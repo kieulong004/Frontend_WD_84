@@ -1,0 +1,166 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --second-color:#b9b9b9;
+    --primary-color:#b5afaf;
+    --black-color:#020101;
+}
+
+.signup a {
+    color: var(--black-color);
+    text-decoration: none;
+}
+
+.signup a:hover {
+    text-decoration: underline;
+}
+
+.login_container {
+    position: relative;
+    left: 50%;
+    top:0;
+    transform:  translateX(-50%);
+    backdrop-filter: blur(25px);
+    width: 450px;
+    border: 2px solid var(--primary-color);
+    padding: 7.5em 2.5em 4em 2.5em;
+    border-radius: 15px;
+    margin: 3.5em 0 ;
+}
+
+.login_title {
+    position: absolute;
+    left: 50%;
+    top:0;
+    display: flex;
+    transform:  translateX(-50%);
+    justify-content: center;
+    align-items: center;
+    width: 140px;
+    background-color: var(--primary-color);
+    border-radius: 0 0 20px 20px;
+    height: 70px;
+}
+
+.login_title span {
+    color: var(--black-color);
+    font-size: 30px;
+}
+.login_title::before {
+    content: "";
+    top: 0;
+    left: -30px;
+    position: absolute;
+    border-top-right-radius: 50%;
+    width: 30px;
+    height: 30px;
+    box-shadow: 15px 0 0 0 var(--primary-color);
+    background: transparent;
+}
+
+.login_title::after {
+    content: "";
+    top:0;
+    position: absolute;
+    height: 30px;
+    right: -30px;
+    width: 30px;
+    background: transparent;
+    border-top-left-radius: 50%;
+    box-shadow: -15px 0 0 0 var(--primary-color);
+}
+
+.input_wrapper {
+    position: relative;
+    flex-direction: column;
+    display: flex;
+    margin: 20px 0;
+}
+
+.input_field {
+    width: 100%;
+    font-size: 16px;
+    height: 55px;
+    /* color: var(--second-color); */
+    background: transparent;
+    padding-inline:20px 54px;
+    border-radius: 30px;
+    border: 2px solid  var(--primary-color);
+    outline: none;
+}
+
+#user {
+    margin-bottom: 10px;
+}
+
+.label {
+    position: absolute;
+    transition: 0.2s;
+    top: 15px;
+    left: 20px;
+}
+
+.input_field:focus ~ .label,
+.input_field:valid .label {
+    position: absolute;
+    font-size: 14px;
+    top:-10px;
+    left: 20px;
+    background-color: var(--primary-color);
+    color: var(--black-color);
+    border-radius: 30px;
+    padding: 0 10px;
+}
+
+.icon {
+    position: absolute;
+    font-size: 20px;
+    top: 18px;
+    right: 25px;
+}
+
+.remember-forgot {
+    justify-content: space-between;
+    display: flex;
+    font-size: 15px;
+}
+
+.input_submit {
+    color: #fff;
+    background:#212529;
+    width: 100%;
+    height:50px;
+    font-size: 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 500;
+    border:none;
+    transition: 0.3s;
+}
+
+.input_submit:hover {
+    background: #343a40;
+}
+
+.signup {
+    text-align: center;
+}
+
+.signup a {
+    font-weight: 500;
+}
+
+@media only screen and (maxw-width:564px){
+    .container {
+        padding: 20px;
+    }
+
+    .login_container{
+        padding: 7.5em 1.5em 4em 1.5em;
+    }
+}
+
