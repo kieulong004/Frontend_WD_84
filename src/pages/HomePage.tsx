@@ -4,7 +4,12 @@ import CategorySection from "@/components/danhmuc/CategorySection";
 import ProductSection from "@/components/product/ProductSection";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-
+interface Product {
+  image: string;
+  name: string;
+  price: string;
+  category: string;
+}
 const HomePage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
