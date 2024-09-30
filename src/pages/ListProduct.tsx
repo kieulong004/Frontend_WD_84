@@ -1,11 +1,17 @@
 import HeroSection from "@/components/banner/HeroSection";
-import ProposalSection from "@/components/banner/ProposalSection";
 import CategorySection from "@/components/danhmuc/CategorySection";
 import ProductSection from "@/components/product/ProductSection";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const HomePage: React.FC = () => {
+interface Product {
+  image: string;
+  name: string;
+  price: string;
+  category: string;
+}
+
+const ListProduct: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,21 +50,15 @@ const HomePage: React.FC = () => {
   if (error) {
     return <div className="text-center py-4 text-red-600">{error}</div>;
   }
+
   return (
     <div className="flex overflow-hidden flex-col pb-2.5 bg-white">
       <HeroSection />
       <CategorySection />
-      <ProductSection
-        title="Sản phẩm mới nhất"
-        products={products.slice(0, 5)}
-      />
-      <ProductSection
-        title="Sản phẩm mới nhất"
-        products={products.slice(0, 5)}
-      />
-      <ProposalSection />
+      <ProductSection title="Sản phẩm mới nhất" products={products} />
+      <ProductSection title="Sản phẩm mới nhất" products={products} />
     </div>
   );
 };
 
-export default HomePage;
+export default ListProduct;
