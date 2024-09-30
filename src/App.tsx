@@ -8,6 +8,9 @@ import CheckoutPage from "./pages/checkOutPage";
 import LoginPage from "./pages/loginPage";
 import RegisterPage from "./pages/registerPage";
 import HomePage from "./pages/HomePage";
+import OrderList from "./pages/orderlist";
+import OrderDetail from "./pages/orderdetail";
+import OrderConfirm from "./pages/orderconfirm";
 
 function App() {
   return (
@@ -20,6 +23,9 @@ function App() {
           <Route path="products/pay" element={<CheckoutPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path='/order-list' element={<OrderList />} />
+          <Route path='/order-detail' element={<OrderDetail />} />
+          <Route path='/order-confirm' element={<OrderConfirm />} />
         </Route>
       </Routes>
     </>
