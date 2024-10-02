@@ -9,22 +9,10 @@ const OrderDetail = () => {
             <div className="mb-3">
                 <p><strong>Mã đơn hàng:</strong> A01 - đặt vào 24/09/2024</p>
                 <p><strong>Thanh toán:</strong> Thanh toán khi nhận hàng (COD)</p>
+                <p><strong>Trạng thái:</strong> Chờ xác nhận thanh toán COD (COD)</p>
             </div>
 
-            <table className="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Ngày</th>
-                        <th>Trạng thái</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>24/09/2024</td>
-                        <td><button className="btn btn-danger">Chờ xác nhận thanh toán COD</button></td>
-                    </tr>
-                </tbody>
-            </table>
+
 
             <div className="row mt-4">
                 <div className="col-md-6">

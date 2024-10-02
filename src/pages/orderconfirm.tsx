@@ -9,7 +9,7 @@ const OrderConfirm = () => {
                 <div className="card-body">
                     {/* Order Confirmation Message */}
                     <div className="alert alert-success text-center">
-                        <h5>Đặt hàng thành công</h5>
+                    <h5>Đặt hàng thành công</h5>
                         <p>
                             Chúng tôi đã gửi email đến địa chỉ email của bạn:
                             <strong> nguyenxuanhung@gmail.com</strong>. Đơn hàng của bạn tại Gemstone
@@ -53,7 +53,7 @@ const OrderConfirm = () => {
 
                         <div className="col-md-6">
                             <div className="card">
-                                <div className="card-body">
+                            <div className="card-body">
                                     <h5 className="card-title">Chi Tiết Đơn Hàng</h5>
                                     <p>Mã đơn hàng: A01</p>
                                     <p>Phương thức thanh toán: Thanh toán khi nhận hàng (COD)</p>

@@ -25,7 +25,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path='/order-list' element={<OrderList />} />
           <Route path='/order-detail' element={<OrderDetail />} />
-          <Route path='/order-confirm' element={<OrderConfirm />} />
+          <Route path='/order-confirm' element={<OrderConfirm />} /> 
         </Route>
       </Routes>
     </>
