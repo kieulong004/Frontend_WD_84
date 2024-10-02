@@ -10,7 +10,7 @@ const OrderDetail = () => {
                 <p><strong>Mã đơn hàng:</strong> A01 - đặt vào 24/09/2024</p>
                 <p><strong>Thanh toán:</strong> Thanh toán khi nhận hàng (COD)</p>
                 <p><strong>Trạng thái:</strong> Chờ xác nhận thanh toán COD (COD)</p>
-            </div>
+            </div> 
 
 
 
