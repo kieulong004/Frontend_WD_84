@@ -62,17 +62,18 @@ const Footer = () => {
             <div className="footer-item">
               <h4 className="footer-title mb-4">Bản tin</h4>
               <p className="text-muted pb-2">
-                Đăng ký để nhận bản tin của chúng tôi và nhận các ưu đãi độc quyền.
+                Đăng ký để nhận bản tin của chúng tôi và nhận các ưu đãi độc
+                quyền.
               </p>
               <form action="" className="newsletter">
                 <div className="input-group">
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Enter Your Email Address"
+                    placeholder="Nhập email..."
                   />
                   <button className="btn btn-primary" type="submit">
-                    Subscribe
+                    Đăng ký
                   </button>
                 </div>
               </form>

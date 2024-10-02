@@ -3,12 +3,12 @@
 }
 
 .category-scroll::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Màu nền cho track của thanh cuộn */
+  background: #ffff; /* Màu nền cho track của thanh cuộn */
   border-radius: 10px; /* Bo góc cho track */
 }
 
 .category-scroll::-webkit-scrollbar-thumb {
-  background: rgba(43, 35, 39, 0.8); /* Màu của thanh cuộn */
+  background: #ffff; /* Màu của thanh cuộn */
   border-radius: 10px; /* Bo góc cho thanh cuộn */
 }
 
