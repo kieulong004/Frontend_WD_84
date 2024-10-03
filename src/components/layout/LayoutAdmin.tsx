@@ -1,8 +1,8 @@
-import React from 'react'
-
 const LayoutAdmin = () => {
   return (
-    <div>LayoutAdmin</div>
+    <div>
+
+    </div>
   )
 } 
 export default LayoutAdmin
