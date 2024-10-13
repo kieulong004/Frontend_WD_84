@@ -18,7 +18,9 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/products?_expand=category");
+        const response = await axios.get(
+          "http://localhost:3000/products?_expand=category"
+        );
         console.log("Dữ liệu trả về từ API:", response.data);
 
         // Kiểm tra xem response.data có phải là một mảng không
