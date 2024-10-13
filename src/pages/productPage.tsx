@@ -10,7 +10,7 @@ type Product = {
   category_id: string;
   category: Category;
   variants: Variant[];
-  created_at: string; // Thêm trường created_at để sắp xếp theo thời gian
+  created_at: string;
 };
 
 type Category = {
@@ -27,8 +27,10 @@ type Variant = {
 const Productpage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1); // State lưu trang hiện tại
-  const [searchTerm, setSearchTerm] = useState(""); // State lưu giá trị tìm kiếm
+  const [currentPage, setCurrentPage] = useState<number>(
+    () => Number(localStorage.getItem("currentPage")) || 1 // Lấy trang từ localStorage hoặc mặc định là 1
+  );
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetch("http://localhost:8000/api/product/product-list")
@@ -40,7 +42,7 @@ const Productpage: React.FC = () => {
       })
       .then((data) => {
         if (data && data.status && Array.isArray(data.data)) {
-          setProducts(data.data); // Lấy mảng sản phẩm từ thuộc tính data
+          setProducts(data.data);
         } else {
           throw new Error("Data is not an array");
         }
@@ -48,38 +50,37 @@ const Productpage: React.FC = () => {
       .catch((err) => {
         setError(err.message);
       });
-  }, []); // Chỉ chạy một lần sau khi component mount
+  }, []);
+
+  // Lưu trang hiện tại vào localStorage mỗi khi nó thay đổi
+  useEffect(() => {
+    localStorage.setItem("currentPage", String(currentPage));
+  }, [currentPage]);
 
   if (error) {
     return <div>Error: {error}</div>;
   }
 
-  // Số lượng sản phẩm mỗi trang
   const itemsPerPage = 10;
 
-  // Lọc sản phẩm theo từ khóa tìm kiếm
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Tính toán số trang dựa trên tổng số sản phẩm đã lọc
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
-  // Lấy sản phẩm cho trang hiện tại
   const currentProducts = filteredProducts.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  // Hàm thay đổi trang
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
 
-  // Hàm cập nhật giá trị tìm kiếm
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(1); // Reset lại trang hiện tại khi thay đổi tìm kiếm
+    setCurrentPage(1);
   };
 
   return (
@@ -99,10 +100,8 @@ const Productpage: React.FC = () => {
         />
       </div>
 
-      {/* Hiển thị danh sách sản phẩm của trang hiện tại */}
       <ProductSection title="Danh sách sản phẩm" products={currentProducts} />
 
-      {/* Hiển thị phân trang */}
       <div className="pagination">
         {Array.from({ length: totalPages }, (_, index) => (
           <button
