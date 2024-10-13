@@ -55,7 +55,7 @@ const Productpage: React.FC = () => {
   }
 
   // Số lượng sản phẩm mỗi trang
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   // Lọc sản phẩm theo từ khóa tìm kiếm
   const filteredProducts = products.filter((product) =>
