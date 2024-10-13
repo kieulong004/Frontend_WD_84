@@ -44,30 +44,6 @@ const CheckoutPage = () => {
                 required
               />
             </div>
-            <div className="mb-3">
-              <label htmlFor="city" className="form-label">
-                Thành phố
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="city"
-                placeholder="TP.HCM"
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="country" className="form-label">
-                Quốc gia
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="country"
-                placeholder="Việt Nam"
-                required
-              />
-            </div>
           </form>
         </div>
 

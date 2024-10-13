@@ -18,6 +18,7 @@ img {
   flex-grow: 2;
 }
 
+
 .detail-item-color {
   width: 30px;
   height: 30px;
@@ -93,6 +94,7 @@ input[type="number"]:focus {
   box-shadow: none;
 }
 
+
 @media (max-width: 1020px) {
   .navbar-brand {
     display: flex;
@@ -108,3 +110,4 @@ input[type="number"]:focus {
     font-size: 0.9rem;
   }
 }
+

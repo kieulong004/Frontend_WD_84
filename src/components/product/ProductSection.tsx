@@ -2,20 +2,23 @@ import React, { useState } from "react";
 import ProductItem from "./ProductItem";
 
 type Product = {
+  id: number;
   image: string;
   name: string;
   price: string;
-  category: string;
+  category: {
+    id: number;
+    name: string;
+  };
+  categoryId: number;
 };
 
 type ProductSectionProps = {
-  title: string;
   products: Product[];
 };
 
-const ProductSection: React.FC<ProductSectionProps> = ({ title, products }) => {
+const ProductSection: React.FC<ProductSectionProps> = ({products} ) => {
   const [searchTerm, setSearchTerm] = useState<string>(""); // Trạng thái cho ô tìm kiếm
-
   // Kiểm tra xem products có phải là mảng không
   if (!Array.isArray(products)) {
     return <div>Dữ liệu sản phẩm không hợp lệ.</div>;
@@ -26,14 +29,14 @@ const ProductSection: React.FC<ProductSectionProps> = ({ title, products }) => {
     setSearchTerm(e.target.value); // Cập nhật trạng thái với giá trị tìm kiếm mới
   };
 
+
   // Lọc sản phẩm dựa trên tìm kiếm
   const filteredProducts = products.filter(
     (product) => product.name.toLowerCase().includes(searchTerm.toLowerCase()) // Tìm kiếm theo tên sản phẩm
   );
-
   return (
     <section className="mt-5">
-      <h2 className="h2 text-black mb-4">{title}</h2>
+      <h2 className="h2 text-black mb-4">sản phẩm mới nhất</h2>
 
       {/* Ô tìm kiếm */}
       <div className="mb-4 d-flex align-items-center">

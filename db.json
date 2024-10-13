@@ -67,17 +67,33 @@
       "id": 10,
       "image": "https://cdn.builder.io/api/v1/image/assets/TEMP/3a9b59616ce27863de0a4dd75dce3ec5c00a1e4cf0f36c13ea19cf6a00ec99ec?placeholderIfAbsent=true&apiKey=96b70dd57e0843dd84b538770e59ca4a",
       "name": "Nhẫn cưới nữ đá CZ 22Q.063NC",
-      "price": "9.999.999 VNĐ",
+      "price": "9.000.000 VNĐ",
       "categoryId": 2
     }
   ],
   "categories": [
     {
       "id": 1,
-      "name": "Vòng cổ"
+      "name": "Vòng cổ",
+      "image":"https://cdn.builder.io/api/v1/image/assets/TEMP/b39f476b64ecc0f31643877703a64403b16cb8edfde7a4f845d344f274654111?placeholderIfAbsent=true&apiKey=96b70dd57e0843dd84b538770e59ca4a"
     },
     {
       "id": 2,
+      "name": "Nhẫn",
+      "image":"https://cdn.builder.io/api/v1/image/assets/TEMP/f16695b5417c7e756e040ce38e4c756e7e6528eb8f37cd9b83d1b0a43aeac0dd?placeholderIfAbsent=true&apiKey=96b70dd57e0843dd84b538770e59ca4a"
+    },
+    {
+      "id": 3,
+      "name": "Hoa tai",
+    "image":"https://cdn.builder.io/api/v1/image/assets/TEMP/cec2f14d08d900c8d18179520086afd2d512fb4b9cfad15e7583a7346ea30998?placeholderIfAbsent=true&apiKey=96b70dd57e0843dd84b538770e59ca4a"
+
+    },
+    {
+      "id": 4,
+      "name": "Nhẫn"
+    },
+    {
+      "id": 5,
       "name": "Nhẫn"
     }
   ],

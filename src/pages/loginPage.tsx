@@ -8,7 +8,6 @@ const LoginPage = () => {
         <div className="input_wrapper">
           <input type="text" id="user" className="input_field" required />
           <label htmlFor="user" className="lable">
-            {" "}
             Username
           </label>
           <i className="fa-regular fa-user icon" />
@@ -16,7 +15,6 @@ const LoginPage = () => {
         <div className="input_wrapper">
           <input type="password" id="pass" className="input_field" required />
           <label htmlFor="pass" className="lable">
-            {" "}
             Password
           </label>
           <i className="fa-solid fa-lock icon" />

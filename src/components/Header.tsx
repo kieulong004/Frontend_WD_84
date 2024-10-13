@@ -1,10 +1,12 @@
+import { useState } from "react";
 import {  search, shop, user } from "./icons";
 import Logo from "./logo";
 
 const Header = () => {
+
   return (
     <header className="header py-3">
-      <div className="container">
+      <div className="container ">
         <nav className="navbar navbar-expand-lg navbar-light">
           <button
             className="navbar-toggler"
@@ -12,10 +14,9 @@ const Header = () => {
             data-bs-toggle="collapse"
             data-bs-target="#nav"
             aria-controls="nav"
-            aria-expanded="false"
             aria-label="Toggle navigation"
           >
-            <span className="navbar-toggler-icon"></span>
+              <span className="navbar-toggler-icon"></span> 
           </button>
           <div className="navbar-brand mx-auto">
             <Logo />

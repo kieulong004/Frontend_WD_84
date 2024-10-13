@@ -5,10 +5,15 @@ import ProductSection from "@/components/product/ProductSection";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 interface Product {
+  id: number;
   image: string;
   name: string;
   price: string;
-  category: string;
+  category: {
+    id: number;
+    name: string;
+  };
+  categoryId: number;
 }
 const HomePage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -49,16 +54,15 @@ const HomePage: React.FC = () => {
   if (error) {
     return <div className="text-center py-4 text-red-600">{error}</div>;
   }
+  console.log(products)
   return (
     <div className="flex overflow-hidden flex-col pb-2.5 bg-white">
       <HeroSection />
       <CategorySection />
       <ProductSection
-        title="Sản phẩm mới nhất"
         products={products.slice(0, 5)}
       />
       <ProductSection
-        title="Sản phẩm mới nhất"
         products={products.slice(0, 5)}
       />
       <ProposalSection />

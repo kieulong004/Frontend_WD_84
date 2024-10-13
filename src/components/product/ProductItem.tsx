@@ -1,23 +1,33 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 interface ProductItemProps {
+  id: number;
   image: string;
   name: string;
   price: string;
+  category: {
+    id: number;
+    name: string;
+  };
+  categoryId: number;
 }
 
-const ProductItem: React.FC<ProductItemProps> = ({ image, name, price }) => {
+const ProductItem: React.FC<ProductItemProps> = (product) => {
   return (
     <div className="d-flex flex-column align-items-center">
       <img
         loading="lazy"
-        src={image}
-        alt={name}
+        src={product.image}
+        alt={product.name}
         className="img-fluid rounded mb-3"
         style={{ width: "250px", height: "250px", objectFit: "contain" }}
       />
-      <div className="mt-2 text-lg fw-semibold text-center">{name}</div>
-      <div className="text-danger fw-bold fs-5">{price}</div>
+      <div className="mt-2 text-lg fw-semibold text-center">
+        <Link to={`/products/${product.id}`} className="text-decoration-none text-dark">{product.name}</Link>
+
+      </div>
+      <div className="text-danger fw-bold fs-5">{product.price}</div>
       <button className="btn btn-warning d-flex align-items-center gap-2 px-4 py-2 mt-3">
         <img
           loading="lazy"
