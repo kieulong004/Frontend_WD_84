@@ -11,7 +11,7 @@ import HomePage from "./pages/HomePage";
 import OrderList from "./pages/orderlist";
 import OrderDetail from "./pages/orderdetail";
 import OrderConfirm from "./pages/orderconfirm";
-import ListProduct from "./pages/ListProduct";
+import Productpage from "./pages/productPage";
 
 function App() {
   return (
@@ -19,7 +19,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LayoutWebsite />}>
           <Route index element={<HomePage />} />
-          <Route path="list" element={<ListProduct />} />
+          <Route path="products" element={<Productpage />} />
           <Route path="products/:id" element={<ProductDetail />} />
           <Route path="products/cart" element={<CartPage />} />
           <Route path="products/pay" element={<CheckoutPage />} />

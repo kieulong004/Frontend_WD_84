@@ -1,0 +1,36 @@
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  font-size: 10px;
+}
+
+.page-item {
+  padding: 10px 15px; /* Thêm padding cho nút rộng hơn */
+  margin: 0 5px;
+  border: 1px solid #007bff; /* Sử dụng màu xanh như màu chính */
+  border-radius: 5px; /* Bo tròn các góc */
+  background-color: white; /* Màu nền cho nút */
+  color: #007bff; /* Màu chữ */
+  font-weight: bold; /* Làm cho chữ đậm hơn */
+  transition: background-color 0.3s, color 0.3s; /* Hiệu ứng chuyển tiếp */
+  cursor: pointer;
+  text-decoration: none; /* Bỏ gạch chân */
+}
+
+.page-item:hover {
+  background-color: #0056b3; /* Màu nền khi hover */
+  color: white; /* Màu chữ khi hover */
+}
+
+.page-item.active {
+  background-color: #007bff; /* Màu nền cho nút hiện tại */
+  color: white; /* Màu chữ cho nút hiện tại */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng cho nút hiện tại */
+}
+
+.page-item:disabled {
+  background-color: #e0e0e0; /* Màu nền cho nút không khả dụng */
+  color: #a1a1a1; /* Màu chữ cho nút không khả dụng */
+  cursor: not-allowed; /* Con trỏ không cho phép */
+}

@@ -1,36 +1,82 @@
-import {  search, shop, user } from "./icons";
-import Logo from "./logo";
+import React, { useState } from 'react';
+import Logo from './logo';
+import { search, shop, user } from './icons';
 
-const Header = () => {
+const Header: React.FC = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsDropdownOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDropdownOpen(false);
+  };
+
   return (
     <header className="header py-3">
-      <div className="container">
-        <nav className="navbar navbar-expand-lg navbar-light">
+      <div className="container ">
+        <nav className="navbar navbar-expand-lg navbar-light row-lg">
           <button
             className="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
-            data-bs-target="#nav"
-            aria-controls="nav"
+            data-bs-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown"
             aria-expanded="false"
             aria-label="Toggle navigation"
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="navbar-brand mx-auto">
+          <div className="navbar-brand">
             <Logo />
           </div>
 
-          <div className="collapse navbar-collapse" id="nav">
-            <ul className="navbar-nav flex-row me-auto">
-              <li className="nav-item">
-                <a href="/" className="nav-link">
-                  Cửa hàng
+
+          <div className="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul className="navbar-nav me-auto">
+
+              <li
+                className="nav-item dropdown position-relative"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                <a
+                  className="nav-link "
+                  href="#"
+                  id="navbarDropdown"
+                  role="button"
+                  aria-expanded={isDropdownOpen}
+                  style={{ paddingRight: "1rem", cursor: "pointer" }}
+                >
+                  Danh mục
                 </a>
+                <ul
+                  className={`dropdown-menu border-0 shadow-lg p-2 ${isDropdownOpen ? 'show' : ''}`}
+                  aria-labelledby="navbarDropdown"
+                  style={{ borderRadius: '0.5rem', minWidth: '200px' }}
+                >
+                  <li>
+                    <a className="dropdown-item" href="/gemstone/diamond">
+                      Nhẫn
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="/gemstone/ruby">
+                      Vòng tay
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="/gemstone/sapphire">
+                      Vòng cổ
+                    </a>
+                  </li>
+                </ul>
               </li>
+
               <li className="nav-item">
-                <a href="/shop" className="nav-link">
-                  Gemstone
+                <a href="/products" className="nav-link">
+                  Cửa hàng
                 </a>
               </li>
               <li className="nav-item">
@@ -52,7 +98,7 @@ const Header = () => {
           </div>
 
           <div className="d-flex align-items-center">
-            <a href="/user" className="btn btn-link p-0 mx-2">
+            <a href="/order-list" className="btn btn-link p-0 mx-2">
               <img
                 src={user}
                 alt="User"
@@ -68,7 +114,7 @@ const Header = () => {
                 style={{ width: "24px" }}
               />
             </a>
-            <a href="/cart" className="btn btn-link p-0 mx-2">
+            <a href="/products/cart" className="btn btn-link p-0 mx-2">
               <img
                 src={shop}
                 alt="Cart"
