@@ -27,8 +27,8 @@ type Variant = {
 
 const HomePage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-
   useEffect(() => {
+
     fetch("http://localhost:8000/api/product/product-list")
       .then((res) => {
         if (!res.ok) {
