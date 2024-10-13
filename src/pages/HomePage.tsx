@@ -1,71 +1,66 @@
-import HeroSection from "@/components/banner/HeroSection";
-import ProposalSection from "@/components/banner/ProposalSection";
-import CategorySection from "@/components/danhmuc/CategorySection";
-import ProductSection from "@/components/product/ProductSection";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
-interface Product {
-  id: number;
-  image: string;
+import ProductSection from "@/components/product/ProductSection";
+import HeroSection from "./../components/banner/HeroSection";
+import ProposalSection from "./../components/banner/ProposalSection";
+import BlogProduct from "@/components/blogProduct";
+
+type Product = {
+  id: string;
+  image?: string;
   name: string;
   price: string;
-  category: {
-    id: number;
-    name: string;
-  };
-  categoryId: number;
-}
+  category_id: string;
+  category: Category;
+  variants: Variant[];
+  created_at: string; // Thêm trường created_at để sắp xếp theo thời gian
+};
+type Category = {
+  name: string;
+  id: string;
+};
+type Variant = {
+  id: string;
+  listed_price: number;
+  selling_price: number;
+  quantity: number;
+};
+
 const HomePage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/products?_expand=category");
-        console.log("Dữ liệu trả về từ API:", response.data);
-
-        // Kiểm tra xem response.data có phải là một mảng không
-        if (Array.isArray(response.data)) {
-          setProducts(response.data);
-        } else {
-          throw new Error("Dữ liệu không phải là mảng");
+    fetch("http://localhost:8000/api/product/product-list")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch data");
         }
-      } catch (error) {
-        setError(
-          "Lỗi khi tải sản phẩm: " +
-            (error instanceof Error ? error.message : "Có lỗi xảy ra")
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
+        return res.json();
+      })
+      .then((data) => {
+        if (data && data.status && Array.isArray(data.data)) {
+          // Sắp xếp sản phẩm theo thời gian giảm dần
+          const sortedProducts = data.data.sort((a: Product, b: Product) => {
+            return (
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+            );
+          });
+          setProducts(sortedProducts.slice(0, 5)); // Chỉ lấy 5 sản phẩm mới nhất
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching products:", error);
+      });
   }, []);
 
-  // Hiển thị trạng thái đang tải
-  if (loading) {
-    return <div className="text-center py-4">Loading...</div>;
-  }
-
-  // Hiển thị trạng thái lỗi
-  if (error) {
-    return <div className="text-center py-4 text-red-600">{error}</div>;
-  }
-  console.log(products)
   return (
-    <div className="flex overflow-hidden flex-col pb-2.5 bg-white">
+    <div>
       <HeroSection />
-      <CategorySection />
       <ProductSection
-        products={products.slice(0, 5)}
-      />
-      <ProductSection
-        products={products.slice(0, 5)}
+        title="Sản phẩm mới nhất"
+        products={products} // Truyền sản phẩm đã sắp xếp và giới hạn
       />
       <ProposalSection />
+      <BlogProduct />
     </div>
   );
 };

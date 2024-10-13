@@ -81,7 +81,7 @@ const Footer = () => {
           </div>
         </div>
         <p className="text-center text-muted pb-2 mt-4 copyright">
-          2023 Furino. All rights reserved
+          2024 @Gemstone
         </p>
       </div>
     </footer>

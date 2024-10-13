@@ -13,6 +13,7 @@ import Icon22 from "@/assets/22.svg";
 import Icon23 from "@/assets/23.svg";
 import Icon24 from "@/assets/24.svg";
 import ImageLogin from "@/assets/bg.jpg"
+import blogImage from "@/assets/blog.jpg"
 
 export {
   user,
@@ -29,5 +30,6 @@ export {
   Icon22,
   Icon23,
   Icon24,
-  ImageLogin
+  ImageLogin,
+  blogImage
 };
