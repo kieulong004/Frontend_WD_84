@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
+import "../../css/ProductSection.css";
 type Product = {
   id: string;
   image?: string;
@@ -9,7 +9,7 @@ type Product = {
   category_id: string;
   category: Category;
   variants: Variant[];
-  created_at: string; // Thêm trường created_at để sắp xếp theo thời gian
+  created_at: string;
 };
 
 type Category = {
@@ -27,7 +27,7 @@ type Variant = {
 type ProductSectionProps = {
   title?: string;
   products: Product[];
-  limit?: number; // Nhận giới hạn sản phẩm
+  limit?: number;
 };
 
 const ProductSection: React.FC<ProductSectionProps> = ({
@@ -35,56 +35,62 @@ const ProductSection: React.FC<ProductSectionProps> = ({
   products,
   limit,
 }) => {
-  // Lấy số lượng sản phẩm dựa trên limit
   const displayedProducts = limit ? products.slice(0, limit) : products;
-  console.log(products);
 
   return (
     <section className="mx-5 mt-5">
       <h2 className="h2 mb-4 text-center">{title}</h2>
       <div className="d-flex flex-wrap gap-4 justify-content-between">
         {displayedProducts.map((product) => {
-          const firstVariant = product.variants[0]; // Lấy biến thể đầu tiên
-
+          const firstVariant = product.variants[0];
           return (
             <div
               key={product.id}
-              className="d-flex flex-column align-items-center border"
+              className="product-card d-flex flex-column align-items-center border position-relative"
+
             >
-              <img
-                loading="lazy"
-                src={`http://127.0.0.1:8000${product.image}`} // Thêm hình ảnh nếu có
-                alt={product.name}
-                className="img-fluid rounded mb-3"
-                style={{
-                  width: "250px",
-                  height: "250px",
-                  objectFit: "contain",
-                  borderBottom: "1px solid #e0e0e0",
-                  borderRadius: "none",
-                }}
-              />
-              <div className="mt-2 text-md text-center text-muted">
-                {product.category.name}
-              </div>
-              <div className="mt-2 text-lg fw-semibold text-center">
+              <div className="product-image-container position-relative">
+                <img
+                  loading="lazy"
+                  src={`http://127.0.0.1:8000${product.image}`}
+                  alt={product.name}
+                  className="img-fluid rounded mb-3"
+                  style={{
+                    width: "250px",
+                    height: "250px",
+                    objectFit: "contain",
+                    borderBottom: "1px solid #e0e0e0",
+                    borderRadius: "none",
+                  }}
+                />
                 <Link
-                  to={"/products/" + product.id}
-                  className="text-decoration-none text-dark"
+                  to={`/products/${product.id}`}
+                  className="btn btn-outline-secondary hover-button"
+                  style={{ fontSize: "12px", borderRadius: "20px" }}
+                >
+                  XEM CHI TIẾT
+                </Link>
+              </div>
+              <div className="text-center mt-3">
+                <div className="text-md text-muted">{product.category.name}</div>
+                <Link
+                  to={`/products/${product.id}`}
+                  className="text-decoration-none text-dark fw-semibold d-block mt-2"
                 >
                   {product.name}
                 </Link>
+                {firstVariant && (
+                  <div className="product-pricing">
+                    <del className="listed-price">
+                      {firstVariant.listed_price.toLocaleString()} đ
+                    </del>
+                    <span className="selling-price">
+                      {firstVariant.selling_price.toLocaleString()} đ
+                    </span>
+                  </div>
+                )}
+
               </div>
-              {firstVariant && (
-                <div className="d-flex justify-content-between align-items-center w-100 px-3 my-2">
-                  <del className="text-muted text-secondary">
-                    {firstVariant.listed_price} đ
-                  </del>
-                  <span className="font-weight-bold text-danger">
-                    {firstVariant.selling_price} đ
-                  </span>
-                </div>
-              )}
             </div>
           );
         })}
