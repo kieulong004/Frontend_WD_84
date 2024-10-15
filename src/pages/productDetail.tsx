@@ -112,15 +112,19 @@ const ProductDetail = () => {
 
             <div className="col-md-6">
               <h1 className="product-title display-4">{product?.name}</h1>
-              <p className="text-muted product-sku">Mã sản phẩm {product?.sku}</p>
-              <p className="product-description lead">
-                {product?.description}
+              <p className="text-muted product-sku">
+                Mã sản phẩm {product?.sku}
               </p>
+              <p className="product-description lead">{product?.description}</p>
               {selectedVariant && (
                 <>
                   <p className="text-muted py-2">
-                    <del className="me-5">{selectedVariant.listed_price} VNĐ</del>
-                    <span className="text-danger ms-3 h6">{selectedVariant.selling_price} VNĐ</span>
+                    <del className="me-5">
+                      {selectedVariant.listed_price} VNĐ
+                    </del>
+                    <span className="text-danger ms-3 h6">
+                      {selectedVariant.selling_price} VNĐ
+                    </span>
                   </p>
                   <div className="mb-3">
                     <div className="d-flex align-items-center">
@@ -134,7 +138,9 @@ const ProductDetail = () => {
                           <button
                             key={variant.id}
                             type="button"
-                            className={`btn btn-outline-secondary me-2 ${selectedVariant.id === variant.id ? 'active' : ''}`}
+                            className={`btn btn-outline-secondary me-2 ${
+                              selectedVariant.id === variant.id ? "active" : ""
+                            }`}
                             onClick={() => setSelectedVariant(variant)}
                           >
                             {variant.weight.weight} {variant.weight.unit}
@@ -198,7 +204,7 @@ const ProductDetail = () => {
             <h2 className="section-heading__title">Sản phẩm cùng danh mục</h2>
           </div>
           <div className="row">
-            {relatedProducts?.map((relatedProduct) => (
+            {relatedProducts?.slice(0, 5).map((relatedProduct) => (
               <div className="col-md-3 mb-4" key={relatedProduct.id}>
                 <div className="card h-100">
                   <img
@@ -207,20 +213,20 @@ const ProductDetail = () => {
                     className="card-img-top"
                     style={{ objectFit: "cover", height: "200px" }}
                   />
-                  <div className="card-body d-flex flex-column">
-                    <h5 className="my-2">
+                  <div className="card-body text-center d-flex flex-column">
+                    <p className="my-2">
                       <a href="#" className="text-decoration-none text-dark">
                         {relatedProduct.category.name}
                       </a>
-                    </h5>
-                    <p className="product__category">
+                    </p>
+                    <h5 className="product__category">
                       <Link
                         className="text-decoration-none text-dark"
                         to={`/products/${relatedProduct.id}`}
                       >
                         {relatedProduct.name}
                       </Link>
-                    </p>
+                    </h5>
                     <div className="mt-auto">
                       <div className="d-flex justify-content-between align-items-center flex-wrap">
                         <del className="text-muted me-2">
