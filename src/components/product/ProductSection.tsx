@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../../css/ProductSection.css";
+import "../../css/ProductSection.css"; // Import file CSS riêng
+
 type Product = {
   id: string;
   image?: string;

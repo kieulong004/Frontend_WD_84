@@ -27,12 +27,14 @@ type Variant = {
 const Productpage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true); // Loading state
   const [currentPage, setCurrentPage] = useState<number>(
     () => Number(localStorage.getItem("currentPage")) || 1 // Lấy trang từ localStorage hoặc mặc định là 1
   );
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
+    setIsLoading(true); // Set loading to true when fetching starts
     fetch("http://localhost:8000/api/product/product-list")
       .then((res) => {
         if (!res.ok) {
@@ -49,6 +51,9 @@ const Productpage: React.FC = () => {
       })
       .catch((err) => {
         setError(err.message);
+      })
+      .finally(() => {
+        setIsLoading(false); // Set loading to false once data is loaded or error occurs
       });
   }, []);
 
@@ -59,6 +64,10 @@ const Productpage: React.FC = () => {
 
   if (error) {
     return <div>Error: {error}</div>;
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   const itemsPerPage = 10;
