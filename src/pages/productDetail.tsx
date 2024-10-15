@@ -86,7 +86,7 @@ const ProductDetail = () => {
         setProduct(data.data.product);
         setRelatedProducts(data.data.relatedProducts);
         setVariants(data.data.variants);
-        setSelectedVariant(data.data.variants[0]); // Set the first variant as the default selected variant
+        setSelectedVariant(data.data.variants[0]); // Đặt biến thể đầu tiên là mặc định
       } catch (error) {
         console.error("Error fetching product details:", error);
       }
@@ -96,6 +96,7 @@ const ProductDetail = () => {
       fetchProductDetail();
     }
   }, [id]);
+
   return (
     <div>
       <section className="detail py-5 border-bottom">
@@ -197,47 +198,73 @@ const ProductDetail = () => {
           <div className="section-heading text-center mb-4">
             <h2 className="section-heading__title">Sản phẩm cùng danh mục</h2>
           </div>
-          <div className="row">
-            {relatedProducts?.map((relatedProduct) => (
-              <div className="col-md-3 mb-4" key={relatedProduct.id}>
-                <div className="card h-100">
-                  <img
-                    src={`http://127.0.0.1:8000${relatedProduct?.image}`}
-                    alt="#"
-                    className="card-img-top"
-                    style={{ objectFit: "cover", height: "200px" }}
-                  />
-                  <div className="card-body d-flex flex-column">
-                    <h5 className="my-2">
-                      <a href="#" className="text-decoration-none text-dark">
-                        {relatedProduct.category.name}
-                      </a>
-                    </h5>
-                    <p className="product__category">
+
+          {/* Hiển thị tối đa 5 sản phẩm */}
+          <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
+            {relatedProducts.slice(0, 5).map((relatedProduct) => {
+              const firstVariant = relatedProduct.variants[0];
+              return (
+                <div className="col d-flex align-items-stretch" key={relatedProduct.id}>
+                  <div className="product-card d-flex flex-column align-items-center border position-relative">
+                    <div className="product-image-container position-relative">
+                      <img
+                        src={`http://127.0.0.1:8000${relatedProduct.image}`}
+                        alt={relatedProduct.name}
+                        className="img-fluid rounded mb-3"
+                        style={{
+                          width: "250px",
+                          height: "250px",
+                          objectFit: "cover",
+                          borderBottom: "1px solid #e0e0e0",
+                          borderRadius: "none",
+                        }}
+                      />
                       <Link
-                        className="text-decoration-none text-dark"
                         to={`/products/${relatedProduct.id}`}
+                        className="btn btn-outline-secondary hover-button"
+                        style={{ fontSize: "12px", borderRadius: "20px" }}
+                      >
+                        XEM CHI TIẾT
+                      </Link>
+                    </div>
+                    <div className="text-center mt-3">
+                      <div className="text-md text-muted">{relatedProduct.category.name}</div>
+                      <Link
+                        to={`/products/${relatedProduct.id}`}
+                        className="text-decoration-none text-dark fw-semibold d-block mt-2"
                       >
                         {relatedProduct.name}
                       </Link>
-                    </p>
-                    <div className="mt-auto">
-                      <div className="d-flex justify-content-between align-items-center flex-wrap">
-                        <del className="text-muted me-2">
-                          {relatedProduct.variants[0].listed_price} VNĐ
-                        </del>
-                        <span className="text-danger font-weight-bold">
-                          {relatedProduct.variants[0].selling_price} VNĐ
-                        </span>
-                      </div>
+                      {firstVariant && (
+                        <div className="product-pricing">
+                          <del className="listed-price">
+                            {firstVariant.listed_price.toLocaleString()} đ
+                          </del>
+                          <span className="selling-price">
+                            {firstVariant.selling_price.toLocaleString()} đ
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+          </div>
+
+          {/* Nút xem thêm */}
+          <div className="text-center mt-4">
+            <Link
+              to="/products"
+              className="btn btn-outline-secondary btn-lg px-3 py-1 fw-bold"
+              style={{ borderRadius: "30px" }}
+            >
+              Xem tất cả
+            </Link>
           </div>
         </div>
       </section>
+
     </div>
   );
 };
