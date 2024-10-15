@@ -219,14 +219,14 @@ const ProductDetail = () => {
                         {relatedProduct.category.name}
                       </a>
                     </p>
-                    <h5 className="product__category">
+                    <p className="product__category">
                       <Link
-                        className="text-decoration-none text-dark"
+                        className="text-decoration-none text-dark fw-semibold"
                         to={`/products/${relatedProduct.id}`}
                       >
                         {relatedProduct.name}
                       </Link>
-                    </h5>
+                    </p>
                     <div className="mt-auto">
                       <div className="d-flex justify-content-between align-items-center flex-wrap">
                         <del className="text-muted me-2">
