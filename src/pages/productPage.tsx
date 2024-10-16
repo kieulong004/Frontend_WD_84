@@ -27,10 +27,16 @@ type Variant = {
 const ProductPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1); // State lưu trang hiện tại
+  const [currentPage, setCurrentPage] = useState<number>(1); // State lưu trang hiện tại
   const [searchTerm, setSearchTerm] = useState(""); // State lưu giá trị tìm kiếm
 
+
   useEffect(() => {
+    // Lấy trạng thái trang hiện tại từ localStorage nếu có
+    const savedPage = localStorage.getItem("currentPage");
+    if (savedPage) {
+      setCurrentPage(parseInt(savedPage, 10));
+    }
     fetchProducts(); // Gọi hàm để lấy sản phẩm
   }, []);
 
@@ -52,7 +58,6 @@ const ProductPage: React.FC = () => {
             );
           });
           setProducts(sortedProducts); // Lưu trữ danh sách sản phẩm đã sắp xếp
-          setCurrentPage(1); // Đặt trang hiện tại về 1 khi lấy sản phẩm mới
         } else {
           throw new Error("Data is not an array");
         }
@@ -86,6 +91,7 @@ const ProductPage: React.FC = () => {
   // Hàm thay đổi trang
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
+    localStorage.setItem("currentPage", pageNumber.toString()); // Lưu trang hiện tại vào localStorage
   };
 
   // Hàm cập nhật giá trị tìm kiếm
