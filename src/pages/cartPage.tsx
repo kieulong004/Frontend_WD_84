@@ -32,8 +32,14 @@ const CartPage = () => {
                   </td>
                   <td className="align-middle" style={{ height: "100px" }}>
                     <div className="d-flex justify-content-center align-items-center h-100">
-                      <div className="input-group" style={{ maxWidth: "120px" }}>
-                        <button className="btn btn-outline-secondary btn-sm" type="button">
+                      <div
+                        className="input-group"
+                        style={{ maxWidth: "120px" }}
+                      >
+                        <button
+                          className="btn btn-outline-secondary btn-sm"
+                          type="button"
+                        >
                           <i className="bi bi-dash"></i>
                         </button>
                         <input
@@ -41,10 +47,17 @@ const CartPage = () => {
                           className="form-control text-center"
                           value="1"
                           min="1"
-                          style={{ width: "50px", border: 'none', borderTop: '1px solid #000', 
-                            borderBottom: '1px solid #000' }}
+                          style={{
+                            width: "50px",
+                            border: "none",
+                            borderTop: "1px solid #000",
+                            borderBottom: "1px solid #000",
+                          }}
                         />
-                        <button className="btn btn-outline-secondary btn-sm" type="button">
+                        <button
+                          className="btn btn-outline-secondary btn-sm"
+                          type="button"
+                        >
                           <i className="bi bi-plus"></i>
                         </button>
                       </div>
@@ -74,8 +87,14 @@ const CartPage = () => {
                   </td>
                   <td className="align-middle" style={{ height: "100px" }}>
                     <div className="d-flex justify-content-center align-items-center h-100">
-                      <div className="input-group" style={{ maxWidth: "120px" }}>
-                        <button className="btn btn-outline-secondary btn-sm" type="button">
+                      <div
+                        className="input-group"
+                        style={{ maxWidth: "120px" }}
+                      >
+                        <button
+                          className="btn btn-outline-secondary btn-sm"
+                          type="button"
+                        >
                           <i className="bi bi-dash"></i>
                         </button>
                         <input
@@ -83,10 +102,17 @@ const CartPage = () => {
                           className="form-control text-center"
                           value="1"
                           min="1"
-                          style={{ width: "50px", border: 'none', borderTop: '1px solid #000', 
-                            borderBottom: '1px solid #000' }}
+                          style={{
+                            width: "50px",
+                            border: "none",
+                            borderTop: "1px solid #000",
+                            borderBottom: "1px solid #000",
+                          }}
                         />
-                        <button className="btn btn-outline-secondary btn-sm" type="button">
+                        <button
+                          className="btn btn-outline-secondary btn-sm"
+                          type="button"
+                        >
                           <i className="bi bi-plus"></i>
                         </button>
                       </div>
@@ -102,9 +128,9 @@ const CartPage = () => {
               </tbody>
             </table>
           </div>
-          <div className="d-flex justify-content-between align-items-center mt-4 " >
+          <div className="d-flex justify-content-between align-items-center mt-4 ">
             <h4>Tổng tiền:</h4>
-            <h4 >7.900.000đ</h4>
+            <h4>7.900.000đ</h4>
           </div>
           <div className="mt-4">
             <button className="btn btn-dark w-100">Tiến hành thanh toán</button>

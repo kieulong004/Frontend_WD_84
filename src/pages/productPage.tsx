@@ -10,7 +10,7 @@ type Product = {
   category_id: string;
   category: Category;
   variants: Variant[];
-  created_at: string;
+  created_at: string; // Thêm trường created_at để sắp xếp theo thời gian
 };
 
 type Category = {
@@ -24,15 +24,23 @@ type Variant = {
   quantity: number;
 };
 
-const Productpage: React.FC = () => {
+const ProductPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState<number>(
-    () => Number(localStorage.getItem("currentPage")) || 1 // Lấy trang từ localStorage hoặc mặc định là 1
-  );
-  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState<number>(1); // State lưu trang hiện tại
+  const [searchTerm, setSearchTerm] = useState(""); // State lưu giá trị tìm kiếm
+
 
   useEffect(() => {
+    // Lấy trạng thái trang hiện tại từ localStorage nếu có
+    const savedPage = localStorage.getItem("currentPage");
+    if (savedPage) {
+      setCurrentPage(parseInt(savedPage, 10));
+    }
+    fetchProducts(); // Gọi hàm để lấy sản phẩm
+  }, []);
+
+  const fetchProducts = () => {
     fetch("http://localhost:8000/api/product/product-list")
       .then((res) => {
         if (!res.ok) {
@@ -42,7 +50,14 @@ const Productpage: React.FC = () => {
       })
       .then((data) => {
         if (data && data.status && Array.isArray(data.data)) {
-          setProducts(data.data);
+          // Sắp xếp sản phẩm theo thời gian giảm dần
+          const sortedProducts = data.data.sort((a: Product, b: Product) => {
+            return (
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+            );
+          });
+          setProducts(sortedProducts); // Lưu trữ danh sách sản phẩm đã sắp xếp
         } else {
           throw new Error("Data is not an array");
         }
@@ -50,37 +65,39 @@ const Productpage: React.FC = () => {
       .catch((err) => {
         setError(err.message);
       });
-  }, []);
-
-  // Lưu trang hiện tại vào localStorage mỗi khi nó thay đổi
-  useEffect(() => {
-    localStorage.setItem("currentPage", String(currentPage));
-  }, [currentPage]);
+  };
 
   if (error) {
     return <div>Error: {error}</div>;
   }
 
+  // Số lượng sản phẩm mỗi trang
   const itemsPerPage = 10;
 
+  // Lọc sản phẩm theo từ khóa tìm kiếm
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Tính toán số trang dựa trên tổng số sản phẩm đã lọc
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
+  // Lấy sản phẩm cho trang hiện tại
   const currentProducts = filteredProducts.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
+  // Hàm thay đổi trang
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
+    localStorage.setItem("currentPage", pageNumber.toString()); // Lưu trang hiện tại vào localStorage
   };
 
+  // Hàm cập nhật giá trị tìm kiếm
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset lại trang hiện tại khi thay đổi tìm kiếm
   };
 
   return (
@@ -100,8 +117,10 @@ const Productpage: React.FC = () => {
         />
       </div>
 
+      {/* Hiển thị danh sách sản phẩm của trang hiện tại */}
       <ProductSection title="Danh sách sản phẩm" products={currentProducts} />
 
+      {/* Hiển thị phân trang */}
       <div className="pagination">
         {Array.from({ length: totalPages }, (_, index) => (
           <button
@@ -117,4 +136,4 @@ const Productpage: React.FC = () => {
   );
 };
 
-export default Productpage;
+export default ProductPage;
