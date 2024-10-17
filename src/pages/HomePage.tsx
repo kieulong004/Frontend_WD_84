@@ -28,6 +28,8 @@ type Variant = {
 const HomePage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   useEffect(() => {
+    window.scrollTo(0, 0);
+
     fetch("http://localhost:8000/api/product/product-list")
       .then((res) => {
         if (!res.ok) {

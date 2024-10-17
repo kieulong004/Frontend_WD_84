@@ -36,7 +36,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
   limit,
 }) => {
   const displayedProducts = limit ? products.slice(0, limit) : products;
-
+console.log(products)
   return (
     <section className="mx-5 mt-5">
       <h2 className="h2 mb-4 text-center">{title}</h2>

@@ -5,9 +5,9 @@
 }
 
 :root {
-    --second-color:#b9b9b9;
-    --primary-color:#b5afaf;
-    --black-color:#020101;
+    --second-color: #b9b9b9;
+    --primary-color: #b5afaf;
+    --black-color: #020101;
 }
 
 .signup a {
@@ -22,22 +22,22 @@
 .login_container {
     position: relative;
     left: 50%;
-    top:0;
-    transform:  translateX(-50%);
+    top: 0;
+    transform: translateX(-50%);
     backdrop-filter: blur(25px);
     width: 450px;
     border: 2px solid var(--primary-color);
     padding: 7.5em 2.5em 4em 2.5em;
     border-radius: 15px;
-    margin: 3.5em 0 ;
+    margin: 3.5em 0;
 }
 
 .login_title {
     position: absolute;
     left: 50%;
-    top:0;
+    top: 0;
     display: flex;
-    transform:  translateX(-50%);
+    transform: translateX(-50%);
     justify-content: center;
     align-items: center;
     width: 140px;
@@ -50,6 +50,7 @@
     color: var(--black-color);
     font-size: 30px;
 }
+
 .login_title::before {
     content: "";
     top: 0;
@@ -64,7 +65,7 @@
 
 .login_title::after {
     content: "";
-    top:0;
+    top: 0;
     position: absolute;
     height: 30px;
     right: -30px;
@@ -85,11 +86,10 @@
     width: 100%;
     font-size: 16px;
     height: 55px;
-    /* color: var(--second-color); */
     background: transparent;
-    padding-inline:20px 54px;
+    padding-inline: 20px 54px;
     border-radius: 30px;
-    border: 2px solid  var(--primary-color);
+    border: 2px solid var(--primary-color);
     outline: none;
 }
 
@@ -102,13 +102,14 @@
     transition: 0.2s;
     top: 15px;
     left: 20px;
+    background-color: transparent;
+    padding: 0 5px;
 }
 
 .input_field:focus ~ .label,
-.input_field:valid .label {
-    position: absolute;
+.input_field:not(:placeholder-shown) ~ .label {
     font-size: 14px;
-    top:-10px;
+    top: -10px;
     left: 20px;
     background-color: var(--primary-color);
     color: var(--black-color);
@@ -131,14 +132,14 @@
 
 .input_submit {
     color: #fff;
-    background:#212529;
+    background: #212529;
     width: 100%;
-    height:50px;
+    height: 50px;
     font-size: 16px;
     border-radius: 30px;
     cursor: pointer;
     font-weight: 500;
-    border:none;
+    border: none;
     transition: 0.3s;
 }
 
@@ -154,13 +155,12 @@
     font-weight: 500;
 }
 
-@media only screen and (maxw-width:564px){
+@media only screen and (max-width: 564px) {
     .container {
         padding: 20px;
     }
 
-    .login_container{
+    .login_container {
         padding: 7.5em 1.5em 4em 1.5em;
     }
 }
-
