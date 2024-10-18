@@ -32,15 +32,23 @@ type ProductSectionProps = {
 };
 
 const ProductSection: React.FC<ProductSectionProps> = ({
-
   title,
   products,
   limit,
 }) => {
   // Sắp xếp sản phẩm theo created_at từ mới nhất
-  const sortedProducts = [...products].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  const sortedProducts = [...products].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
   const displayedProducts = limit ? sortedProducts.slice(0, limit) : sortedProducts;
 
+  // Hàm định dạng giá tiền theo VNĐ
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+  };
 
   return (
     <section className="mx-5 mt-5">
@@ -49,10 +57,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
         {displayedProducts.map((product) => {
           const firstVariant = product.variants[0];
           return (
-            <div
-              key={product.id}
-              className="col d-flex align-items-stretch"
-            >
+            <div key={product.id} className="col d-flex align-items-stretch">
               <div className="product-card d-flex flex-column align-items-center border position-relative">
                 <div className="product-image-container position-relative">
                   <img
@@ -87,10 +92,10 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                   {firstVariant && (
                     <div className="product-pricing">
                       <del className="listed-price">
-                        {firstVariant.listed_price.toLocaleString()} đ
+                        {formatCurrency(Number(firstVariant.listed_price))}
                       </del>
                       <span className="selling-price">
-                        {firstVariant.selling_price.toLocaleString()} đ
+                        {formatCurrency(Number(firstVariant.selling_price))}
                       </span>
                     </div>
                   )}

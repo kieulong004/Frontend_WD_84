@@ -82,6 +82,7 @@ const ProductDetail = () => {
   const [showModal, setShowModal] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
 
+
   useEffect(() => {
     const fetchProductDetail = async () => {
       try {
@@ -138,6 +139,12 @@ const ProductDetail = () => {
     navigate('/products/cart'); // Chuyển hướng đến trang giỏ hàng
   };
 
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+  };
 
 
   return (
@@ -161,8 +168,12 @@ const ProductDetail = () => {
               {variants.length > 0 && (
                 <>
                   <p className="text-muted py-2">
-                    <del className="me-5">{selectedVariant ? selectedVariant.listed_price : variants[0].listed_price} VNĐ</del>
-                    <span className="text-danger ms-3 h6">{selectedVariant ? selectedVariant.selling_price : variants[0].selling_price} VNĐ</span>
+                    <del className="me-5">
+                      {formatCurrency(Number(selectedVariant ? selectedVariant.listed_price : variants[0].listed_price))}
+                    </del>
+                    <span className="text-danger ms-3 h6">
+                      {formatCurrency(Number(selectedVariant ? selectedVariant.selling_price : variants[0].selling_price))}
+                    </span>
                   </p>
                   <div className="mb-3">
                     <div className="d-flex align-items-center">
@@ -311,10 +322,10 @@ const ProductDetail = () => {
                       {firstVariant && (
                         <div className="product-pricing">
                           <del className="listed-price">
-                            {firstVariant.listed_price.toLocaleString()} đ
+                            {formatCurrency(Number(firstVariant.listed_price))}
                           </del>
                           <span className="selling-price">
-                            {firstVariant.selling_price.toLocaleString()} đ
+                            {formatCurrency(Number(firstVariant.selling_price))}
                           </span>
                         </div>
                       )}

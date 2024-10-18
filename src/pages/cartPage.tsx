@@ -109,6 +109,9 @@ const CartPage: React.FC = () => {
     }
   };
 
+  const formatCurrency = (value: number): string => {
+    return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+  };
 
   return (
     <div className="container my-5">
@@ -135,12 +138,12 @@ const CartPage: React.FC = () => {
                       alt={item.product.name}
                       className="img-fluid" style={{ width: "80px", height: "80px", marginRight: "10px" }}
                     />
-                    <div className="text-left">
+                    <div className="text-left fw-bold">
                       <p className="mb-1">{item.product.name}</p>
                     </div>
                   </div>
                 </td>
-                <td>
+                <td className="fw-bold">
                   {item.variant && item.variant.weight
                     ? `${item.variant.weight.weight} ${item.variant.weight.unit}`
                     : 'Không có trọng lượng'}
@@ -148,7 +151,7 @@ const CartPage: React.FC = () => {
                 <td>
                   <div className="input-group" style={{ maxWidth: "120px", margin: "0 auto" }}>
                     <button
-                      className="btn btn-outline-secondary btn-sm"
+                      className="btn btn-outline-secondary btn-sm fw"
                       type="button"
                       onClick={() =>
                         handleQuantityChange(item.id, Math.max(1, item.quantity - 1))
@@ -172,7 +175,7 @@ const CartPage: React.FC = () => {
                     </button>
                   </div>
                 </td>
-                <td>{item.price * item.quantity}đ</td>
+                <td className="fw-bold">{formatCurrency(Number(item.price * item.quantity))}</td>
                 <td>
                   <button
                     className="btn btn-danger btn-sm"
@@ -188,7 +191,7 @@ const CartPage: React.FC = () => {
       </div>
       <div className="d-flex justify-content-between align-items-center mt-4">
         <h4>Tổng tiền:</h4>
-        <h4 className="text-danger fw-bold">{totalPrice}đ</h4>
+        <h4 className="text-danger fw-bold">{formatCurrency(Number(totalPrice))}</h4>
       </div>
       <div className="mt-4">
         <Link to={`/products/pay`} className="btn btn-dark w-100">Tiến hành thanh toán</Link>
