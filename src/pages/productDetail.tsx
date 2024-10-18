@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { Button, Modal } from "react-bootstrap";
 
 type Product = {
   id: number;
@@ -71,11 +72,15 @@ type Variant = {
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [variants, setVariants] = useState<Variant[]>([]);
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
+  const [quantity, setQuantity] = useState<number>(1);
+  const [showModal, setShowModal] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
 
   useEffect(() => {
     const fetchProductDetail = async () => {
@@ -86,7 +91,6 @@ const ProductDetail = () => {
         setProduct(data.data.product);
         setRelatedProducts(data.data.relatedProducts);
         setVariants(data.data.variants);
-        setSelectedVariant(data.data.variants[0]); // Đặt biến thể đầu tiên là mặc định
       } catch (error) {
         console.error("Error fetching product details:", error);
       }
@@ -96,6 +100,45 @@ const ProductDetail = () => {
       fetchProductDetail();
     }
   }, [id]);
+
+  const handleAddToCart = async () => {
+    // Kiểm tra xem biến thể đã được chọn chưa
+    if (!selectedVariant) {
+      setShowWarning(true);
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:8000/api/carts/addToCart', {
+        user_id: 0,
+        product_id: product?.id,
+        variant_id: selectedVariant?.id,
+        quantity: quantity,
+        price: selectedVariant?.selling_price,
+      });
+      console.log('Product added to cart successfully:', response.data);
+      setShowModal(true);
+      setTimeout(() => {
+        setShowModal(false);
+      }, 2000);
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+      alert('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
+    }
+  };
+
+  const handleBuyNow = async () => {
+    // Kiểm tra xem biến thể đã được chọn chưa
+    if (!selectedVariant) {
+      setShowWarning(true);
+      return;
+    }
+
+    await handleAddToCart(); // Gọi hàm thêm vào giỏ hàng
+    navigate('/products/cart'); // Chuyển hướng đến trang giỏ hàng
+  };
+
+
 
   return (
     <div>
@@ -114,29 +157,30 @@ const ProductDetail = () => {
             <div className="col-md-6">
               <h1 className="product-title display-4">{product?.name}</h1>
               <p className="text-muted product-sku">Mã sản phẩm {product?.sku}</p>
-              <p className="product-description lead">
-                {product?.description}
-              </p>
-              {selectedVariant && (
+              <p className="product-description lead">{product?.description}</p>
+              {variants.length > 0 && (
                 <>
                   <p className="text-muted py-2">
-                    <del className="me-5">{selectedVariant.listed_price} VNĐ</del>
-                    <span className="text-danger ms-3 h6">{selectedVariant.selling_price} VNĐ</span>
+                    <del className="me-5">{selectedVariant ? selectedVariant.listed_price : variants[0].listed_price} VNĐ</del>
+                    <span className="text-danger ms-3 h6">{selectedVariant ? selectedVariant.selling_price : variants[0].selling_price} VNĐ</span>
                   </p>
                   <div className="mb-3">
                     <div className="d-flex align-items-center">
-                      <h5 className="me-3 mb-0">Kích cỡ </h5>
-                      <div
-                        className="btn-group"
-                        role="group"
-                        aria-label="Chọn kích cỡ viên kim cương"
-                      >
+                      <h5 className="me-3 mb-0">Kích cỡ</h5>
+                      <div className="btn-group" role="group" aria-label="Chọn kích cỡ viên kim cương">
                         {variants?.map((variant) => (
                           <button
                             key={variant.id}
                             type="button"
-                            className={`btn btn-outline-secondary me-2 ${selectedVariant.id === variant.id ? 'active' : ''}`}
-                            onClick={() => setSelectedVariant(variant)}
+                            className={`btn btn-outline-secondary me-2 ${selectedVariant?.id === variant.id ? 'active' : ''}`}
+                            onClick={() => {
+                              if (selectedVariant?.id === variant.id) {
+                                setSelectedVariant(null);
+                              } else {
+                                setSelectedVariant(variant);
+                                setShowWarning(false); // Ẩn cảnh báo khi chọn biến thể
+                              }
+                            }}
                           >
                             {variant.weight.weight} {variant.weight.unit}
                           </button>
@@ -147,6 +191,7 @@ const ProductDetail = () => {
                 </>
               )}
 
+
               <div className="d-flex align-items-center mb-3">
                 <span className="me-3">Số lượng</span>
                 <div className="d-flex justify-content-center align-items-center h-100">
@@ -154,14 +199,16 @@ const ProductDetail = () => {
                     <button
                       className="btn btn-outline-secondary btn-sm"
                       type="button"
+                      onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
                     >
                       <i className="bi bi-dash"></i>
                     </button>
                     <input
                       type="number"
                       className="form-control text-center"
-                      defaultValue="1"
+                      value={quantity}
                       min="1"
+                      onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
                       style={{
                         width: "50px",
                         border: "none",
@@ -172,6 +219,7 @@ const ProductDetail = () => {
                     <button
                       className="btn btn-outline-secondary btn-sm"
                       type="button"
+                      onClick={() => setQuantity((prev) => prev + 1)}
                     >
                       <i className="bi bi-plus"></i>
                     </button>
@@ -180,18 +228,43 @@ const ProductDetail = () => {
               </div>
 
               <div className="d-flex mb-3">
-                <button className="btn btn-dark w-50 me-2 add-to-cart-btn">
+                <button
+                  className="btn btn-dark w-50 me-2 add-to-cart-btn"
+                  onClick={handleAddToCart}
+                // disabled={!selectedVariant} // Vô hiệu hóa nút nếu không có biến thể được chọn
+                >
                   <i className="bi bi-cart-plus me-2"></i>
                   Thêm vào giỏ hàng
                 </button>
-                <button className="btn btn-danger w-50 buy-now-btn">
+                <button className="btn btn-danger w-50 buy-now-btn" onClick={handleBuyNow}>
                   Mua ngay
                 </button>
               </div>
+
+              {showWarning && (
+                <div className="alert alert-warning" role="alert">
+                  Vui lòng chọn kích cỡ khi mua sản phẩm.
+                </div>
+              )}
             </div>
           </div>
         </div>
       </section>
+
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Thông báo</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="d-flex align-items-center">
+          <i className="bi bi-check-circle-fill text-success me-2" style={{ fontSize: '24px' }}></i>
+          <p className="mb-0">Sản phẩm đã được thêm vào giỏ hàng thành công!</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+            Đóng
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       <section className="Related py-5">
         <div className="container">
@@ -264,7 +337,6 @@ const ProductDetail = () => {
           </div>
         </div>
       </section>
-
     </div>
   );
 };
