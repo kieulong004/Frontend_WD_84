@@ -90,7 +90,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                     {product.name}
                   </Link>
                   {firstVariant && (
-                    <div className="product-pricing">
+                    <div className="product-pricing mb-2">
                       <del className="listed-price">
                         {formatCurrency(Number(firstVariant.listed_price))}
                       </del>

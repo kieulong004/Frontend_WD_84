@@ -12,9 +12,11 @@ import OrderList from "./pages/orderlist";
 import OrderDetail from "./pages/orderdetail";
 import OrderConfirm from "./pages/orderconfirm";
 import Productpage from "./pages/productPage";
+import PrivateRoute from "./components/PrivateRoute";
 
 
 function App() {
+  
   return (
     <>
       <Routes>
@@ -22,13 +24,48 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="products" element={<Productpage />} />
           <Route path="products/:id" element={<ProductDetail />} />
-          <Route path="products/cart" element={<CartPage />} />
-          <Route path="products/pay" element={<CheckoutPage />} />
+          <Route
+          path="products/cart"
+          element={
+            <PrivateRoute>
+              <CartPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="products/pay"
+          element={
+            <PrivateRoute>
+              <CheckoutPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/order-list"
+          element={
+            <PrivateRoute>
+              <OrderList />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/order-detail/:id"
+          element={
+            <PrivateRoute>
+              <OrderDetail />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/order-confirm"
+          element={
+            <PrivateRoute>
+              <OrderConfirm />
+            </PrivateRoute>
+          }
+        />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/order-list" element={<OrderList />} />
-          <Route path="/order-detail" element={<OrderDetail />} />
-          <Route path="/order-confirm" element={<OrderConfirm />} />
         </Route>
       </Routes>
     </>

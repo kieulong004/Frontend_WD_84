@@ -16,19 +16,27 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data: LoginFormInputs) => {
-    console.log(data);
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/login", data);
-      const login = response.data;
+      const { message, user, token, status_code } = response.data;
 
-      if (login.status_code === 200) {
-        toast.success("Đăng nhập thành công!");
-        if (login.user.role === 0) {
-          window.location.href = "http://localhost/DATN/public/admin";
-        } else if (login.user.role === 1) {
-          navigate("/");
-        } else {
-          toast.error("Invalid role!");
+      if (status_code === 200) {
+        toast.success(message);
+        // Lưu thông tin người dùng và token vào localStorage
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('token', token);
+
+
+
+        if (user) {
+          if (user.role === 0) {
+            window.location.href = "http://localhost/DATN/public/admin";
+          } else if (user.role === 1) {
+            navigate("/");
+            window.location.reload(); 
+          } else {
+            toast.error("Vai trò không hợp lệ!");
+          }
         }
       }
     } catch (error) {

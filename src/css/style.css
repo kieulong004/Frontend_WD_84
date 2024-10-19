@@ -111,3 +111,16 @@ input[type="number"]:focus {
   }
 }
 
+.header-container {
+  display: flex;
+  align-items: center;
+  padding-left: 20px; /* Khoảng cách từ bên trái */
+}
+
+.header-container .logo {
+  margin-right: auto; /* Đẩy logo sang bên trái */
+}
+
+.header-container .login-link {
+  margin-left: 20px; /* Khoảng cách giữa logo và chữ "Đăng nhập" */
+}

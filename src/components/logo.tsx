@@ -8,8 +8,8 @@ const Logo = () => {
         <img
           src={logo}
           alt="Logo"
-          width={125}
-          height={35}
+          width={135}
+          height={65}
           className="img-fluid"
         />
       </a>
