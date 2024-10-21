@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "./logo";
 import { search, shop, user } from "./icons";
 import axios from "axios";
@@ -14,10 +14,20 @@ const Header: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Trạng thái tải dữ liệu
+  const [userName, setUserName] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token); // Chuyển đổi token thành boolean để xác định trạng thái đăng nhập
+
+    if (token) {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        setUserName(user.name);
+      }
+    }
 
     const fetchCategories = async () => {
       try {
@@ -46,7 +56,6 @@ const Header: React.FC = () => {
 
   const handleLogout = async () => {
     let token = localStorage.getItem("token");
-    console.log(token);
     try {
       if (token) {
         const response = await axios.post(
@@ -60,14 +69,33 @@ const Header: React.FC = () => {
         );
         if (response.status === 200) {
           localStorage.removeItem("token");
+          localStorage.removeItem("user");
           setIsLoggedIn(false);
+          setUserName(null);
           window.location.reload(); // Tải lại trang sau khi đăng xuất
         } else {
           console.error("Logout failed:", response.data.message);
         }
       }
     } catch (error) {
-      console.error("Error logging out:", error);
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        // Xử lý lỗi 401 (Unauthorized)
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setIsLoggedIn(false);
+        setUserName(null);
+        window.location.reload(); // Tải lại trang sau khi đăng xuất
+      } else {
+        console.error("Error logging out:", error);
+      }
+    }
+  };
+
+  const handleUserIconClick = () => {
+    if (isLoggedIn) {
+      navigate("/account");
+    } else {
+      navigate("/register");
     }
   };
 
@@ -99,7 +127,7 @@ const Header: React.FC = () => {
                 onMouseLeave={handleMouseLeave}
               >
                 <Link
-                  className="nav-link"
+                  className="nav-link text-decoration-none"
                   to="#"
                   id="navbarDropdown"
                   role="button"
@@ -121,7 +149,7 @@ const Header: React.FC = () => {
                     categories.map((category) => (
                       <li key={category.id}>
                         <Link
-                          className="dropdown-item"
+                          className="dropdown-item text-decoration-none"
                           to={`/category/${category.id}`}
                         >
                           {category.name}
@@ -133,22 +161,22 @@ const Header: React.FC = () => {
               </li>
 
               <li className="nav-item">
-                <Link to="/products" className="nav-link">
+                <Link to="/products" className="nav-link text-decoration-none">
                   Cửa hàng
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/about" className="nav-link">
+                <Link to="/about" className="nav-link text-decoration-none">
                   Giới thiệu về chúng tôi
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/stories" className="nav-link">
+                <Link to="/stories" className="nav-link text-decoration-none">
                   Những câu chuyện
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/contact" className="nav-link">
+                <Link to="/contact" className="nav-link text-decoration-none">
                   Liên hệ với chúng tôi
                 </Link>
               </li>
@@ -157,10 +185,10 @@ const Header: React.FC = () => {
 
           <div className="d-flex align-items-center">
             {isLoggedIn ? (
-              <div className="nav-item dropdown">
+              <div className="nav-item dropdown d-flex align-items-center">
                 <Link
                   to="#"
-                  className="btn btn-link p-0 mx-2 dropdown-toggle"
+                  className="btn btn-link p-0 mx-2 dropdown-toggle text-decoration-none d-flex align-items-center"
                   id="userDropdown"
                   role="button"
                   data-bs-toggle="dropdown"
@@ -172,45 +200,41 @@ const Header: React.FC = () => {
                     className="img-fluid"
                     style={{ width: "24px" }}
                   />
+                  <span className="ms-2 fw-bold text-dark">{userName}</span>
                 </Link>
                 <ul className="dropdown-menu" aria-labelledby="userDropdown">
                   <li>
-                    <Link className="dropdown-item" to="/account">
+                    <Link className="dropdown-item text-decoration-none" to="/account">
                       Tài khoản của tôi
                     </Link>
                   </li>
                   <li>
-                    <Link className="dropdown-item" to="/order-list">
+                    <Link className="dropdown-item text-decoration-none" to="/order-list">
                       Đơn hàng
                     </Link>
                   </li>
                   <li>
-                    <button className="dropdown-item" onClick={handleLogout}>
+                    <button className="dropdown-item text-decoration-none" onClick={handleLogout}>
                       Đăng xuất
                     </button>
                   </li>
                 </ul>
               </div>
             ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="btn btn-link p-0 mx-2 text-decoration-none"
-                  style={{ color: "#6c757d" }}
-                >
-                  Đăng nhập
-                </Link>
-
-                <Link
-                  to="/register"
-                  className="btn btn-link p-0 mx-2 text-decoration-none"
-                  style={{ color: "#6c757d" }}
-                >
-                  Đăng ký
-                </Link>
-              </>
+              <button
+                className="btn btn-link p-0 mx-2 text-decoration-none d-flex align-items-center"
+                style={{ color: "#6c757d" }}
+                onClick={handleUserIconClick}
+              >
+                <img
+                  src={user}
+                  alt="User"
+                  className="img-fluid"
+                  style={{ width: "24px" }}
+                />
+              </button>
             )}
-            <Link to="/search" className="btn btn-link p-0 mx-2">
+            <Link to="/search" className="btn btn-link p-0 mx-2 text-decoration-none">
               <img
                 src={search}
                 alt="Search"
@@ -218,7 +242,7 @@ const Header: React.FC = () => {
                 style={{ width: "24px" }}
               />
             </Link>
-            <Link to="/products/cart" className="btn btn-link p-0 mx-2">
+            <Link to="/products/cart" className="btn btn-link p-0 mx-2 text-decoration-none">
               <img
                 src={shop}
                 alt="Cart"

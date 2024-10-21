@@ -16,24 +16,26 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data: LoginFormInputs) => {
+    toast.info("Đang xử lý đăng nhập...");
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/login", data);
-      const { message, user, token, status_code } = response.data;
+      const { user, token, status_code } = response.data;
 
       if (status_code === 200) {
-        toast.success(message);
-        // Lưu thông tin người dùng và token vào localStorage
         localStorage.setItem('user', JSON.stringify(user));
         localStorage.setItem('token', token);
-
-
-
+        toast.success("Đăng nhập thành công!");
         if (user) {
           if (user.role === 0) {
-            window.location.href = "http://localhost/DATN/public/admin";
+            toast.info("Chuyển hướng đến trang quản trị...");
+            setTimeout(() => {
+              window.location.href = "http://localhost/DATN/public/admin";
+            }, 2000);
           } else if (user.role === 1) {
-            navigate("/");
-            window.location.reload(); 
+            toast.info("Chuyển hướng đến trang chủ...");
+            setTimeout(() => {
+              navigate("/");
+            }, 2000);
           } else {
             toast.error("Vai trò không hợp lệ!");
           }
@@ -91,18 +93,7 @@ const LoginPage: React.FC = () => {
               className={`input_field ${errors.password ? "is-invalid" : ""}`}
               {...register("password", {
                 required: "Password là trường hợp bắt buộc",
-                validate: {
-                  startsWithUpperCase: value =>
-                    /^[A-Z]/.test(value) || "Password phải bắt đầu bằng chữ cái viết hoa",
-                  minLength: value =>
-                    value.length >= 8 || "Password phải có ít nhất 8 ký tự",
-                  hasLowerCase: value =>
-                    /[a-z]/.test(value) || "Password phải chứa ít nhất một chữ cái viết thường",
-                  hasNumber: value =>
-                    /\d/.test(value) || "Password phải chứa ít nhất một chữ số",
-                  hasSpecialChar: value =>
-                    /[!@#$%^&*(),.?":{}|<>]/.test(value) || "Password phải chứa ít nhất một ký tự đặc biệt"
-                }
+                minLength: { value: 8, message: "Password phải có ít nhất 8 ký tự" }
               })}
               placeholder=" "
             />

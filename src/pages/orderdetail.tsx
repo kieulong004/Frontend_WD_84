@@ -74,6 +74,7 @@ const OrderDetail = () => {
     const location = useLocation();
     const { order } = location.state as { order: Order };
 
+
     const formatPrice = (price: string) => {
         return new Intl.NumberFormat('vi-VN').format(Number(price));
     };
