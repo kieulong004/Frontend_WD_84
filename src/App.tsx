@@ -13,10 +13,9 @@ import OrderDetail from "./pages/orderdetail";
 import OrderConfirm from "./pages/orderconfirm";
 import Productpage from "./pages/productPage";
 import PrivateRoute from "./components/PrivateRoute";
-
+import { ToastContainer } from 'react-toastify'; // Import ToastContainer
 
 function App() {
-  
   return (
     <>
       <Routes>
@@ -25,49 +24,50 @@ function App() {
           <Route path="products" element={<Productpage />} />
           <Route path="products/:id" element={<ProductDetail />} />
           <Route
-          path="products/cart"
-          element={
-            <PrivateRoute>
-              <CartPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="products/pay"
-          element={
-            <PrivateRoute>
-              <CheckoutPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/order-list"
-          element={
-            <PrivateRoute>
-              <OrderList />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/order-detail/:id"
-          element={
-            <PrivateRoute>
-              <OrderDetail />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/order-confirm"
-          element={
-            <PrivateRoute>
-              <OrderConfirm />
-            </PrivateRoute>
-          }
-        />
+            path="products/cart"
+            element={
+              <PrivateRoute allowedRoles={[1]}>
+                <CartPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="products/pay"
+            element={
+              <PrivateRoute allowedRoles={[1]}>
+                <CheckoutPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/order-list"
+            element={
+              <PrivateRoute allowedRoles={[1]}>
+                <OrderList />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/order-detail/:id"
+            element={
+              <PrivateRoute allowedRoles={[1]}>
+                <OrderDetail />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/order-confirm"
+            element={
+              <PrivateRoute allowedRoles={[1]}>
+                <OrderConfirm />
+              </PrivateRoute>
+            }
+          />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Route>
       </Routes>
+      <ToastContainer /> {/* Thêm ToastContainer để hiển thị thông báo */}
     </>
   );
 }
