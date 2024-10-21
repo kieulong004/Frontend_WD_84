@@ -1,30 +1,31 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from "react-toastify";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 type RegisterFormInputs = {
+  name: string;
   email: string;
   password: string;
   confirmPassword: string;
 };
 
 const RegisterPage: React.FC = () => {
-  const { register, handleSubmit, formState: { errors }, watch } = useForm<RegisterFormInputs>();
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterFormInputs>();
   const navigate = useNavigate();
-  const password = watch("password");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const onSubmit = async (data: RegisterFormInputs) => {
-    console.log(data)
+    toast.info("Đang xử lý đăng ký...");
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/register", data);
       if (response.status === 201) {
         toast.success("Đăng ký thành công!");
-        navigate("/login");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000); // Chờ 2 giây trước khi chuyển hướng
       }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -37,6 +38,9 @@ const RegisterPage: React.FC = () => {
           }
           if (data.errors.password) {
             toast.error(data.errors.password[0]);
+          }
+          if (data.errors.name) {
+            toast.error(data.errors.name[0]);
           }
         } else {
           toast.error("Đăng ký thất bại!");
@@ -55,6 +59,20 @@ const RegisterPage: React.FC = () => {
           <span>Register</span>
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="input_wrapper">
+            <input
+              type="text"
+              id="name"
+              className={`input_field ${errors.name ? "is-invalid" : ""}`}
+              {...register("name", { required: "Name là trường hợp bắt buộc" })}
+              placeholder=" "
+            />
+            <label htmlFor="name" className="label">
+              Name
+            </label>
+            <i className="fa-regular fa-user icon" />
+            {errors.name && <div className="invalid-feedback">{errors.name.message}</div>}
+          </div>
           <div className="input_wrapper">
             <input
               type="email"
@@ -92,23 +110,19 @@ const RegisterPage: React.FC = () => {
           </div>
           <div className="input_wrapper">
             <input
-              type={showConfirmPassword ? "text" : "password"}
+              type="password"
               id="confirmPassword"
               className={`input_field ${errors.confirmPassword ? "is-invalid" : ""}`}
               {...register("confirmPassword", {
                 required: "Confirm Password là trường hợp bắt buộc",
-                validate: value => value === password || "Passwords không khớp"
+                validate: value =>
+                  value === watch("password") || "Confirm Password không khớp với Password"
               })}
               placeholder=" "
             />
             <label htmlFor="confirmPassword" className="label">
               Confirm Password
             </label>
-            <i
-              className={`fa-solid ${showConfirmPassword ? "fa-eye-slash" : "fa-eye"} icon`}
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              style={{ cursor: "pointer" }}
-            />
             {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword.message}</div>}
           </div>
           <div className="input_wrapper">
@@ -119,7 +133,7 @@ const RegisterPage: React.FC = () => {
         </form>
         <div className="signup">
           <span>
-            Already have an account? <Link to="/login">Login</Link>
+            Bạn đã có tài khoản? <Link to="/login">Đăng nhập</Link>
           </span>
         </div>
       </div>
