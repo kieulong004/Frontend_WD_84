@@ -16,7 +16,7 @@ const RegisterPage: React.FC = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterFormInputs>();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const onSubmit = async (data: RegisterFormInputs) => {
     toast.info("Đang xử lý đăng ký...");
     try {
@@ -123,6 +123,11 @@ const RegisterPage: React.FC = () => {
             <label htmlFor="confirmPassword" className="label">
               Confirm Password
             </label>
+            <i
+              className={`fa-solid ${showConfirmPassword ? "fa-eye-slash" : "fa-eye"} icon`}
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              style={{ cursor: "pointer" }}
+            />
             {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword.message}</div>}
           </div>
           <div className="input_wrapper">

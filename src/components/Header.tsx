@@ -95,7 +95,7 @@ const Header: React.FC = () => {
     if (isLoggedIn) {
       navigate("/account");
     } else {
-      navigate("/register");
+      navigate("/login");
     }
   };
 
