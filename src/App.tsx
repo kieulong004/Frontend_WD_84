@@ -13,7 +13,8 @@ import OrderDetail from "./pages/orderdetail";
 import OrderConfirm from "./pages/orderconfirm";
 import Productpage from "./pages/productPage";
 import PrivateRoute from "./components/PrivateRoute";
-import { ToastContainer } from 'react-toastify'; // Import ToastContainer
+import { ToastContainer } from "react-toastify"; // Import ToastContainer
+import Confirm from "./pages/Confirm";
 
 function App() {
   return (
@@ -52,6 +53,14 @@ function App() {
             element={
               <PrivateRoute>
                 <OrderDetail />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/confirm"
+            element={
+              <PrivateRoute allowedRoles={[1]}>
+                <Confirm />
               </PrivateRoute>
             }
           />
