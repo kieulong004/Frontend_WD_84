@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button, Modal } from "react-bootstrap";
+import { getUserFromLocalStorage } from "@/components/utils";
 
 type Product = {
   id: number;
@@ -81,7 +82,9 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState<number>(1);
   const [showModal, setShowModal] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
-
+  const userFromStorage = getUserFromLocalStorage();
+  const userId = userFromStorage.id;
+  console.log(userId);
 
   useEffect(() => {
     const fetchProductDetail = async () => {
@@ -110,21 +113,24 @@ const ProductDetail = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:8000/api/carts/addToCart', {
-        user_id: 0,
-        product_id: product?.id,
-        variant_id: selectedVariant?.id,
-        quantity: quantity,
-        price: selectedVariant?.selling_price,
-      });
-      console.log('Product added to cart successfully:', response.data);
+      const response = await axios.post(
+        "http://localhost:8000/api/carts/addToCart",
+        {
+          user_id: userId,
+          product_id: product?.id,
+          variant_id: selectedVariant?.id,
+          quantity: quantity,
+          price: selectedVariant?.selling_price,
+        }
+      );
+      console.log("Product added to cart successfully:", response.data);
       setShowModal(true);
       setTimeout(() => {
         setShowModal(false);
       }, 2000);
     } catch (error) {
-      console.error('Error adding product to cart:', error);
-      alert('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
+      console.error("Error adding product to cart:", error);
+      alert("Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.");
     }
   };
 
@@ -136,7 +142,7 @@ const ProductDetail = () => {
     }
 
     await handleAddToCart(); // Gọi hàm thêm vào giỏ hàng
-    navigate('/products/cart'); // Chuyển hướng đến trang giỏ hàng
+    navigate("/products/cart"); // Chuyển hướng đến trang giỏ hàng
   };
 
   const formatCurrency = (value: number) => {
@@ -145,7 +151,6 @@ const ProductDetail = () => {
       currency: "VND",
     });
   };
-
 
   return (
     <div>
@@ -163,27 +168,47 @@ const ProductDetail = () => {
 
             <div className="col-md-6">
               <h1 className="product-title display-4">{product?.name}</h1>
-              <p className="text-muted product-sku">Mã sản phẩm {product?.sku}</p>
+              <p className="text-muted product-sku">
+                Mã sản phẩm {product?.sku}
+              </p>
               <p className="product-description lead">{product?.description}</p>
               {variants.length > 0 && (
                 <>
                   <p className="text-muted py-2">
                     <del className="me-5">
-                      {formatCurrency(Number(selectedVariant ? selectedVariant.listed_price : variants[0].listed_price))}
+                      {formatCurrency(
+                        Number(
+                          selectedVariant
+                            ? selectedVariant.listed_price
+                            : variants[0].listed_price
+                        )
+                      )}
                     </del>
                     <span className="text-danger ms-3 h6">
-                      {formatCurrency(Number(selectedVariant ? selectedVariant.selling_price : variants[0].selling_price))}
+                      {formatCurrency(
+                        Number(
+                          selectedVariant
+                            ? selectedVariant.selling_price
+                            : variants[0].selling_price
+                        )
+                      )}
                     </span>
                   </p>
                   <div className="mb-3">
                     <div className="d-flex align-items-center">
                       <h5 className="me-3 mb-0">Kích cỡ</h5>
-                      <div className="btn-group" role="group" aria-label="Chọn kích cỡ viên kim cương">
+                      <div
+                        className="btn-group"
+                        role="group"
+                        aria-label="Chọn kích cỡ viên kim cương"
+                      >
                         {variants?.map((variant) => (
                           <button
                             key={variant.id}
                             type="button"
-                            className={`btn btn-outline-secondary me-2 ${selectedVariant?.id === variant.id ? 'active' : ''}`}
+                            className={`btn btn-outline-secondary me-2 ${
+                              selectedVariant?.id === variant.id ? "active" : ""
+                            }`}
                             onClick={() => {
                               if (selectedVariant?.id === variant.id) {
                                 setSelectedVariant(null);
@@ -202,7 +227,6 @@ const ProductDetail = () => {
                 </>
               )}
 
-
               <div className="d-flex align-items-center mb-3">
                 <span className="me-3">Số lượng</span>
                 <div className="d-flex justify-content-center align-items-center h-100">
@@ -210,7 +234,9 @@ const ProductDetail = () => {
                     <button
                       className="btn btn-outline-secondary btn-sm"
                       type="button"
-                      onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                      onClick={() =>
+                        setQuantity((prev) => Math.max(1, prev - 1))
+                      }
                     >
                       <i className="bi bi-dash"></i>
                     </button>
@@ -219,7 +245,9 @@ const ProductDetail = () => {
                       className="form-control text-center"
                       value={quantity}
                       min="1"
-                      onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+                      onChange={(e) =>
+                        setQuantity(Math.max(1, Number(e.target.value)))
+                      }
                       style={{
                         width: "50px",
                         border: "none",
@@ -242,12 +270,15 @@ const ProductDetail = () => {
                 <button
                   className="btn btn-dark w-50 me-2 add-to-cart-btn"
                   onClick={handleAddToCart}
-                // disabled={!selectedVariant} // Vô hiệu hóa nút nếu không có biến thể được chọn
+                  // disabled={!selectedVariant} // Vô hiệu hóa nút nếu không có biến thể được chọn
                 >
                   <i className="bi bi-cart-plus me-2"></i>
                   Thêm vào giỏ hàng
                 </button>
-                <button className="btn btn-danger w-50 buy-now-btn" onClick={handleBuyNow}>
+                <button
+                  className="btn btn-danger w-50 buy-now-btn"
+                  onClick={handleBuyNow}
+                >
                   Mua ngay
                 </button>
               </div>
@@ -267,11 +298,17 @@ const ProductDetail = () => {
           <Modal.Title>Thông báo</Modal.Title>
         </Modal.Header>
         <Modal.Body className="d-flex align-items-center">
-          <i className="bi bi-check-circle-fill text-success me-2" style={{ fontSize: '24px' }}></i>
+          <i
+            className="bi bi-check-circle-fill text-success me-2"
+            style={{ fontSize: "24px" }}
+          ></i>
           <p className="mb-0">Sản phẩm đã được thêm vào giỏ hàng thành công!</p>
         </Modal.Body>
         <Modal.Footer>
-          <Button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+          <Button
+            className="btn btn-secondary"
+            onClick={() => setShowModal(false)}
+          >
             Đóng
           </Button>
         </Modal.Footer>
@@ -288,7 +325,10 @@ const ProductDetail = () => {
             {relatedProducts.slice(0, 5).map((relatedProduct) => {
               const firstVariant = relatedProduct.variants[0];
               return (
-                <div className="col d-flex align-items-stretch" key={relatedProduct.id}>
+                <div
+                  className="col d-flex align-items-stretch"
+                  key={relatedProduct.id}
+                >
                   <div className="product-card d-flex flex-column align-items-center border position-relative">
                     <div className="product-image-container position-relative">
                       <img
@@ -312,7 +352,9 @@ const ProductDetail = () => {
                       </Link>
                     </div>
                     <div className="text-center mt-3">
-                      <div className="text-md text-muted">{relatedProduct.category.name}</div>
+                      <div className="text-md text-muted">
+                        {relatedProduct.category.name}
+                      </div>
                       <Link
                         to={`/products/${relatedProduct.id}`}
                         className="text-decoration-none text-dark fw-semibold d-block mt-2"

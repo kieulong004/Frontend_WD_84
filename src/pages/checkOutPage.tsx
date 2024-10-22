@@ -3,88 +3,103 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getUserFromLocalStorage } from "@/components/utils";
 
-// Định nghĩa kiểu cho sản phẩm
 type Product = {
   id: number;
   name: string;
   price: number;
-  image: string; // Đường dẫn ảnh của sản phẩm
+  image: string;
 };
 
-// Định nghĩa kiểu cho biến thể
 type Variant = {
   id: number;
   weight: {
     weight: string;
     unit: string;
   };
-  size?: string; // Nếu có kích thước
+  size?: string;
 };
 
-// Định nghĩa kiểu cho sản phẩm trong giỏ hàng
 type CartItem = {
   id: number;
-  product: Product; // Thông tin sản phẩm chi tiết
+  product: Product;
   quantity: number;
   price: number;
-  variant?: Variant; // Biến thể sản phẩm (nếu có)
+  variant?: Variant;
 };
 
-// Định nghĩa kiểu cho phản hồi từ API giỏ hàng
 type CartResponse = {
   status: boolean;
   message: string;
   cart_items: CartItem[];
 };
 
-// Định nghĩa kiểu cho phản hồi khi lưu đơn hàng
+type Order = {
+  id: number;
+  code: string;
+  total_price: number;
+  // Thêm các thuộc tính khác nếu cần
+};
+
 type OrderResponse = {
   status: boolean;
   message: string;
+  order?: Order; // Sử dụng Order thay vì any
 };
 
 const CheckoutPage: React.FC = () => {
-  const userId = null; // userId là null
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const nav = useNavigate();
+  const navigate = useNavigate();
   const shippingFee = 30000;
+
+  const userFromStorage = getUserFromLocalStorage();
+  const userId = userFromStorage.id;
 
   useEffect(() => {
     const fetchCartItems = async () => {
-      try {
-        const response = await axios.get<CartResponse>(
-          `http://localhost:8000/api/carts/cart-list/${userId}`
-        );
-        if (response.data.status) {
-          setCartItems(response.data.cart_items);
-          const total = response.data.cart_items.reduce(
-            (acc, item) => acc + item.price * item.quantity,
-            0
+      if (userFromStorage) {
+        try {
+          const response = await axios.get<CartResponse>(
+            `http://localhost:8000/api/carts/cart-list/${userId}`
           );
-          setTotalPrice(total);
 
-          // Kiểm tra nếu giỏ hàng trống và chuyển hướng về trang sản phẩm
-          if (response.data.cart_items.length === 0) {
-            toast.error("Giỏ hàng của bạn trống, quay lại trang sản phẩm.");
-            nav("/products"); // Chuyển hướng về trang sản phẩm
+          if (response.data.status) {
+            setCartItems(response.data.cart_items);
+            const total = response.data.cart_items.reduce(
+              (acc, item) => acc + item.price * item.quantity,
+              0
+            );
+            setTotalPrice(total);
+          } else {
+            setError(
+              response.data.message || "Không có sản phẩm trong giỏ hàng"
+            );
+            setTotalPrice(0);
           }
-        } else {
-          setError(response.data.message);
+        } catch (error) {
+          if (axios.isAxiosError(error)) {
+            console.error(
+              "Lỗi khi lấy các sản phẩm trong giỏ hàng:",
+              error.response?.data
+            );
+            setError(
+              error.response?.data.message ||
+                "Lỗi khi lấy các sản phẩm trong giỏ hàng"
+            );
+          } else {
+            console.error("Lỗi không xác định:", error);
+            setError("Có lỗi không xác định xảy ra");
+          }
         }
-      } catch (error) {
-        console.error("Error fetching cart items:", error);
-        setError("Không có sản phẩm nào.");
-        // Nếu có lỗi khi lấy giỏ hàng hoặc giỏ hàng rỗng, chuyển hướng về trang sản phẩm
-        nav("/products");
       }
     };
 
     fetchCartItems();
-  }, [userId, nav]);
+  }, [userFromStorage]);
 
   const formatCurrency = (value: number): string => {
     return value.toLocaleString("vi-VN", {
@@ -101,14 +116,22 @@ const CheckoutPage: React.FC = () => {
     const address = (document.getElementById("address") as HTMLInputElement)
       .value;
 
+    if (!name || !phone || !address || cartItems.length === 0) {
+      toast.error("Vui lòng điền đầy đủ thông tin và kiểm tra giỏ hàng.");
+      return;
+    }
+
     const orderData = {
-      user_id: null,
+      user_id: userId,
       code: generateOrderCode(),
-      name: name,
-      phone: phone,
-      address: address,
+      name,
+      phone,
+      address,
+      shipping_fee: shippingFee,
+      payment_method: "COD",
       total_price: totalPrice + shippingFee,
       products: cartItems.map((item) => ({
+        product_id: item.product.id,
         variant_id: item.variant?.id || null,
         price: item.price,
         quantity: item.quantity,
@@ -119,57 +142,64 @@ const CheckoutPage: React.FC = () => {
 
     try {
       const response = await axios.post<OrderResponse>(
-        "http://localhost:8000/api/orders/storeOrder",
+        "http://127.0.0.1:8000/api/orders/storeOrder",
         orderData
       );
+
       if (response.data.status) {
-        toast.success("Đơn hàng đã được xác nhận thành công!", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        nav("/order-confirm");
+        toast.success("Đơn hàng đã được xác nhận thành công!");
+        await clearCart(); // Đảm bảo giỏ hàng được làm trống
+
+        setCartItems([]); // Thiết lập cartItems thành mảng trống
+        setTotalPrice(0); // Reset total price
+
+        // Chuyển hướng đến trang OrderConfirm và truyền thông tin đơn hàng
+        navigate("/confirm", { state: { orderId: response.data.order?.code } });
       } else {
-        toast.error(`Lỗi: ${response.data.message}`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        toast.error(`Lỗi: ${response.data.message}`);
       }
     } catch (error) {
-      console.error("Error submitting order:", error);
-      toast.error("Có lỗi xảy ra trong quá trình xác nhận đơn hàng.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Lỗi khi gửi đơn hàng:",
+          error.response?.data || error.message
+        );
+        toast.error(
+          `Có lỗi xảy ra: ${error.response?.data?.message || error.message}`
+        );
+      } else {
+        console.error("Lỗi không xác định:", error);
+        toast.error("Có lỗi xảy ra trong quá trình xác nhận đơn hàng.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  const clearCart = async () => {
+    try {
+      const clearCartResponse = await axios.delete(
+        `http://localhost:8000/api/carts/delete-cart/${userId}`
+      );
+      if (clearCartResponse.data.status) {
+        toast.success("Giỏ hàng đã được làm trống sau khi đặt hàng.");
+      } else {
+        toast.error("Không thể xóa giỏ hàng.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi xóa giỏ hàng:", error);
+      toast.error("Có lỗi xảy ra khi làm trống giỏ hàng.");
+    }
+  };
+
   const generateOrderCode = () => {
-    // Tạo mã đơn hàng tùy ý
     return `ORDER-${Date.now()}`;
   };
 
   return (
     <div className="container py-5">
+      <ToastContainer />
       <div className="row">
-        {/* Thông tin người dùng và các thông tin khác */}
-        <ToastContainer />
         <div className="col-md-7">
           <h2 className="mb-4">Thông tin giao hàng</h2>
           <form onSubmit={handleOrderConfirmation}>
@@ -193,6 +223,7 @@ const CheckoutPage: React.FC = () => {
                 type="tel"
                 className="form-control"
                 id="phone"
+                pattern="[0-9]{10}"
                 placeholder="0901234567"
                 required
               />
@@ -209,6 +240,7 @@ const CheckoutPage: React.FC = () => {
                 required
               />
             </div>
+            <input className="form-control" type="number" value={shippingFee} />
             <button
               className="btn btn-primary btn-lg w-100 mt-4"
               type="submit"
@@ -231,6 +263,9 @@ const CheckoutPage: React.FC = () => {
                   <img
                     src={`http://127.0.0.1:8000${item.product.image}`}
                     alt={item.product.name}
+                    onError={(e) => {
+                      e.currentTarget.src = "/path-to-fallback-image.jpg"; // Cập nhật đường dẫn này
+                    }}
                     style={{
                       width: "50px",
                       height: "50px",
@@ -238,14 +273,19 @@ const CheckoutPage: React.FC = () => {
                       marginRight: "10px",
                     }}
                   />
-                  <span className="fw-bold margin-right: 10px">
+                  <span className="fw-bold">
                     {item.product.name} (x{item.quantity})
                   </span>
-                  {/* Hiển thị thông tin biến thể nếu có */}
                   {item.variant && (
-                    <div style={{ fontSize: "0.9rem", color: "#555" }}>
+                    <div
+                      style={{
+                        fontSize: "0.9rem",
+                        color: "#555",
+                        marginLeft: "10px",
+                      }}
+                    >
                       <div>
-                        Kích thước: {item.variant.weight.weight}{" "}
+                        Trọng lượng: {item.variant.weight.weight}{" "}
                         {item.variant.weight.unit}
                       </div>
                       {item.variant.size && (
@@ -266,7 +306,6 @@ const CheckoutPage: React.FC = () => {
               <strong>{formatCurrency(totalPrice + shippingFee)}</strong>
             </li>
           </ul>
-
           <h4 className="mb-3">Phương thức thanh toán</h4>
           <form>
             <div className="form-check mb-2">
@@ -282,16 +321,16 @@ const CheckoutPage: React.FC = () => {
                 Thanh toán khi nhận hàng (COD)
               </label>
             </div>
-            <div className="form-check mb-2">
+            <div className="form-check">
               <input
                 className="form-check-input"
                 type="radio"
                 name="paymentMethod"
                 id="payment2"
-                value="creditCard"
+                value="bankTransfer"
               />
               <label className="form-check-label" htmlFor="payment2">
-                Thẻ tín dụng/Thẻ ghi nợ
+                Chuyển khoản ngân hàng
               </label>
             </div>
           </form>
