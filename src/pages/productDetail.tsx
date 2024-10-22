@@ -86,7 +86,7 @@ const ProductDetail = () => {
   const [showWarning, setShowWarning] = useState(false);
   const userFromStorage = getUserFromLocalStorage();
   const userId = userFromStorage?.id;
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchProductDetail = async () => {
@@ -111,39 +111,39 @@ const ProductDetail = () => {
     if (!token) {
       toast.error("Bạn chưa đăng nhập.");
       setTimeout(() => {
-        navigate('/login');
+        navigate("/login");
       }, 2000);
       return false;
     }
-  
+
     try {
-      const response = await axios.get('http://localhost:8000/api/checkRole', {
+      const response = await axios.get("http://localhost:8000/api/checkRole", {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
-  
+
       const userRole = response.data.role;
-      if (!userRole || userRole !== 1) {
+      if (!userRole && userRole !== 1) {
         toast.error("Bạn cần đăng nhập để mua hàng.");
         setTimeout(() => {
-          navigate('/login');
+          navigate("/login");
         }, 2000);
         return false;
       }
       return true;
     } catch (error) {
-      console.error('Error checking role:', error);
+      console.error("Error checking role:", error);
       toast.error("Đã xảy ra lỗi khi kiểm tra quyền người dùng.");
       setTimeout(() => {
-        navigate('/login');
+        navigate("/login");
       }, 2000);
       return false;
     }
   };
 
   const handleAddToCart = async () => {
-    if (!await checkUserRole()) return;
+    if (!(await checkUserRole())) return;
     // Kiểm tra xem biến thể đã được chọn chưa
     if (!selectedVariant) {
       setShowWarning(true);
@@ -151,7 +151,7 @@ const ProductDetail = () => {
     }
 
     try {
-      const {data} = await axios.post(
+      const { data } = await axios.post(
         "http://localhost:8000/api/carts/addToCart",
         {
           user_id: userId,
@@ -173,7 +173,7 @@ const ProductDetail = () => {
   };
 
   const handleBuyNow = async () => {
-    if (!await checkUserRole()) return;
+    if (!(await checkUserRole())) return;
 
     // Kiểm tra xem biến thể đã được chọn chưa
     if (!selectedVariant) {

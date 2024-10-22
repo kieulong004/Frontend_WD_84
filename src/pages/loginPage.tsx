@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 
 type LoginFormInputs = {
   email: string;
@@ -11,33 +11,38 @@ type LoginFormInputs = {
 };
 
 const LoginPage: React.FC = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormInputs>();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data: LoginFormInputs) => {
     toast.info("Đang xử lý đăng nhập...");
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/login", data);
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/login",
+        data
+      );
       const { user, token, status_code } = response.data;
-
+      console.log(user.role);
       if (status_code === 200) {
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('token', token);
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("token", token);
         toast.success("Đăng nhập thành công!");
         if (user) {
-          if (user.role === 0) {
+          if (user.role == 0) {
             toast.info("Chuyển hướng đến trang quản trị...");
             setTimeout(() => {
               window.location.href = "http://localhost/DATN/public/admin";
             }, 2000);
-          } else if (user.role === 1) {
+          } else if (user.role == 1) {
             toast.info("Chuyển hướng đến trang chủ...");
             setTimeout(() => {
               navigate("/");
             }, 2000);
-          } else {
-            toast.error("Vai trò không hợp lệ!");
           }
         }
       }
@@ -77,14 +82,18 @@ const LoginPage: React.FC = () => {
               type="email"
               id="email"
               className={`input_field ${errors.email ? "is-invalid" : ""}`}
-              {...register("email", { required: "Email là trường hợp bắt buộc" })}
+              {...register("email", {
+                required: "Email là trường hợp bắt buộc",
+              })}
               placeholder=" "
             />
             <label htmlFor="email" className="label">
               Email
             </label>
             <i className="fa-regular fa-envelope icon" />
-            {errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
+            {errors.email && (
+              <div className="invalid-feedback">{errors.email.message}</div>
+            )}
           </div>
           <div className="input_wrapper">
             <input
@@ -93,7 +102,10 @@ const LoginPage: React.FC = () => {
               className={`input_field ${errors.password ? "is-invalid" : ""}`}
               {...register("password", {
                 required: "Password là trường hợp bắt buộc",
-                minLength: { value: 8, message: "Password phải có ít nhất 8 ký tự" }
+                minLength: {
+                  value: 8,
+                  message: "Password phải có ít nhất 8 ký tự",
+                },
               })}
               placeholder=" "
             />
@@ -101,11 +113,15 @@ const LoginPage: React.FC = () => {
               Password
             </label>
             <i
-              className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"} icon`}
+              className={`fa-solid ${
+                showPassword ? "fa-eye-slash" : "fa-eye"
+              } icon`}
               onClick={() => setShowPassword(!showPassword)}
               style={{ cursor: "pointer" }}
             />
-            {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
+            {errors.password && (
+              <div className="invalid-feedback">{errors.password.message}</div>
+            )}
           </div>
           <div className="input_wrapper">
             <button type="submit" className="input_submit">
