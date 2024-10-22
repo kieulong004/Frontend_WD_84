@@ -1,77 +1,77 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
 interface User {
-    id: number;
-    userName: string;
-    email: string;
-    email_verified_at: string | null;
-    phone: string;
+  id: number;
+  userName: string;
+  email: string;
+  email_verified_at: string | null;
+  phone: string;
 }
 
 interface Weight {
-    id: number;
-    weight: string;
-    unit: string;
-    created_at: string;
-    updated_at: string;
+  id: number;
+  weight: string;
+  unit: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface Product {
-    id: number;
-    category_id: number;
-    name: string;
-    description: string;
-    image: string;
-    sku: string;
-    created_at: string;
-    updated_at: string;
+  id: number;
+  category_id: number;
+  name: string;
+  description: string;
+  image: string;
+  sku: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface Variant {
-    id: number;
-    product_id: number;
-    quantity: number;
-    selling_price: string;
-    import_price: string;
-    listed_price: string;
-    weight_id: number;
-    product: Product;
-    weight: Weight;
-    created_at: string;
-    updated_at: string;
+  id: number;
+  product_id: number;
+  quantity: number;
+  selling_price: string;
+  import_price: string;
+  listed_price: string;
+  weight_id: number;
+  product: Product;
+  weight: Weight;
+  created_at: string;
+  updated_at: string;
 }
 
 interface OrderDetail {
-    id: number;
-    order_id: number;
-    product_id: number;
-    quantity: number;
-    total: string;
-    variant_id: number;
-    variant: Variant;
-    created_at: string;
-    updated_at: string;
+  id: number;
+  order_id: number;
+  product_id: number;
+  quantity: number;
+  total: string;
+  variant_id: number;
+  variant: Variant;
+  created_at: string;
+  updated_at: string;
 }
 
 interface Order {
-    id: number;
-    code: string;
-    created_at: string;
-    updated_at: string;
-    address: string;
-    name: string;
-    phone: string;
-    payment_method: string;
-    payment_status: string;
-    status: string;
-    total_price: string;
-    user_id: number;
-    user: User;
-    order_details: OrderDetail[];
+  id: number;
+  code: string;
+  created_at: string;
+  updated_at: string;
+  address: string;
+  name: string;
+  phone: string;
+  payment_method: string;
+  payment_status: string;
+  status: string;
+  total_price: string;
+  user_id: number;
+  user: User;
+  order_details: OrderDetail[];
 }
 
 const OrderDetail = () => {
+
     const location = useLocation();
     const navigate = useNavigate();
     const { order } = location.state as { order: Order };
@@ -140,8 +140,9 @@ const OrderDetail = () => {
             <div className="text-center mt-4">
                 <button className="btn btn-danger" onClick={handleCancelOrder}>Hủy đơn hàng</button>
             </div>
-        </div>
-    );
+
+    </div>
+  );
 };
 
 export default OrderDetail;

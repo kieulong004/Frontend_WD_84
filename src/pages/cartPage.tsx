@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { Button, Modal } from "react-bootstrap";
+import { getUserFromLocalStorage } from "@/components/utils";
 
 // Định nghĩa type cho sản phẩm
 type Product = {
@@ -38,27 +39,35 @@ type CartResponse = {
 };
 
 const CartPage: React.FC = () => {
-  const userId = 0; // Cập nhật userId với giá trị phù hợp
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [error, setError] = useState<string>("");
   const [showModal, setShowModal] = useState(false);
-
+  const userFromStorage = getUserFromLocalStorage();
+  const userId = userFromStorage.id;
+  console.log(userId);
   useEffect(() => {
     const fetchCartItems = async () => {
-      try {
-        const response = await axios.get<CartResponse>(`http://localhost:8000/api/carts/cart-list/${userId}`);
-        if (response.data.status) {
-          setCartItems(response.data.cart_items);
-          // Tính tổng giá trị giỏ hàng
-          const total = response.data.cart_items.reduce((acc, item) => acc + item.price * item.quantity, 0);
-          setTotalPrice(total);
-        } else {
-          setError(response.data.message);
+      if (userFromStorage) {
+        try {
+          const response = await axios.get<CartResponse>(
+            `http://localhost:8000/api/carts/cart-list/${userId}`
+          );
+          if (response.data.status) {
+            setCartItems(response.data.cart_items);
+            // Tính tổng giá trị giỏ hàng
+            const total = response.data.cart_items.reduce(
+              (acc, item) => acc + item.price * item.quantity,
+              0
+            );
+            setTotalPrice(total);
+          } else {
+            setError(response.data.message);
+          }
+        } catch (error) {
+          console.error("Error fetching cart items:", error);
+          setError("Không có sản phẩm nào.");
         }
-      } catch (error) {
-        console.error("Error fetching cart items:", error);
-        setError("Không có sản phẩm nào.");
       }
     };
 
@@ -66,7 +75,10 @@ const CartPage: React.FC = () => {
   }, [userId]);
 
   // Hàm xử lý khi thay đổi số lượng sản phẩm
-  const handleQuantityChange = async (cartItemId: number, newQuantity: number) => {
+  const handleQuantityChange = async (
+    cartItemId: number,
+    newQuantity: number
+  ) => {
     try {
       await axios.post(`http://localhost:8000/api/carts/update-quantity`, {
         cart_id: cartItemId,
@@ -79,7 +91,12 @@ const CartPage: React.FC = () => {
         )
       );
       // Cập nhật tổng tiền ngay lập tức
-      const updatedTotal = cartItems.reduce((acc, item) => acc + item.price * (item.id === cartItemId ? newQuantity : item.quantity), 0);
+      const updatedTotal = cartItems.reduce(
+        (acc, item) =>
+          acc +
+          item.price * (item.id === cartItemId ? newQuantity : item.quantity),
+        0
+      );
       setTotalPrice(updatedTotal);
     } catch (error) {
       console.error("Error updating quantity:", error);
@@ -90,11 +107,18 @@ const CartPage: React.FC = () => {
   // Hàm xử lý khi xóa sản phẩm khỏi giỏ hàng
   const handleDeleteItem = async (cartId: number) => {
     try {
-      const response = await axios.delete(`http://localhost:8000/api/carts/delete-cart/${cartId}`);
+      const response = await axios.delete(
+        `http://localhost:8000/api/carts/delete-cart/${cartId}`
+      );
       if (response.status === 200) {
-        setCartItems((prevItems) => prevItems.filter((item) => item.id !== cartId));
-        setTotalPrice((prevTotal) =>
-          prevTotal - cartItems.find((item) => item.id === cartId)!.price * cartItems.find((item) => item.id === cartId)!.quantity
+        setCartItems((prevItems) =>
+          prevItems.filter((item) => item.id !== cartId)
+        );
+        setTotalPrice(
+          (prevTotal) =>
+            prevTotal -
+            cartItems.find((item) => item.id === cartId)!.price *
+              cartItems.find((item) => item.id === cartId)!.quantity
         );
       } else {
         setError("Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng.");
@@ -110,7 +134,10 @@ const CartPage: React.FC = () => {
   };
 
   const formatCurrency = (value: number): string => {
-    return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    return value.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
   };
 
   return (
@@ -136,7 +163,12 @@ const CartPage: React.FC = () => {
                     <img
                       src={`http://127.0.0.1:8000${item.product.image}`}
                       alt={item.product.name}
-                      className="img-fluid" style={{ width: "80px", height: "80px", marginRight: "10px" }}
+                      className="img-fluid"
+                      style={{
+                        width: "80px",
+                        height: "80px",
+                        marginRight: "10px",
+                      }}
                     />
                     <div className="text-left fw-bold">
                       <p className="mb-1">{item.product.name}</p>
@@ -146,15 +178,21 @@ const CartPage: React.FC = () => {
                 <td className="fw-bold">
                   {item.variant && item.variant.weight
                     ? `${item.variant.weight.weight} ${item.variant.weight.unit}`
-                    : 'Không có trọng lượng'}
+                    : "Không có trọng lượng"}
                 </td>
                 <td>
-                  <div className="input-group" style={{ maxWidth: "120px", margin: "0 auto" }}>
+                  <div
+                    className="input-group"
+                    style={{ maxWidth: "120px", margin: "0 auto" }}
+                  >
                     <button
                       className="btn btn-outline-secondary btn-sm fw"
                       type="button"
                       onClick={() =>
-                        handleQuantityChange(item.id, Math.max(1, item.quantity - 1))
+                        handleQuantityChange(
+                          item.id,
+                          Math.max(1, item.quantity - 1)
+                        )
                       }
                     >
                       <i className="bi bi-dash"></i>
@@ -169,13 +207,17 @@ const CartPage: React.FC = () => {
                     <button
                       className="btn btn-outline-secondary btn-sm"
                       type="button"
-                      onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                      onClick={() =>
+                        handleQuantityChange(item.id, item.quantity + 1)
+                      }
                     >
                       <i className="bi bi-plus"></i>
                     </button>
                   </div>
                 </td>
-                <td className="fw-bold">{formatCurrency(Number(item.price * item.quantity))}</td>
+                <td className="fw-bold">
+                  {formatCurrency(Number(item.price * item.quantity))}
+                </td>
                 <td>
                   <button
                     className="btn btn-danger btn-sm"
@@ -191,10 +233,14 @@ const CartPage: React.FC = () => {
       </div>
       <div className="d-flex justify-content-between align-items-center mt-4">
         <h4>Tổng tiền:</h4>
-        <h4 className="text-danger fw-bold">{formatCurrency(Number(totalPrice))}</h4>
+        <h4 className="text-danger fw-bold">
+          {formatCurrency(Number(totalPrice))}
+        </h4>
       </div>
       <div className="mt-4">
-        <Link to={`/products/pay`} className="btn btn-dark w-100">Tiến hành thanh toán</Link>
+        <Link to={`/products/pay`} className="btn btn-dark w-100">
+          Tiến hành thanh toán
+        </Link>
       </div>
 
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
@@ -202,11 +248,17 @@ const CartPage: React.FC = () => {
           <Modal.Title>Thông báo</Modal.Title>
         </Modal.Header>
         <Modal.Body className="d-flex align-items-center">
-          <i className="bi bi-x-circle-fill text-danger me-2" style={{ fontSize: '24px' }}></i>
+          <i
+            className="bi bi-x-circle-fill text-danger me-2"
+            style={{ fontSize: "24px" }}
+          ></i>
           <p className="mb-0">Sản phẩm đã được xóa khỏi giỏ hàng!</p>
         </Modal.Body>
         <Modal.Footer>
-          <Button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+          <Button
+            className="btn btn-secondary"
+            onClick={() => setShowModal(false)}
+          >
             Đóng
           </Button>
         </Modal.Footer>

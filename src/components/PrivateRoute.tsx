@@ -12,7 +12,6 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
-
   useEffect(() => {
     const verifyUserRole = async () => {
       if (!token) {
@@ -20,9 +19,9 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
         navigate('/login');
         return;
       }
-
+console.log(token)
       try {
-        const response = await axios.get('http://localhost:8000/api/check-role', {
+        const response = await axios.get('http://localhost:8000/api/checkRole', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -30,7 +29,6 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
 
         const userRole = response.data.role;
         console.log(userRole);
-
         if (userRole !== 1) {
           // Nếu vai trò của người dùng không phải là 1, hiển thị thông báo lỗi
           toast.error('Bạn không có quyền truy cập vào trang này.');

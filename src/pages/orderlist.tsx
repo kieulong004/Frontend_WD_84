@@ -46,7 +46,7 @@ const OrderList = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, [fetchOrders]);
+  }, []);
 
   const onSubmit: SubmitHandler<SearchFormData> = (data) => {
     setSearchTerm(data.searchTerm);
