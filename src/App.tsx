@@ -59,7 +59,7 @@ function App() {
           <Route
             path="/confirm"
             element={
-              <PrivateRoute allowedRoles={[1]}>
+              <PrivateRoute>
                 <Confirm />
               </PrivateRoute>
             }
