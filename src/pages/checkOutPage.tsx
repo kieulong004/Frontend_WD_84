@@ -39,13 +39,12 @@ type Order = {
   id: number;
   code: string;
   total_price: number;
-  // Thêm các thuộc tính khác nếu cần
 };
 
 type OrderResponse = {
   status: boolean;
   message: string;
-  order?: Order; // Sử dụng Order thay vì any
+  order?: Order;
 };
 
 const CheckoutPage: React.FC = () => {
@@ -54,7 +53,7 @@ const CheckoutPage: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const shippingFee = 30000;
+  const shippingFee = 30000; // Đặt giá trị mặc định cho phí vận chuyển
 
   const userFromStorage = getUserFromLocalStorage();
   const userId = userFromStorage.id;
@@ -127,9 +126,9 @@ const CheckoutPage: React.FC = () => {
       name,
       phone,
       address,
-      shipping_fee: shippingFee,
+      shipping_fee: shippingFee, // Gửi phí vận chuyển từ Frontend, nhưng không cộng vào tổng tiền
       payment_method: "COD",
-      total_price: totalPrice + shippingFee,
+      total_price: totalPrice, // Chỉ tổng tiền sản phẩm, không cộng phí ship
       products: cartItems.map((item) => ({
         product_id: item.product.id,
         variant_id: item.variant?.id || null,
@@ -148,13 +147,14 @@ const CheckoutPage: React.FC = () => {
 
       if (response.data.status) {
         toast.success("Đơn hàng đã được xác nhận thành công!");
-        await clearCart(); // Đảm bảo giỏ hàng được làm trống
+        await clearCart();
 
-        setCartItems([]); // Thiết lập cartItems thành mảng trống
-        setTotalPrice(0); // Reset total price
+        setCartItems([]);
+        setTotalPrice(0);
 
-        // Chuyển hướng đến trang OrderConfirm và truyền thông tin đơn hàng
-        navigate("/confirm", { state: { orderId: response.data.order?.code } });
+        navigate("/confirm", {
+          state: { orderId: response.data.order?.code },
+        });
       } else {
         toast.error(`Lỗi: ${response.data.message}`);
       }
@@ -240,7 +240,7 @@ const CheckoutPage: React.FC = () => {
                 required
               />
             </div>
-            <input className="form-control" type="number" value={shippingFee} />
+            {/* Không hiển thị phí vận chuyển trên giao diện */}
             <button
               className="btn btn-primary btn-lg w-100 mt-4"
               type="submit"
@@ -264,7 +264,7 @@ const CheckoutPage: React.FC = () => {
                     src={`http://127.0.0.1:8000${item.product.image}`}
                     alt={item.product.name}
                     onError={(e) => {
-                      e.currentTarget.src = "/path-to-fallback-image.jpg"; // Cập nhật đường dẫn này
+                      e.currentTarget.src = "/path-to-fallback-image.jpg"; // Đường dẫn thay thế nếu không tải được ảnh
                     }}
                     style={{
                       width: "50px",
@@ -297,13 +297,19 @@ const CheckoutPage: React.FC = () => {
                 <strong>{formatCurrency(item.price * item.quantity)}</strong>
               </li>
             ))}
+
+            {/* Phí vận chuyển */}
             <li className="list-group-item d-flex justify-content-between">
               <span>Phí vận chuyển</span>
-              <strong>{formatCurrency(shippingFee)}</strong>
+              <strong>{formatCurrency(30000)}</strong>{" "}
+              {/* Hiển thị phí vận chuyển */}
             </li>
+
+            {/* Tổng cộng không bao gồm phí vận chuyển */}
             <li className="list-group-item d-flex justify-content-between">
               <span>Tổng cộng</span>
-              <strong>{formatCurrency(totalPrice + shippingFee)}</strong>
+              <strong>{formatCurrency(totalPrice)}</strong>{" "}
+              {/* Tổng tiền chỉ bao gồm tổng sản phẩm */}
             </li>
           </ul>
           <h4 className="mb-3">Phương thức thanh toán</h4>
