@@ -15,6 +15,7 @@ import Productpage from "./pages/productPage";
 import PrivateRoute from "./components/PrivateRoute";
 import { ToastContainer } from "react-toastify"; // Import ToastContainer
 import Confirm from "./pages/Confirm";
+import ComfirmCancel from "./pages/ComfirmCancel";
 
 function App() {
   return (
@@ -61,6 +62,14 @@ function App() {
             element={
               <PrivateRoute>
                 <Confirm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/confirm-cancel"
+            element={
+              <PrivateRoute>
+                <ComfirmCancel />
               </PrivateRoute>
             }
           />

@@ -45,6 +45,8 @@ type OrderResponse = {
   status: boolean;
   message: string;
   order?: Order;
+  vnpay_url: string;
+  payment_method: string;
 };
 
 const CheckoutPage: React.FC = () => {
@@ -53,10 +55,14 @@ const CheckoutPage: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+  const [paymentMethod, setPaymentMethod] = useState("");
   const shippingFee = 30000; // Đặt giá trị mặc định cho phí vận chuyển
 
   const userFromStorage = getUserFromLocalStorage();
   const userId = userFromStorage.id;
+  const handlePaymentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPaymentMethod(event.target.value);
+  };
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -122,12 +128,11 @@ const CheckoutPage: React.FC = () => {
 
     const orderData = {
       user_id: userId,
-      code: generateOrderCode(),
       name,
       phone,
       address,
       shipping_fee: shippingFee, // Gửi phí vận chuyển từ Frontend, nhưng không cộng vào tổng tiền
-      payment_method: "COD",
+      payment_method: paymentMethod,
       total_price: totalPrice, // Chỉ tổng tiền sản phẩm, không cộng phí ship
       products: cartItems.map((item) => ({
         product_id: item.product.id,
@@ -146,15 +151,21 @@ const CheckoutPage: React.FC = () => {
       );
 
       if (response.data.status) {
-        toast.success("Đơn hàng đã được xác nhận thành công!");
         await clearCart();
 
         setCartItems([]);
         setTotalPrice(0);
-
-        navigate("/confirm", {
-          state: { orderId: response.data.order?.code },
-        });
+        if (response.data.status) {
+          if (response.data.payment_method === "vnpay") {
+            window.location.href = response.data.vnpay_url;
+            toast.success("Đơn hàng đã được xác nhận thành công!");
+          } else {
+            navigate("/confirm");
+            toast.success("Đơn hàng đã được xác nhận thành công!");
+            // chuyển hướng sau khi thành công COD
+          }
+        }
+        console.log(response.data.payment_method);
       } else {
         toast.error(`Lỗi: ${response.data.message}`);
       }
@@ -191,11 +202,6 @@ const CheckoutPage: React.FC = () => {
       toast.error("Có lỗi xảy ra khi làm trống giỏ hàng.");
     }
   };
-
-  const generateOrderCode = () => {
-    return `ORDER-${Date.now()}`;
-  };
-
   return (
     <div className="container py-5">
       <ToastContainer />
@@ -321,6 +327,7 @@ const CheckoutPage: React.FC = () => {
                 name="paymentMethod"
                 id="payment1"
                 value="cod"
+                onChange={handlePaymentChange}
                 defaultChecked
               />
               <label className="form-check-label" htmlFor="payment1">
@@ -333,7 +340,8 @@ const CheckoutPage: React.FC = () => {
                 type="radio"
                 name="paymentMethod"
                 id="payment2"
-                value="bankTransfer"
+                value="vnpay"
+                onChange={handlePaymentChange}
               />
               <label className="form-check-label" htmlFor="payment2">
                 Chuyển khoản ngân hàng
