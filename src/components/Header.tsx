@@ -99,7 +99,6 @@ const Header: React.FC = () => {
     }
   };
 
-  console.log(categories);
   return (
     <header className="header py-3">
       <div className="container ">

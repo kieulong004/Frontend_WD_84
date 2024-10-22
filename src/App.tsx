@@ -26,7 +26,7 @@ function App() {
           <Route
             path="products/cart"
             element={
-              <PrivateRoute allowedRoles={[1]}>
+              <PrivateRoute>
                 <CartPage />
               </PrivateRoute>
             }
@@ -34,7 +34,7 @@ function App() {
           <Route
             path="products/pay"
             element={
-              <PrivateRoute allowedRoles={[1]}>
+              <PrivateRoute>
                 <CheckoutPage />
               </PrivateRoute>
             }
@@ -42,7 +42,7 @@ function App() {
           <Route
             path="/order-list"
             element={
-              <PrivateRoute allowedRoles={[1]}>
+              <PrivateRoute>
                 <OrderList />
               </PrivateRoute>
             }
@@ -50,7 +50,7 @@ function App() {
           <Route
             path="/order-detail/:id"
             element={
-              <PrivateRoute allowedRoles={[1]}>
+              <PrivateRoute>
                 <OrderDetail />
               </PrivateRoute>
             }
@@ -58,7 +58,7 @@ function App() {
           <Route
             path="/order-confirm"
             element={
-              <PrivateRoute allowedRoles={[1]}>
+              <PrivateRoute>
                 <OrderConfirm />
               </PrivateRoute>
             }

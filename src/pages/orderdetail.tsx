@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 interface User {
     id: number;
@@ -72,34 +73,44 @@ interface Order {
 
 const OrderDetail = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const { order } = location.state as { order: Order };
-
 
     const formatPrice = (price: string) => {
         return new Intl.NumberFormat('vi-VN').format(Number(price));
     };
 
+    const handleCancelOrder = async () => {
+        try {
+            await axios.get(`http://localhost:8000/api/orders/cancel-order/${order.id}`);
+            alert('Đơn hàng đã được hủy thành công.');
+            navigate('/order-list');
+        } catch (error) {
+            console.error('Lỗi khi hủy đơn hàng:', error);
+            alert('Có lỗi xảy ra khi hủy đơn hàng.');
+        }
+    };
+
     return (
         <div className="container mt-4 mb-5">
             <hr />
-                <h3 className="text-center">Chi tiết đơn hàng</h3>
-        <div className="order-details ">
-
+            <h3 className="text-center">Chi tiết đơn hàng</h3>
+            <div className="order-details">
                 <div className="mb-3">
-                        <p><strong>Mã đơn hàng:</strong> {order.code} - đặt vào {new Date(order.created_at).toLocaleDateString()}</p>
-                        <p><strong>Thanh toán:</strong> {order.payment_method === 'cod' ? 'Thanh toán khi nhận hàng (COD)' : order.payment_method}</p>
-                        <p><strong>Trạng thái:</strong> {order.status}</p>
+                    <p><strong>Mã đơn hàng:</strong> {order.code} - đặt vào {new Date(order.created_at).toLocaleDateString()}</p>
+                    <p><strong>Thanh toán:</strong> {order.payment_method === 'cod' ? 'Thanh toán khi nhận hàng (COD)' : order.payment_method}</p>
+                    <p><strong>Trạng thái:</strong> {order.status}</p>
                 </div>
 
                 <div className="row mt-4">
-                        <div className="col-md-6">
-                                <h5>Địa chỉ giao hàng</h5>
-                                <p>{order.name}</p>
-                                <p>{order.address}</p>
-                                <p>{order.phone}</p>
-                        </div>
+                    <div className="col-md-6">
+                        <h5>Địa chỉ giao hàng</h5>
+                        <p>{order.name}</p>
+                        <p>{order.address}</p>
+                        <p>{order.phone}</p>
+                    </div>
                 </div>
-        </div>
+            </div>
 
             <table className="table table-bordered mt-4">
                 <thead>
@@ -126,6 +137,9 @@ const OrderDetail = () => {
                 </tbody>
             </table>
 
+            <div className="text-center mt-4">
+                <button className="btn btn-danger" onClick={handleCancelOrder}>Hủy đơn hàng</button>
+            </div>
         </div>
     );
 };
