@@ -86,7 +86,6 @@ const ProductDetail = () => {
   const [showWarning, setShowWarning] = useState(false);
   const userFromStorage = getUserFromLocalStorage();
   const userId = userFromStorage?.id;
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchProductDetail = async () => {
@@ -176,9 +175,16 @@ const ProductDetail = () => {
 
             <div className="col-md-6">
               <h1 className="product-title display-4">{product?.name}</h1>
-              <p className="text-muted product-sku">
-                Mã sản phẩm {product?.sku}
-              </p>
+              <div className="d-flex align-items-center product-info-row mb-2">
+                <p className="text-muted product-sku mb-0 me-4">
+                  Mã sản phẩm: {product?.sku}
+                </p>
+                {selectedVariant && (
+                  <span className="badge bg-info text-dark stock-badge">
+                    Số lượng còn lại: {selectedVariant.quantity}
+                  </span>
+                )}
+              </div>
               <p className="product-description lead">{product?.description}</p>
               {variants.length > 0 && (
                 <>
@@ -205,18 +211,13 @@ const ProductDetail = () => {
                   <div className="mb-3">
                     <div className="d-flex align-items-center">
                       <h5 className="me-3 mb-0">Kích cỡ</h5>
-                      <div
-                        className="btn-group"
-                        role="group"
-                        aria-label="Chọn kích cỡ viên kim cương"
-                      >
+                      <div className="btn-group" role="group" aria-label="Chọn kích cỡ viên kim cương">
                         {variants?.map((variant) => (
                           <button
                             key={variant.id}
                             type="button"
-                            className={`btn btn-outline-secondary me-2 ${
-                              selectedVariant?.id === variant.id ? "active" : ""
-                            }`}
+                            className={`btn btn-outline-secondary me-2 ${selectedVariant?.id === variant.id ? "active" : ""
+                              }`}
                             onClick={() => {
                               if (selectedVariant?.id === variant.id) {
                                 setSelectedVariant(null);
@@ -231,33 +232,39 @@ const ProductDetail = () => {
                         ))}
                       </div>
                     </div>
+
                   </div>
                 </>
               )}
 
-              <div className="d-flex align-items-center mb-3">
+              <div className="d-flex align-items-center mb-3 quantity-container">
                 <span className="me-3">Số lượng</span>
                 <div className="d-flex justify-content-center align-items-center h-100">
-                  <div className="input-group" style={{ maxWidth: "120px" }}>
+                  <div className="input-group" style={{ maxWidth: "150px" }}>
                     <button
                       className="btn btn-outline-secondary btn-sm"
                       type="button"
-                      onClick={() =>
-                        setQuantity((prev) => Math.max(1, prev - 1))
-                      }
+                      onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
                     >
                       <i className="bi bi-dash"></i>
                     </button>
                     <input
                       type="number"
-                      className="form-control text-center"
+                      className="form-control text-center quantity-input"
                       value={quantity}
                       min="1"
-                      onChange={(e) =>
-                        setQuantity(Math.max(1, Number(e.target.value)))
-                      }
+                      max={selectedVariant ? selectedVariant.quantity : 1}
+                      onChange={(e) => {
+                        const newQuantity = Number(e.target.value);
+                        if (
+                          newQuantity >= 1 &&
+                          newQuantity <= (selectedVariant ? selectedVariant.quantity : 1)
+                        ) {
+                          setQuantity(newQuantity);
+                        }
+                      }}
                       style={{
-                        width: "50px",
+                        width: "60px",
                         border: "none",
                         borderTop: "1px solid #000",
                         borderBottom: "1px solid #000",
@@ -266,7 +273,14 @@ const ProductDetail = () => {
                     <button
                       className="btn btn-outline-secondary btn-sm"
                       type="button"
-                      onClick={() => setQuantity((prev) => prev + 1)}
+                      onClick={() =>
+                        setQuantity((prev) =>
+                          Math.min(
+                            prev + 1,
+                            selectedVariant ? selectedVariant.quantity : prev
+                          )
+                        )
+                      }
                     >
                       <i className="bi bi-plus"></i>
                     </button>
