@@ -106,7 +106,6 @@ const ProductDetail = () => {
       fetchProductDetail();
     }
   }, [id]);
-
   const checkUserRole = async () => {
     if (!token) {
       toast.error("Bạn chưa đăng nhập.");
@@ -144,7 +143,7 @@ const ProductDetail = () => {
 
   const handleAddToCart = async () => {
     if (!(await checkUserRole())) return;
-    // Kiểm tra xem biến thể đã được chọn chưa
+        // Kiểm tra xem biến thể đã được chọn chưa
     if (!selectedVariant) {
       setShowWarning(true);
       return;
