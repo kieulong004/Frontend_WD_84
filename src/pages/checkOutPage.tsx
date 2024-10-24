@@ -104,7 +104,7 @@ const CheckoutPage: React.FC = () => {
     };
 
     fetchCartItems();
-  }, [userFromStorage]);
+  }, []);
 
   const formatCurrency = (value: number): string => {
     return value.toLocaleString("vi-VN", {
@@ -128,9 +128,9 @@ const CheckoutPage: React.FC = () => {
 
     const orderData = {
       user_id: userId,
-      name,
-      phone,
-      address,
+      name: name,
+      phone: phone,
+      address: address,
       shipping_fee: shippingFee, // Gửi phí vận chuyển từ Frontend, nhưng không cộng vào tổng tiền
       payment_method: paymentMethod,
       total_price: totalPrice, // Chỉ tổng tiền sản phẩm, không cộng phí ship
@@ -344,7 +344,7 @@ const CheckoutPage: React.FC = () => {
                 onChange={handlePaymentChange}
               />
               <label className="form-check-label" htmlFor="payment2">
-                Chuyển khoản ngân hàng
+                Thanh toán qua VNPAY
               </label>
             </div>
           </form>
