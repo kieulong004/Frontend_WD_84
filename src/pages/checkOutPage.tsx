@@ -57,9 +57,12 @@ const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState("");
   const shippingFee = 30000; // Đặt giá trị mặc định cho phí vận chuyển
-
   const userFromStorage = getUserFromLocalStorage();
   const userId = userFromStorage.id;
+
+  // State để lưu trữ tên người dùng
+  const [name, setName] = useState(userFromStorage?.name || "");
+
   const handlePaymentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPaymentMethod(event.target.value);
   };
@@ -116,7 +119,6 @@ const CheckoutPage: React.FC = () => {
   const handleOrderConfirmation = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const name = (document.getElementById("name") as HTMLInputElement).value;
     const phone = (document.getElementById("phone") as HTMLInputElement).value;
     const address = (document.getElementById("address") as HTMLInputElement)
       .value;
@@ -133,7 +135,7 @@ const CheckoutPage: React.FC = () => {
       address: address,
       shipping_fee: shippingFee, // Gửi phí vận chuyển từ Frontend, nhưng không cộng vào tổng tiền
       payment_method: paymentMethod,
-      total_price: totalPrice, // Chỉ tổng tiền sản phẩm, không cộng phí ship
+      total_price: totalPrice + shippingFee, // Chỉ tổng tiền sản phẩm, không cộng phí ship
       products: cartItems.map((item) => ({
         product_id: item.product.id,
         variant_id: item.variant?.id || null,
@@ -149,7 +151,7 @@ const CheckoutPage: React.FC = () => {
         "http://127.0.0.1:8000/api/orders/storeOrder",
         orderData
       );
-
+      console.log(orderData);
       if (response.data.status) {
         await clearCart();
 
@@ -202,6 +204,7 @@ const CheckoutPage: React.FC = () => {
       toast.error("Có lỗi xảy ra khi làm trống giỏ hàng.");
     }
   };
+
   return (
     <div className="container py-5">
       <ToastContainer />
@@ -218,6 +221,8 @@ const CheckoutPage: React.FC = () => {
                 className="form-control"
                 id="name"
                 placeholder="Nguyễn Văn A"
+                value={name} // Sử dụng state name
+                onChange={(e) => setName(e.target.value)} // Cập nhật state khi người dùng thay đổi
                 required
               />
             </div>
@@ -246,7 +251,6 @@ const CheckoutPage: React.FC = () => {
                 required
               />
             </div>
-            {/* Không hiển thị phí vận chuyển trên giao diện */}
             <button
               className="btn btn-primary btn-lg w-100 mt-4"
               type="submit"
@@ -314,7 +318,7 @@ const CheckoutPage: React.FC = () => {
             {/* Tổng cộng không bao gồm phí vận chuyển */}
             <li className="list-group-item d-flex justify-content-between">
               <span>Tổng cộng</span>
-              <strong>{formatCurrency(totalPrice)}</strong>{" "}
+              <strong>{formatCurrency(totalPrice + shippingFee)}</strong>{" "}
               {/* Tổng tiền chỉ bao gồm tổng sản phẩm */}
             </li>
           </ul>
