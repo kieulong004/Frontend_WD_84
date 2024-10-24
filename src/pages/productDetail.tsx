@@ -106,44 +106,12 @@ const ProductDetail = () => {
       fetchProductDetail();
     }
   }, [id]);
-  const checkUserRole = async () => {
-    if (!token) {
-      toast.error("Bạn chưa đăng nhập.");
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
-      return false;
-    }
 
-    try {
-      const response = await axios.get("http://localhost:8000/api/checkRole", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const userRole = response.data.role;
-      if (!userRole && userRole !== 1) {
-        toast.error("Bạn cần đăng nhập để mua hàng.");
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
-        return false;
-      }
-      return true;
-    } catch (error) {
-      console.error("Error checking role:", error);
-      toast.error("Đã xảy ra lỗi khi kiểm tra quyền người dùng.");
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
-      return false;
-    }
-  };
 
   const handleAddToCart = async () => {
-    if (!(await checkUserRole())) return;
-        // Kiểm tra xem biến thể đã được chọn chưa
+
+
+    // Kiểm tra xem biến thể đã được chọn chưa
     if (!selectedVariant) {
       setShowWarning(true);
       return;
@@ -172,7 +140,7 @@ const ProductDetail = () => {
   };
 
   const handleBuyNow = async () => {
-    if (!(await checkUserRole())) return;
+
 
     // Kiểm tra xem biến thể đã được chọn chưa
     if (!selectedVariant) {
