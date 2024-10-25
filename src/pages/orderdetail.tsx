@@ -179,15 +179,17 @@ const OrderDetail = () => {
           className="btn btn-danger"
           onClick={handleCancelOrder}
           disabled={order.status !== "pending"}
+          style={{ color: "white" }}
         >
           Hủy đơn hàng
         </button>
         {order.status === "delivering" && (
           <button
-            className="btn btn-success ml-2"
-            onClick={handleReceivedOrder}
+        className="btn btn-info animate__animated animate__pulse"
+        style={{ marginLeft: "10px", color: "white" }}
+        onClick={handleReceivedOrder}
           >
-            Đã nhận được hàng
+        Đã nhận được hàng
           </button>
         )}
       </div>
