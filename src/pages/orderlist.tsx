@@ -52,6 +52,12 @@ const OrderList = () => {
     setSearchTerm(data.searchTerm);
   };
 
+  useEffect(() => {
+    if (searchTerm === "") {
+      fetchOrders();
+    }
+  }, [searchTerm, fetchOrders]);
+
   const handleCancelOrder = async (orderId: number) => {
     try {
       await axios.post(`http://localhost:8000/api/orders/cancel/${orderId}`);
@@ -95,6 +101,7 @@ const OrderList = () => {
                 className="form-control"
                 placeholder="Tìm kiếm đơn hàng theo mã"
                 {...register("searchTerm")}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
               <button type="submit" className="btn btn-primary">Tìm kiếm</button>
             </div>

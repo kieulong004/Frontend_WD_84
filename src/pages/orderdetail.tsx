@@ -86,7 +86,9 @@ const OrderDetail = () => {
         `http://localhost:8000/api/orders/cancel-order/${order.id}`
       );
       toast.success("Đơn hàng đã được hủy thành công.");
-      navigate("/order-list");
+      setTimeout(() => {
+        navigate("/order-list");
+      }, 2000);
     } catch (error) {
       console.error("Lỗi khi hủy đơn hàng:", error);
       toast.error("Có lỗi xảy ra khi hủy đơn hàng.");
@@ -99,7 +101,9 @@ const OrderDetail = () => {
         `http://localhost:8000/api/orders/order-markAsCompleted/${order.id}`
       );
       toast.success("Đơn hàng đã được xác nhận là đã nhận.");
-      navigate("/order-list");
+      setTimeout(() => {
+        navigate("/order-list");
+      }, 2000);
     } catch (error) {
       console.error("Lỗi khi xác nhận đơn hàng:", error);
       toast.error("Có lỗi xảy ra khi xác nhận đơn hàng.");
@@ -185,11 +189,11 @@ const OrderDetail = () => {
         </button>
         {order.status === "delivering" && (
           <button
-        className="btn btn-info animate__animated animate__pulse"
-        style={{ marginLeft: "10px", color: "white" }}
-        onClick={handleReceivedOrder}
+            className="btn btn-info animate__animated animate__pulse"
+            style={{ marginLeft: "10px", color: "white" }}
+            onClick={handleReceivedOrder}
           >
-        Đã nhận được hàng
+            Đã nhận được hàng
           </button>
         )}
       </div>
