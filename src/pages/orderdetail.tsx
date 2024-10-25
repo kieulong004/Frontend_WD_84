@@ -1,5 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+
 interface User {
   id: number;
   userName: string;
@@ -83,16 +85,30 @@ const OrderDetail = () => {
       await axios.get(
         `http://localhost:8000/api/orders/cancel-order/${order.id}`
       );
-      alert("Đơn hàng đã được hủy thành công.");
+      toast.success("Đơn hàng đã được hủy thành công.");
       navigate("/order-list");
     } catch (error) {
       console.error("Lỗi khi hủy đơn hàng:", error);
-      alert("Có lỗi xảy ra khi hủy đơn hàng.");
+      toast.error("Có lỗi xảy ra khi hủy đơn hàng.");
+    }
+  };
+
+  const handleReceivedOrder = async () => {
+    try {
+      await axios.get(
+        `http://localhost:8000/api/orders/order-markAsCompleted/${order.id}`
+      );
+      toast.success("Đơn hàng đã được xác nhận là đã nhận.");
+      navigate("/order-list");
+    } catch (error) {
+      console.error("Lỗi khi xác nhận đơn hàng:", error);
+      toast.error("Có lỗi xảy ra khi xác nhận đơn hàng.");
     }
   };
 
   return (
     <div className="container mt-4 mb-5">
+      <ToastContainer />
       <hr />
       <h3 className="text-center">Chi tiết đơn hàng</h3>
       <div className="order-details">
@@ -159,9 +175,21 @@ const OrderDetail = () => {
       </table>
 
       <div className="text-center mt-4">
-        <button className="btn btn-danger" onClick={handleCancelOrder}>
+        <button
+          className="btn btn-danger"
+          onClick={handleCancelOrder}
+          disabled={order.status !== "pending"}
+        >
           Hủy đơn hàng
         </button>
+        {order.status === "delivering" && (
+          <button
+            className="btn btn-success ml-2"
+            onClick={handleReceivedOrder}
+          >
+            Đã nhận được hàng
+          </button>
+        )}
       </div>
     </div>
   );
