@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { Button, Modal } from "react-bootstrap";
 import { getUserFromLocalStorage } from "@/components/utils";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 // Định nghĩa type cho sản phẩm
 type Product = {
@@ -43,13 +44,15 @@ const CartPage: React.FC = () => {
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [error, setError] = useState<string>("");
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const userFromStorage = getUserFromLocalStorage();
   const userId = userFromStorage.id;
-  console.log(userId);
+
   useEffect(() => {
     const fetchCartItems = async () => {
       if (userFromStorage) {
         try {
+          setLoading(true);
           const response = await axios.get<CartResponse>(
             `http://localhost:8000/api/carts/cart-list/${userId}`
           );
@@ -65,8 +68,9 @@ const CartPage: React.FC = () => {
             setError(response.data.message);
           }
         } catch (error) {
-          console.error("Error fetching cart items:", error);
           setError("Không có sản phẩm nào.");
+        } finally {
+          setLoading(false);
         }
       }
     };
@@ -118,7 +122,7 @@ const CartPage: React.FC = () => {
           (prevTotal) =>
             prevTotal -
             cartItems.find((item) => item.id === cartId)!.price *
-              cartItems.find((item) => item.id === cartId)!.quantity
+            cartItems.find((item) => item.id === cartId)!.quantity
         );
       } else {
         setError("Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng.");
@@ -140,108 +144,133 @@ const CartPage: React.FC = () => {
     });
   };
 
+  if (loading) {
+    return (
+      <div className="text-center my-5">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container my-5">
-      <h2 className="mb-4 text-center">Giỏ hàng của bạn</h2>
-      {error && <div className="alert alert-danger">{error}</div>}
-      <div className="table-responsive">
-        <table className="table table-hover text-center">
-          <thead className="table-dark">
-            <tr>
-              <th scope="col">Sản phẩm</th>
-              <th scope="col">Kích thước</th>
-              <th scope="col">Số lượng</th>
-              <th scope="col">Tổng</th>
-              <th scope="col">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cartItems.map((item) => (
-              <tr key={item.id}>
-                <td>
-                  <div className="d-flex align-items-center justify-content-center">
-                    <img
-                      src={`http://127.0.0.1:8000${item.product.image}`}
-                      alt={item.product.name}
-                      className="img-fluid"
-                      style={{
-                        width: "80px",
-                        height: "80px",
-                        marginRight: "10px",
-                      }}
-                    />
-                    <div className="text-left fw-bold">
-                      <p className="mb-1">{item.product.name}</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="fw-bold">
-                  {item.variant && item.variant.weight
-                    ? `${item.variant.weight.weight} ${item.variant.weight.unit}`
-                    : "Không có trọng lượng"}
-                </td>
-                <td>
-                  <div
-                    className="input-group"
-                    style={{ maxWidth: "120px", margin: "0 auto" }}
-                  >
-                    <button
-                      className="btn btn-outline-secondary btn-sm fw"
-                      type="button"
-                      onClick={() =>
-                        handleQuantityChange(
-                          item.id,
-                          Math.max(1, item.quantity - 1)
-                        )
-                      }
-                    >
-                      <i className="bi bi-dash"></i>
-                    </button>
-                    <input
-                      type="number"
-                      className="form-control text-center"
-                      value={item.quantity}
-                      min="1"
-                      readOnly
-                    />
-                    <button
-                      className="btn btn-outline-secondary btn-sm"
-                      type="button"
-                      onClick={() =>
-                        handleQuantityChange(item.id, item.quantity + 1)
-                      }
-                    >
-                      <i className="bi bi-plus"></i>
-                    </button>
-                  </div>
-                </td>
-                <td className="fw-bold">
-                  {formatCurrency(Number(item.price * item.quantity))}
-                </td>
-                <td>
-                  <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => handleDeleteItem(item.id)}
-                  >
-                    <i className="bi bi-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="d-flex justify-content-between align-items-center mt-4">
-        <h4>Tổng tiền:</h4>
-        <h4 className="text-danger fw-bold">
-          {formatCurrency(Number(totalPrice))}
-        </h4>
-      </div>
-      <div className="mt-4">
-        <Link to={`/products/pay`} className="btn btn-dark w-100">
-          Tiến hành thanh toán
-        </Link>
-      </div>
+      {cartItems.length > 0 && <h2 className="mb-4 text-center">Giỏ hàng của bạn</h2>}
+      {cartItems.length === 0 ? (
+        <div className="text-center">
+          <div className="alert alert-secondary p-5 border border-light">
+            <h4 className="mb-3 text-primary">Giỏ hàng của bạn đang trống</h4>
+            <p className="mb-4">Khám phá thêm những sản phẩm tuyệt vời và thêm vào giỏ hàng để nhận nhiều ưu đãi đặc biệt.</p>
+            <Link to="/products" className="btn btn-success btn-lg">
+              <i className="bi bi-cart-plus me-2"></i>Tiếp tục mua hàng
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <>
+          {error && <div className="alert alert-danger">{error}</div>}
+          <div className="table-responsive shadow-sm rounded">
+            <table className="table table-bordered table-hover text-center">
+              <thead className="table-dark">
+                <tr>
+                  <th scope="col">Sản phẩm</th>
+                  <th scope="col">Kích thước</th>
+                  <th scope="col">Số lượng</th>
+                  <th scope="col">Tổng</th>
+                  <th scope="col">Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cartItems.map((item) => (
+                  <tr key={item.id} className="align-middle">
+                    <td>
+                      <div className="d-flex align-items-center justify-content-center">
+                        <img
+                          src={`http://127.0.0.1:8000${item.product.image}`}
+                          alt={item.product.name}
+                          className="img-fluid rounded shadow-sm"
+                          style={{
+                            width: "80px",
+                            height: "80px",
+                            marginRight: "10px",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <div className="text-left fw-bold">
+                          <p className="mb-1">{item.product.name}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="fw-bold">
+                      {item.variant && item.variant.weight
+                        ? `${item.variant.weight.weight} ${item.variant.weight.unit}`
+                        : "Không có trọng lượng"}
+                    </td>
+                    <td>
+                      <div
+                        className="input-group"
+                        style={{ maxWidth: "150px", margin: "0 auto" }}
+                      >
+                        <button
+                          className="btn btn-outline-secondary btn-sm fw"
+                          type="button"
+                          onClick={() =>
+                            handleQuantityChange(
+                              item.id,
+                              Math.max(1, item.quantity - 1)
+                            )
+                          }
+                        >
+                          <i className="bi bi-dash"></i>
+                        </button>
+                        <input
+                          type="number"
+                          className="form-control text-center"
+                          value={item.quantity}
+                          min="1"
+                          readOnly
+                        />
+                        <button
+                          className="btn btn-outline-secondary btn-sm"
+                          type="button"
+                          onClick={() =>
+                            handleQuantityChange(item.id, item.quantity + 1)
+                          }
+                        >
+                          <i className="bi bi-plus"></i>
+                        </button>
+                      </div>
+                    </td>
+                    <td className="fw-bold">
+                      {formatCurrency(Number(item.price * item.quantity))}
+                    </td>
+                    <td>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleDeleteItem(item.id)}
+                      >
+                        <i className="bi bi-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="d-flex justify-content-between align-items-center mt-4 p-4 border rounded shadow-sm">
+            <h4 className="mb-0">Tổng tiền:</h4>
+            <h4 className="text-danger fw-bold mb-0">
+              {formatCurrency(Number(totalPrice))}
+            </h4>
+          </div>
+          <div className="mt-4 text-center">
+            <Link to={`/products/pay`} className="btn btn-dark w-100 btn-lg shadow-sm">
+              <i className="bi bi-credit-card-fill me-2"></i>Tiến hành thanh toán
+            </Link>
+          </div>
+        </>
+      )}
 
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
