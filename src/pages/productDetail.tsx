@@ -5,6 +5,7 @@ import { Button, Modal } from "react-bootstrap";
 import { getUserFromLocalStorage } from "@/components/utils";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { checkAuthorization } from "@/components/authUtils";
 
 type Product = {
   id: number;
@@ -107,7 +108,7 @@ const ProductDetail = () => {
   }, [id]);
 
   const handleAddToCart = async () => {
-    // Kiểm tra xem biến thể đã được chọn chưa và còn hàng không
+  if(!checkAuthorization(navigate)) return;
     if (!selectedVariant) {
       setShowWarning(true);
       return;
@@ -141,7 +142,7 @@ const ProductDetail = () => {
   };
 
   const handleBuyNow = async () => {
-    // Kiểm tra xem biến thể đã được chọn chưa và còn hàng không
+  if(!checkAuthorization(navigate)) return;
     if (!selectedVariant) {
       setShowWarning(true);
       return;
