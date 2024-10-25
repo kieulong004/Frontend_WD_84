@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { getUserFromLocalStorage } from '@/components/utils'; 
+import { getUserFromLocalStorage } from '@/components/utils';
 
 interface Order {
   id: number;
@@ -30,7 +30,7 @@ const OrderList = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const userFromStorage = getUserFromLocalStorage();
-  const { register, handleSubmit, watch } = useForm<SearchFormData>();
+  const { register, handleSubmit } = useForm<SearchFormData>();
 
   const fetchOrders = useCallback(async () => {
     if (userFromStorage) {
@@ -39,24 +39,19 @@ const OrderList = () => {
         const { data } = await axios.get(`http://localhost:8000/api/orders/order-list/${userId}`);
         setOrders(data.data);
       } catch (error) {
-        console.error("Error fetching orders:", error);
-      }
+        console.error("Error fetching orders:");
+      } 
     }
-  }, [userFromStorage]);
+  }, []);
 
   useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+    fetchOrders().catch(error => console.error("Error fetching categories:", error));
+  }, []);
 
   const onSubmit: SubmitHandler<SearchFormData> = (data) => {
     setSearchTerm(data.searchTerm);
   };
 
-  useEffect(() => {
-    if (searchTerm === "") {
-      fetchOrders();
-    }
-  }, [searchTerm, fetchOrders]);
 
   const handleCancelOrder = async (orderId: number) => {
     try {
@@ -115,7 +110,7 @@ const OrderList = () => {
                   <th scope="col">Tổng giá</th>
                   <th scope="col">Thanh toán</th>
                   <th scope="col">Trạng thái thanh toán</th>
-                  <th scope="col">Trạng thái</th>
+                  <th scope="col">Trạng thái đơn hàng</th>
                   <th scope="col">Số lượng</th>
                   <th scope="col">Hành động</th>
                 </tr>
@@ -127,8 +122,16 @@ const OrderList = () => {
                     <td>{new Date(order.created_at).toLocaleDateString()}</td>
                     <td>{order.total_price} đ</td>
                     <td>{order.payment_method === 'cod' ? 'Thanh toán khi nhận hàng (COD)' : order.payment_method}</td>
-                    <td>{order.payment_status}</td>
-                    <td>{order.status}</td>
+                    <td>
+                      <span className={`badge ${order.payment_status === 'paid' ? 'bg-success' : 'bg-warning'} text-white mb-1`}>
+                        {order.payment_status === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`badge ${order.status === 'completed' ? 'bg-primary' : order.status === 'cancelled' ? 'bg-danger' : order.status === 'shipping' ? 'bg-info' : order.status === 'confirmed' ? 'bg-secondary' : order.status === 'pending' ? 'bg-warning text-dark' : order.status === 'failed' ? 'bg-dark' : order.status === 'delivering' ? 'bg-success' : 'bg-info'} text-white`}>
+                        {order.status === 'completed' ? 'Hoàn thành / Đã nhận được hàng' : order.status === 'cancelled' ? 'Đã hủy' : order.status === 'shipping' ? 'Đang giao' : order.status === 'confirmed' ? 'Đã xác nhận' : order.status === 'pending' ? 'Chờ xác nhận' : order.status === 'failed' ? 'Giao hàng thất bại' : order.status === 'delivering' ? 'Giao hàng thành công' : 'Không xác định'}
+                      </span>
+                    </td>
                     <td>{order.order_details.length}</td>
                     <td className="text-center align-middle">
                       <div className="d-flex flex-column justify-content-center align-items-center h-100 gap-2">
