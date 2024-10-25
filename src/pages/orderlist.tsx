@@ -30,7 +30,7 @@ const OrderList = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const userFromStorage = getUserFromLocalStorage();
-  const { register, handleSubmit } = useForm<SearchFormData>();
+  const { register, handleSubmit, watch } = useForm<SearchFormData>();
 
   const fetchOrders = useCallback(async () => {
     if (userFromStorage) {
@@ -46,7 +46,7 @@ const OrderList = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [fetchOrders]);
 
   const onSubmit: SubmitHandler<SearchFormData> = (data) => {
     setSearchTerm(data.searchTerm);
@@ -68,7 +68,7 @@ const OrderList = () => {
   };
 
   const filteredOrders = orders.filter(order =>
-    order.code.includes(searchTerm)
+    order.code.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
