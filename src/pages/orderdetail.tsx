@@ -91,7 +91,7 @@ const OrderDetail = () => {
       }, 2000);
     } catch (error) {
       console.error("Lỗi khi hủy đơn hàng:", error);
-      toast.error("Có lỗi xảy ra khi hủy đơn hàng.");
+      toast.error("Đơn hàng đã được xác nhận không thể hủy");
     }
   };
 
