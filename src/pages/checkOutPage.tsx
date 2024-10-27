@@ -56,12 +56,12 @@ const CheckoutPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState("");
-  const shippingFee = 30000; // Đặt giá trị mặc định cho phí vận chuyển
   const userFromStorage = getUserFromLocalStorage();
   const userId = userFromStorage.id;
 
   // State để lưu trữ tên người dùng
   const [name, setName] = useState(userFromStorage?.name || "");
+
   const handlePaymentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPaymentMethod(event.target.value);
   };
@@ -95,7 +95,7 @@ const CheckoutPage: React.FC = () => {
             );
             setError(
               error.response?.data.message ||
-                "Lỗi khi lấy các sản phẩm trong giỏ hàng"
+              "Lỗi khi lấy các sản phẩm trong giỏ hàng"
             );
           } else {
             console.error("Lỗi không xác định:", error);
@@ -117,23 +117,20 @@ const CheckoutPage: React.FC = () => {
 
   const handleOrderConfirmation = async (event: React.FormEvent) => {
     event.preventDefault();
-
     const phone = (document.getElementById("phone") as HTMLInputElement).value;
     const address = (document.getElementById("address") as HTMLInputElement)
       .value;
-
     if (!name || !phone || !address || cartItems.length === 0) {
       toast.error("Vui lòng điền đầy đủ thông tin và kiểm tra giỏ hàng.");
       return;
     }
-
     const orderData = {
       user_id: userId,
       name: name,
       phone: phone,
       address: address,
       payment_method: paymentMethod,
-      total_price: totalPrice , // Chỉ tổng tiền sản phẩm, không cộng phí ship
+      total_price: totalPrice,
       products: cartItems.map((item) => ({
         product_id: item.product.id,
         variant_id: item.variant?.id || null,
@@ -150,22 +147,25 @@ const CheckoutPage: React.FC = () => {
         orderData
       );
       console.log(orderData);
-    
       if (response.data.status) {
-        await clearCart();
         setCartItems([]);
         setTotalPrice(0);
-    
-        if (response.data.payment_method === "vnpay") {
-          // Redirect only after clearCart completes
-          window.location.href = response.data.vnpay_url;
-        } else {
-          navigate("/confirm");
-          // COD redirect after successful order placement
+        if (response.data.status) {
+          if (response.data.payment_method === "vnpay") {
+            window.location.href = response.data.vnpay_url;
+            toast.success("Đơn hàng đã được xác nhận thành công!", {
+              autoClose: 1000,  // Thời gian hiển thị toast ngắn hơn (0.5 giây)
+            });
+          } else {
+            navigate("/confirm");
+            await clearCart();
+          }
         }
+        console.log(response.data.payment_method);
       } else {
         toast.error(`Lỗi: ${response.data.message}`);
       }
+
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(
@@ -182,7 +182,7 @@ const CheckoutPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };    
+  };
 
   const clearCart = async () => {
     try {
@@ -190,10 +190,11 @@ const CheckoutPage: React.FC = () => {
         `http://localhost:8000/api/carts/delete-cart/${userId}`
       );
       if (clearCartResponse.data.status) {
-        console.log(error)
+        toast.success("Giỏ hàng đã được làm trống sau khi đặt hàng.");
       } else {
-        console.log(error);
+        toast.error("Không thể xóa giỏ hàng.");
       }
+      console.log(clearCartResponse);
     } catch (error) {
       console.error("Lỗi khi xóa giỏ hàng:", error);
     }
@@ -305,14 +306,14 @@ const CheckoutPage: React.FC = () => {
             {/* Phí vận chuyển */}
             <li className="list-group-item d-flex justify-content-between">
               <span>Phí vận chuyển</span>
-              <strong>{formatCurrency(30000)}</strong>{" "}
+              <strong>Miễn phí</strong>{" "}
               {/* Hiển thị phí vận chuyển */}
             </li>
 
             {/* Tổng cộng không bao gồm phí vận chuyển */}
             <li className="list-group-item d-flex justify-content-between">
               <span>Tổng cộng</span>
-              <strong>{formatCurrency(totalPrice + shippingFee)}</strong>{" "}
+              <strong>{formatCurrency(totalPrice)}</strong>{" "}
               {/* Tổng tiền chỉ bao gồm tổng sản phẩm */}
             </li>
           </ul>
