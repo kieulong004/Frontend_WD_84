@@ -62,7 +62,6 @@ const CheckoutPage: React.FC = () => {
 
   // State để lưu trữ tên người dùng
   const [name, setName] = useState(userFromStorage?.name || "");
-
   const handlePaymentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPaymentMethod(event.target.value);
   };
@@ -133,9 +132,8 @@ const CheckoutPage: React.FC = () => {
       name: name,
       phone: phone,
       address: address,
-      shipping_fee: shippingFee, // Gửi phí vận chuyển từ Frontend, nhưng không cộng vào tổng tiền
       payment_method: paymentMethod,
-      total_price: totalPrice + shippingFee, // Chỉ tổng tiền sản phẩm, không cộng phí ship
+      total_price: totalPrice , // Chỉ tổng tiền sản phẩm, không cộng phí ship
       products: cartItems.map((item) => ({
         product_id: item.product.id,
         variant_id: item.variant?.id || null,
@@ -152,22 +150,19 @@ const CheckoutPage: React.FC = () => {
         orderData
       );
       console.log(orderData);
+    
       if (response.data.status) {
         await clearCart();
-
         setCartItems([]);
         setTotalPrice(0);
-        if (response.data.status) {
-          if (response.data.payment_method === "vnpay") {
-            window.location.href = response.data.vnpay_url;
-            toast.success("Đơn hàng đã được xác nhận thành công!");
-          } else {
-            navigate("/confirm");
-            toast.success("Đơn hàng đã được xác nhận thành công!");
-            // chuyển hướng sau khi thành công COD
-          }
+    
+        if (response.data.payment_method === "vnpay") {
+          // Redirect only after clearCart completes
+          window.location.href = response.data.vnpay_url;
+        } else {
+          navigate("/confirm");
+          // COD redirect after successful order placement
         }
-        console.log(response.data.payment_method);
       } else {
         toast.error(`Lỗi: ${response.data.message}`);
       }
@@ -187,7 +182,7 @@ const CheckoutPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };    
 
   const clearCart = async () => {
     try {
@@ -195,13 +190,12 @@ const CheckoutPage: React.FC = () => {
         `http://localhost:8000/api/carts/delete-cart/${userId}`
       );
       if (clearCartResponse.data.status) {
-        toast.success("Giỏ hàng đã được làm trống sau khi đặt hàng.");
+        console.log(error)
       } else {
-        toast.error("Không thể xóa giỏ hàng.");
+        console.log(error);
       }
     } catch (error) {
       console.error("Lỗi khi xóa giỏ hàng:", error);
-      toast.error("Có lỗi xảy ra khi làm trống giỏ hàng.");
     }
   };
 
