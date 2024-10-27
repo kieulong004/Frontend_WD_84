@@ -1,6 +1,8 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
+import { useEffect, useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
 
 interface User {
   id: number;
@@ -73,17 +75,40 @@ interface Order {
 }
 
 const OrderDetail = () => {
-  const location = useLocation();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { order } = location.state as { order: Order };
+  const [order, setOrder] = useState<Order | null>(null);
+
+  useEffect(() => {
+    const fetchOrderDetail = async () => {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:8000/api/orders/order-detail/${id}`
+        );
+        if (data.status) {
+          setOrder(data.data.order);
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching order details:", error);
+        toast.error("Có lỗi xảy ra khi lấy chi tiết đơn hàng.");
+      }
+    };
+
+    if (id) {
+      fetchOrderDetail();
+    }
+  }, [id]);
+
   const formatPrice = (price: string) => {
     return new Intl.NumberFormat("vi-VN").format(Number(price));
   };
 
   const handleCancelOrder = async () => {
     try {
-      await axios.get(
-        `http://localhost:8000/api/orders/cancel-order/${order.id}`
+       await axios.get(
+        `http://localhost:8000/api/orders/cancel-order/${order?.id}`
       );
       toast.success("Đơn hàng đã được hủy thành công.");
       setTimeout(() => {
@@ -92,13 +117,16 @@ const OrderDetail = () => {
     } catch (error) {
       console.error("Lỗi khi hủy đơn hàng:", error);
       toast.error("Đơn hàng đã được xác nhận không thể hủy");
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000); 
     }
   };
 
   const handleReceivedOrder = async () => {
     try {
       await axios.get(
-        `http://localhost:8000/api/orders/order-markAsCompleted/${order.id}`
+        `http://localhost:8000/api/orders/order-markAsCompleted/${order?.id}`
       );
       toast.success("Đơn hàng đã được xác nhận là đã nhận.");
       setTimeout(() => {
@@ -109,6 +137,10 @@ const OrderDetail = () => {
       toast.error("Có lỗi xảy ra khi xác nhận đơn hàng.");
     }
   };
+
+  if (!order) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="container mt-4 mb-5">
