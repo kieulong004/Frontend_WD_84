@@ -40,7 +40,7 @@ const OrderList = () => {
         setOrders(data.data);
       } catch (error) {
         console.error("Error fetching orders:");
-      } 
+      }
     }
   }, []);
 
@@ -101,8 +101,8 @@ const OrderList = () => {
               <button type="submit" className="btn btn-primary">Tìm kiếm</button>
             </div>
           </form>
-          <div className="table-responsive">
-            <table className="table table-hover">
+          <div className="table-responsive" style={{ maxHeight: '415px', overflowY: 'scroll' }}>
+            <table className="table table-hover table-bordered">
               <thead className="thead-light">
                 <tr>
                   <th scope="col">Mã đặt hàng</th>
@@ -117,23 +117,25 @@ const OrderList = () => {
               </thead>
               <tbody>
                 {filteredOrders.map((order: Order) => (
-                  <tr key={order.id}>
-                    <td>{order.code}</td>
-                    <td>{new Date(order.created_at).toLocaleDateString()}</td>
-                    <td>{order.total_price} đ</td>
-                    <td>{order.payment_method === 'cod' ? 'Thanh toán khi nhận hàng (COD)' : order.payment_method}</td>
-                    <td>
+                  <tr key={order.id} className="align-middle">
+                    <td className="text-center">{order.code}</td>
+                    <td className="text-center">{new Date(order.created_at).toLocaleDateString()}</td>
+                    <td className="text-center">{order.total_price} đ</td>
+                    <td className="text-center">
+                      {order.payment_method === 'cod' ? 'Thanh toán khi nhận hàng (COD)' : order.payment_method}
+                    </td>
+                    <td className="text-center">
                       <span className={`badge ${order.payment_status === 'paid' ? 'bg-success' : 'bg-warning'} text-white mb-1`}>
                         {order.payment_status === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
                       </span>
                     </td>
-                    <td>
+                    <td className="text-center">
                       <span className={`badge ${order.status === 'completed' ? 'bg-primary' : order.status === 'cancelled' ? 'bg-danger' : order.status === 'shipping' ? 'bg-info' : order.status === 'confirmed' ? 'bg-secondary' : order.status === 'pending' ? 'bg-warning text-dark' : order.status === 'failed' ? 'bg-dark' : order.status === 'delivering' ? 'bg-success' : 'bg-info'} text-white`}>
                         {order.status === 'completed' ? 'Hoàn thành / Đã nhận được hàng' : order.status === 'cancelled' ? 'Đã hủy' : order.status === 'shipping' ? 'Đang giao' : order.status === 'confirmed' ? 'Đã xác nhận' : order.status === 'pending' ? 'Chờ xác nhận' : order.status === 'failed' ? 'Giao hàng thất bại' : order.status === 'delivering' ? 'Giao hàng thành công' : 'Không xác định'}
                       </span>
                     </td>
-                    <td>{order.order_details.length}</td>
-                    <td className="text-center align-middle">
+                    <td className="text-center">{order.order_details.length}</td>
+                    <td className="text-center">
                       <div className="d-flex flex-column justify-content-center align-items-center h-100 gap-2">
                         <Link to={`/order-detail/${order.id}`} state={{ order }}>
                           <button className="btn btn-outline-info btn-sm px-3 d-flex justify-content-center align-items-center">
@@ -148,10 +150,10 @@ const OrderList = () => {
                   </tr>
                 ))}
               </tbody>
+
             </table>
           </div>
         </div>
-        <hr />
       </div>
     </div>
   );
