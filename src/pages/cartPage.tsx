@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { Button, Modal } from "react-bootstrap";
-import { getUserFromLocalStorage } from "@/components/utils";
+import { getUser } from "@/components/utils";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 // Định nghĩa type cho sản phẩm
@@ -45,12 +45,11 @@ const CartPage: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const userFromStorage = getUserFromLocalStorage();
+  const userFromStorage = getUser();
   const userId = userFromStorage.id;
 
   useEffect(() => {
     const fetchCartItems = async () => {
-      if (userFromStorage) {
         try {
           setLoading(true);
           const response = await axios.get<CartResponse>(
@@ -73,7 +72,6 @@ const CartPage: React.FC = () => {
           setLoading(false);
         }
       }
-    };
 
     fetchCartItems();
   }, [userId]);

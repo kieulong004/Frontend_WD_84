@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "./logo";
 import { search, shop, user } from "./icons";
 import axios from "axios";
+import { getToken } from "./utils";
+import { toast } from "react-toastify";
 
 interface Category {
   id: number;
@@ -17,16 +19,39 @@ const Header: React.FC = () => {
   const [userName, setUserName] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const handleCartClick = () => {
+    if (!isLoggedIn) {
+      toast.error("Bạn phải đăng nhập.");
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+    } else {
+      navigate("/products/cart");
+    }
+  };
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getToken();
     setIsLoggedIn(!!token); // Chuyển đổi token thành boolean để xác định trạng thái đăng nhập
 
-    if (token) {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        const user = JSON.parse(storedUser);
-        setUserName(user.name);
+    const fetchUserData = async () => {
+      try {
+        const { data } = await axios.get("http://127.0.0.1:8000/api/user", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const userData = data.data;
+        setUserName(userData.name);
+        localStorage.setItem("user", JSON.stringify(userData));
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        toast.error("Có lỗi xảy ra khi lấy thông tin người dùng.");
       }
+    };
+
+    if (token) {
+      fetchUserData();
     }
 
     const fetchCategories = async () => {
@@ -55,11 +80,12 @@ const Header: React.FC = () => {
   };
 
   const handleLogout = async () => {
-    let token = localStorage.getItem("token");
+    const token = getToken();
     try {
       if (token) {
         const response = await axios.post(
           "http://127.0.0.1:8000/api/logout",
+          {},
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -92,7 +118,7 @@ const Header: React.FC = () => {
 
   const handleUserIconClick = () => {
     if (isLoggedIn) {
-      navigate("/account");
+      navigate("/order-list/profile");
     } else {
       navigate("/login");
     }
@@ -202,7 +228,7 @@ const Header: React.FC = () => {
                 </Link>
                 <ul className="dropdown-menu" aria-labelledby="userDropdown">
                   <li>
-                    <Link className="dropdown-item text-decoration-none" to="/account">
+                    <Link className="dropdown-item text-decoration-none" to="/order-list/profile">
                       Tài khoản của tôi
                     </Link>
                   </li>
@@ -240,14 +266,14 @@ const Header: React.FC = () => {
                 style={{ width: "24px" }}
               />
             </Link>
-            <Link to="/products/cart" className="btn btn-link p-0 mx-2 text-decoration-none">
+            <button onClick={handleCartClick} className="btn btn-link p-0 mx-2 text-decoration-none">
               <img
                 src={shop}
                 alt="Cart"
                 className="img-fluid"
                 style={{ width: "24px" }}
               />
-            </Link>
+            </button>
           </div>
         </nav>
       </div>

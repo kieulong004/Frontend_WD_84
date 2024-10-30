@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getUserFromLocalStorage } from "@/components/utils";
+import { getUser } from "@/components/utils";
 
 type Product = {
   id: number;
@@ -56,7 +56,7 @@ const CheckoutPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState("");
-  const userFromStorage = getUserFromLocalStorage();
+  const userFromStorage = getUser();
   const userId = userFromStorage.id;
 
   // State để lưu trữ tên người dùng

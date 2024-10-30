@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button, Modal } from "react-bootstrap";
-import { getUserFromLocalStorage } from "@/components/utils";
+import { getUser } from "@/components/utils";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { checkAuthorization } from "@/components/authUtils";
+import { checkAuthorizations } from "@/components/authUtils";
 
 type Product = {
   id: number;
@@ -85,7 +85,7 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState<number>(1);
   const [showModal, setShowModal] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
-  const userFromStorage = getUserFromLocalStorage();
+  const userFromStorage = getUser();
   const userId = userFromStorage?.id;
 
   useEffect(() => {
@@ -108,7 +108,7 @@ const ProductDetail = () => {
   }, [id]);
 
   const handleAddToCart = async () => {
-  if(!checkAuthorization(navigate)) return;
+  if(!checkAuthorizations(navigate)) return;
     if (!selectedVariant) {
       setShowWarning(true);
       return;
@@ -142,7 +142,7 @@ const ProductDetail = () => {
   };
 
   const handleBuyNow = async () => {
-  if(!checkAuthorization(navigate)) return;
+  if(!checkAuthorizations(navigate)) return;
     if (!selectedVariant) {
       setShowWarning(true);
       return;

@@ -86,7 +86,7 @@ const OrderDetail = () => {
           `http://localhost:8000/api/orders/order-detail/${id}`
         );
         if (data.status) {
-          setOrder(data.data.order);
+          setOrder(data.data);
         } else {
           toast.error(data.message);
         }
@@ -104,7 +104,7 @@ const OrderDetail = () => {
   const formatPrice = (price: string) => {
     return new Intl.NumberFormat("vi-VN").format(Number(price));
   };
-
+console.log(order)
   const handleCancelOrder = async () => {
     try {
        await axios.get(

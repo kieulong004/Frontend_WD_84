@@ -16,6 +16,8 @@ import PrivateRoute from "./components/PrivateRoute";
 import { ToastContainer } from "react-toastify"; // Import ToastContainer
 import Confirm from "./pages/Confirm";
 import ComfirmCancel from "./pages/ComfirmCancel";
+import Profile from "./pages/Profile";
+import OrderHistory from "./pages/OrderHistory";
 
 function App() {
   return (
@@ -28,9 +30,7 @@ function App() {
           <Route
             path="products/cart"
             element={
-              <PrivateRoute>
                 <CartPage />
-              </PrivateRoute>
             }
           />
           <Route
@@ -48,7 +48,10 @@ function App() {
                 <OrderList />
               </PrivateRoute>
             }
-          />
+          >
+            <Route index element={<OrderHistory />} />
+            <Route path="profile" element={<Profile />} />
+          </Route>
           <Route
             path="/order-detail/:id"
             element={
