@@ -1,0 +1,104 @@
+/* Nền mờ của popup */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, .4); /* Độ mờ sáng hơn */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Phong cách cho nội dung popup */
+.popup-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 450px; /* Tăng kích thước rộng hơn */
+  max-height: 90vh; /* Đặt chiều cao tối đa để có thể cuộn nếu nội dung dài */
+  text-align: center;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Tăng độ mờ bóng */
+}
+
+/* Tiêu đề của popup */
+.popup-content h2 {
+  margin-top: 0;
+  font-size: 1.5em;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Ô tìm kiếm mã giảm giá */
+.search-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1em;
+}
+
+/* Danh sách phiếu giảm giá với chiều cao tối đa và thanh cuộn */
+.popup-content ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 20px 0;
+  max-height: 200px; /* Chiều cao tối đa của danh sách */
+  overflow-y: auto; /* Thêm thanh cuộn dọc nếu vượt quá chiều cao */
+  border: 1px solid #ddd; /* Tùy chọn: Viền để danh sách nổi bật */
+  border-radius: 8px; /* Bo tròn viền */
+}
+
+/* Thanh cuộn tùy chỉnh */
+.popup-content ul::-webkit-scrollbar {
+  width: 8px; /* Độ rộng của thanh cuộn */
+}
+
+.popup-content ul::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Màu nền của track thanh cuộn */
+  border-radius: 8px; /* Bo tròn track thanh cuộn */
+}
+
+.popup-content ul::-webkit-scrollbar-thumb {
+  background: #888; /* Màu của thanh cuộn */
+  border-radius: 8px; /* Bo tròn thanh cuộn */
+}
+
+.popup-content ul::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Màu của thanh cuộn khi hover */
+}
+
+/* Phong cách cho mục trong danh sách */
+.popup-content li {
+  padding: 12px 20px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.popup-content li:hover {
+  background-color: #e3f2fd;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Nút đóng */
+.popup-content button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #ff5f5f;
+  color: white;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.popup-content button:hover {
+  background-color: #ff3b3b;
+}

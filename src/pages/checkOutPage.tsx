@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getUser } from "@/components/utils";
-
+import CouponPopup from "@/components/CouponPopup";
+import '../css/CouponPopup.css';
 type Product = {
   id: number;
   name: string;
@@ -48,7 +49,13 @@ type OrderResponse = {
   vnpay_url: string;
   payment_method: string;
 };
-
+interface Coupon {
+  id: number;
+  code: string;
+  expiryDate: string; // Thời gian hết hạn
+  maxDiscount: number; // Giá trị giảm tối đa
+  minOrderValue: number; // Giá trị đơn hàng tối thiểu
+}
 
 const CheckoutPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -59,14 +66,51 @@ const CheckoutPage: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const userFromStorage = getUser();
   const userId = userFromStorage?.id;
-
+ 
   // Thêm các state để lưu thông tin người dùng
   const [name, setName] = useState(userFromStorage?.name || "");
   const [phone, setPhone] = useState(userFromStorage?.phone || "");
   const [address, setAddress] = useState(userFromStorage?.address || "");
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+  const coupons = [
+    {
+      id: 1,
+      code: 'DISCOUNT10',
+     
+      expiryDate: '2024-11-30',
+      maxDiscount: 200000, // Giá trị giảm tối đa (200k)
+      minOrderValue: 1000000, // Giá trị đơn hàng tối thiểu (1tr)
+    },
+    {
+      id: 2,
+      code: 'DISCOUNT20',
+     
+      expiryDate: '2024-12-15',
+      maxDiscount: 500000, 
+      minOrderValue: 2000000, // Giá trị đơn hàng tối thiểu (2tr)
+    },
+    {
+      id: 3,
+      code: 'DISCOUNT30',
+      expiryDate: '2024-12-31',
+      maxDiscount: 1000000, 
+      minOrderValue: 3000000, // Giá trị đơn hàng tối thiểu (3tr)
+    },
+    // Thêm các phiếu giảm giá khác ở đây
+  ];
+  
+  
 
+   const openPopup = () => setShowPopup(true);
+  const closePopup = () => setShowPopup(false);
   const handlePaymentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPaymentMethod(event.target.value);
+  };
+  const handleSelectCoupon = (coupon: Coupon) => {
+    setSelectedCoupon(coupon);
+  //  toast(`Bạn đã chọn mã giảm giá: ${coupon.code}`);
+    closePopup();
   };
 
   useEffect(() => {
@@ -321,6 +365,23 @@ const CheckoutPage: React.FC = () => {
               {/* Tổng tiền chỉ bao gồm tổng sản phẩm */}
             </li>
           </ul>
+          <div className="popup">
+    <p><strong>Gemstone voucher : </strong>  <button className="btn btn-outline-primary" onClick={openPopup}>Chọn phiếu giảm giá</button></p>
+      
+      {showPopup && (
+        <CouponPopup 
+          coupons={coupons} 
+          onSelect={handleSelectCoupon} 
+          onClose={closePopup} 
+        />
+      )}
+
+      {selectedCoupon && (
+        <div>
+          <p>Phiếu giảm giá đã chọn: <strong>{selectedCoupon.code}</strong></p>
+        </div>
+      )}
+    </div>
           <h4 className="mb-3">Phương thức thanh toán</h4>
           <form>
             <div className="form-check mb-2">
