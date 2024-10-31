@@ -55,6 +55,7 @@ const Profile = () => {
         window.location.reload();
       }, 4000);
     } catch (error) {
+      console.log(error)
       toast.error("Có lỗi xảy ra khi cập nhật thông tin cá nhân.");
     } finally {
       setLoading(false);

@@ -49,6 +49,7 @@ type OrderResponse = {
   payment_method: string;
 };
 
+
 const CheckoutPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
@@ -57,10 +58,12 @@ const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState("");
   const userFromStorage = getUser();
-  const userId = userFromStorage.id;
+  const userId = userFromStorage?.id;
 
-  // State để lưu trữ tên người dùng
+  // Thêm các state để lưu thông tin người dùng
   const [name, setName] = useState(userFromStorage?.name || "");
+  const [phone, setPhone] = useState(userFromStorage?.phone || "");
+  const [address, setAddress] = useState(userFromStorage?.address || "");
 
   const handlePaymentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPaymentMethod(event.target.value);
@@ -94,8 +97,7 @@ const CheckoutPage: React.FC = () => {
               error.response?.data
             );
             setError(
-              error.response?.data.message ||
-              "Lỗi khi lấy các sản phẩm trong giỏ hàng"
+              error.response?.data.message || "Lỗi khi lấy các sản phẩm trong giỏ hàng"
             );
           } else {
             console.error("Lỗi không xác định:", error);
@@ -117,13 +119,11 @@ const CheckoutPage: React.FC = () => {
 
   const handleOrderConfirmation = async (event: React.FormEvent) => {
     event.preventDefault();
-    const phone = (document.getElementById("phone") as HTMLInputElement).value;
-    const address = (document.getElementById("address") as HTMLInputElement)
-      .value;
     if (!name || !phone || !address || cartItems.length === 0) {
       toast.error("Vui lòng điền đầy đủ thông tin và kiểm tra giỏ hàng.");
       return;
     }
+
     const orderData = {
       user_id: userId,
       name: name,
@@ -154,7 +154,7 @@ const CheckoutPage: React.FC = () => {
           if (response.data.payment_method === "vnpay") {
             window.location.href = response.data.vnpay_url;
             toast.success("Đơn hàng đã được xác nhận thành công!", {
-              autoClose: 1000,  // Thời gian hiển thị toast ngắn hơn (0.5 giây)
+              autoClose: 1000,
             });
           } else {
             navigate("/confirm");
@@ -217,7 +217,7 @@ const CheckoutPage: React.FC = () => {
                 id="name"
                 placeholder="Nguyễn Văn A"
                 value={name} // Sử dụng state name
-                onChange={(e) => setName(e.target.value)} // Cập nhật state khi người dùng thay đổi
+                onChange={(e) => setName(e.target.value)}// Cập nhật state khi người dùng thay đổi
                 required
               />
             </div>
@@ -229,6 +229,8 @@ const CheckoutPage: React.FC = () => {
                 type="tel"
                 className="form-control"
                 id="phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 pattern="[0-9]{10}"
                 placeholder="0901234567"
                 required
@@ -242,6 +244,8 @@ const CheckoutPage: React.FC = () => {
                 type="text"
                 className="form-control"
                 id="address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
                 placeholder="123 Đường ABC, Quận X, TP.HCM"
                 required
               />
@@ -354,3 +358,4 @@ const CheckoutPage: React.FC = () => {
 };
 
 export default CheckoutPage;
+
