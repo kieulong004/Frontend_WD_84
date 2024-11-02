@@ -80,6 +80,8 @@ const RegisterPage: React.FC = () => {
               className={`input_field ${errors.email ? "is-invalid" : ""}`}
               {...register("email", { required: "Email là trường hợp bắt buộc" })}
               placeholder=" "
+              autoComplete="email"
+
             />
             <label htmlFor="email" className="label">
               Email
@@ -97,6 +99,7 @@ const RegisterPage: React.FC = () => {
                 minLength: { value: 8, message: "Password phải có ít nhất 8 ký tự" }
               })}
               placeholder=" "
+              autoComplete="new-password"
             />
             <label htmlFor="password" className="label">
               Password
@@ -110,7 +113,7 @@ const RegisterPage: React.FC = () => {
           </div>
           <div className="input_wrapper">
             <input
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               id="confirmPassword"
               className={`input_field ${errors.confirmPassword ? "is-invalid" : ""}`}
               {...register("confirmPassword", {
@@ -118,7 +121,10 @@ const RegisterPage: React.FC = () => {
                 validate: value =>
                   value === watch("password") || "Confirm Password không khớp với Password"
               })}
+
               placeholder=" "
+              autoComplete="new-password"
+              
             />
             <label htmlFor="confirmPassword" className="label">
               Confirm Password

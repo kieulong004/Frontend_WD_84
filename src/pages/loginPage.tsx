@@ -27,24 +27,15 @@ const LoginPage: React.FC = () => {
         data
       );
       const { user, token, status_code } = response.data;
-      console.log(user.role);
+      console.log(response.data);
       if (status_code === 200) {
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("token", token);
         toast.success("Đăng nhập thành công!");
-        if (user) {
-          if (user.role == 0) {
-            toast.info("Chuyển hướng đến trang quản trị...");
-            setTimeout(() => {
-              window.location.href = "http://localhost/DATN/public/admin";
-            }, 2000);
-          } else if (user.role == 1) {
             toast.info("Chuyển hướng đến trang chủ...");
             setTimeout(() => {
               navigate("/");
             }, 2000);
-          }
-        }
       }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -86,6 +77,7 @@ const LoginPage: React.FC = () => {
                 required: "Email là trường hợp bắt buộc",
               })}
               placeholder=" "
+              autoComplete="email"
             />
             <label htmlFor="email" className="label">
               Email
@@ -108,6 +100,7 @@ const LoginPage: React.FC = () => {
                 },
               })}
               placeholder=" "
+              autoComplete="new-password"
             />
             <label htmlFor="password" className="label">
               Password

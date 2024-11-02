@@ -17,6 +17,7 @@ const Header: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Trạng thái tải dữ liệu
   const [userName, setUserName] = useState<string | null>(null);
+  const [userType, setUserType] = useState<string | null>(null); // Add state for user type
   const navigate = useNavigate();
 
   const handleCartClick = () => {
@@ -43,6 +44,7 @@ const Header: React.FC = () => {
         });
         const userData = data.data;
         setUserName(userData.name);
+        setUserType(userData.type); // Set user type
         localStorage.setItem("user", JSON.stringify(userData));
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -190,13 +192,13 @@ const Header: React.FC = () => {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/about" className="nav-link text-decoration-none">
-                  Giới thiệu về chúng tôi
+                <Link to="/vocher" className="nav-link text-decoration-none">
+                  Mã giảm giá
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/stories" className="nav-link text-decoration-none">
-                  Những câu chuyện
+                <Link to="/about" className="nav-link text-decoration-none">
+                  Giới thiệu về chúng tôi
                 </Link>
               </li>
               <li className="nav-item">
@@ -227,11 +229,18 @@ const Header: React.FC = () => {
                   <span className="ms-2 fw-bold text-dark">{userName}</span>
                 </Link>
                 <ul className="dropdown-menu" aria-labelledby="userDropdown">
-                  <li>
-                    <Link className="dropdown-item text-decoration-none" to="/order-list/profile">
-                      Tài khoản của tôi
-                    </Link>
-                  </li>
+                    <li>
+                      <Link className="dropdown-item text-decoration-none" to="/order-list/profile">
+                        Tài khoản của tôi
+                      </Link>
+                    </li>
+                  {userType === "admin" && (
+                    <li>
+                      <Link className="dropdown-item text-decoration-none" to="http://localhost/DATN/public/admin">
+                        Đăng nhập vào trang quản trị
+                      </Link>
+                    </li>
+                  )}
                   <li>
                     <Link className="dropdown-item text-decoration-none" to="/order-list">
                       Đơn hàng

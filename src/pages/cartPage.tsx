@@ -75,7 +75,7 @@ const CartPage: React.FC = () => {
 
     fetchCartItems();
   }, [userId]);
-
+console.log(cartItems);
   // Hàm xử lý khi thay đổi số lượng sản phẩm
   const handleQuantityChange = async (
     cartItemId: number,

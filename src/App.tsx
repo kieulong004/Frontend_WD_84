@@ -18,6 +18,7 @@ import Confirm from "./pages/Confirm";
 import ComfirmCancel from "./pages/ComfirmCancel";
 import Profile from "./pages/Profile";
 import OrderHistory from "./pages/OrderHistory";
+import DiscountPage from "./pages/DiscountPage";
 
 function App() {
   return (
@@ -27,6 +28,14 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="products" element={<Productpage />} />
           <Route path="products/:id" element={<ProductDetail />} />
+          <Route
+            path="voucher"
+            element={
+              <PrivateRoute>
+                <DiscountPage />
+              </PrivateRoute>
+            }
+          />
           <Route
             path="products/cart"
             element={
