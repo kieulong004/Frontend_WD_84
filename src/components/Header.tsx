@@ -192,7 +192,7 @@ const Header: React.FC = () => {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/vocher" className="nav-link text-decoration-none">
+                <Link to="/voucher" className="nav-link text-decoration-none">
                   Mã giảm giá
                 </Link>
               </li>
