@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
+import { IoStar } from "react-icons/io5";
 
 interface User {
   id: number;
@@ -78,15 +79,27 @@ const OrderDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [order, setOrder] = useState<Order | null>(null);
+  const [comments, setComments] = useState<Record<number, string>>({});
+  const [ratings, setRatings] = useState<Record<number, number>>({});
+  const [existingComments, setExistingComments] = useState<Record<string, Comment[]>>({});
 
   useEffect(() => {
     const fetchOrderDetail = async () => {
       try {
-        const { data } = await axios.get(
-          `http://localhost:8000/api/orders/order-detail/${id}`
-        );
+        const { data } = await axios.get(`http://localhost:8000/api/orders/order-detail/${id}`);
         if (data.status) {
           setOrder(data.data);
+
+          // Lấy đánh giá cho từng biến thể của sản phẩm trong đơn hàng
+          const orderDetails = data.data?.order_details;
+          if (Array.isArray(orderDetails) && orderDetails.length > 0) {
+            orderDetails.forEach((detail) => {
+              if (detail.variant && detail.variant.product) {
+                // Gọi hàm fetchComments với cả productId và variantId
+                fetchComments(detail.variant.product.id, detail.variant.id);
+              }
+            });
+          }
         } else {
           toast.error(data.message);
         }
@@ -101,15 +114,65 @@ const OrderDetail = () => {
     }
   }, [id]);
 
+  // Lấy danh sách đánh giá cho một sản phẩm và biến thể cụ thể
+  const fetchComments = async (productId: number, variantId: number) => {
+    try {
+      const { data } = await axios.get(`http://localhost:8000/api/comments/product/${productId}/variant/${variantId}`);
+      setExistingComments((prev) => {
+        const updatedComments = { ...prev, [`${productId}-${variantId}`]: data.data || [] };
+        return updatedComments;
+      });
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
+
+  const handleCommentChange = (variantId: number, value: string) => {
+    setComments((prev) => ({ ...prev, [variantId]: value }));
+  };
+
+  const handleRatingChange = (variantId: number, value: number) => {
+    setRatings((prev) => ({ ...prev, [variantId]: value }));
+  };
+
+  // Gửi đánh giá mới cho một biến thể cụ thể của sản phẩm
+  const submitComment = async (productId: number, variantId: number) => {
+    if (!ratings[variantId] || ratings[variantId] < 1 || ratings[variantId] > 5) {
+      toast.error("Vui lòng nhập số sao hợp lệ (1-5).");
+      return;
+    }
+
+    if (!comments[variantId]) {
+      toast.error("Vui lòng nhập nội dung đánh giá.");
+      return;
+    }
+
+    try {
+      await axios.post("http://localhost:8000/api/comments/add", {
+        order_id: order?.id,
+        product_id: productId,
+        variant_id: variantId, // Thêm variant_id vào dữ liệu gửi lên
+        user_id: order?.user_id,
+        content: comments[variantId],
+        rating: ratings[variantId],
+      });
+      toast.success("Đánh giá đã được thêm thành công.");
+      setComments((prev) => ({ ...prev, [variantId]: "" }));
+      setRatings((prev) => ({ ...prev, [variantId]: 0 }));
+      fetchComments(productId, variantId); // Tải lại đánh giá sau khi thêm mới
+    } catch (error) {
+      console.error("Lỗi khi thêm đánh giá:", error);
+      toast.error("Bạn chỉ có thể đánh giá một lần cho mỗi sản phẩm");
+    }
+  };
+
   const formatPrice = (price: string) => {
     return new Intl.NumberFormat("vi-VN").format(Number(price));
   };
-console.log(order)
+
   const handleCancelOrder = async () => {
     try {
-       await axios.get(
-        `http://localhost:8000/api/orders/cancel-order/${order?.id}`
-      );
+      await axios.get(`http://localhost:8000/api/orders/cancel-order/${order?.id}`);
       toast.success("Đơn hàng đã được hủy thành công.");
       setTimeout(() => {
         navigate("/order-list");
@@ -119,15 +182,13 @@ console.log(order)
       toast.error("Đơn hàng đã được xác nhận không thể hủy");
       setTimeout(() => {
         window.location.reload();
-      }, 3000); 
+      }, 3000);
     }
   };
 
   const handleReceivedOrder = async () => {
     try {
-      await axios.get(
-        `http://localhost:8000/api/orders/order-markAsCompleted/${order?.id}`
-      );
+      await axios.get(`http://localhost:8000/api/orders/order-markAsCompleted/${order?.id}`);
       toast.success("Đơn hàng đã được xác nhận là đã nhận.");
       setTimeout(() => {
         navigate("/order-list");
@@ -188,25 +249,57 @@ console.log(order)
           <tr>
             <th>Tên sản phẩm</th>
             <th>Ảnh sản phẩm</th>
+            <th>Kích thước</th>
             <th>Số lượng</th>
             <th>Đơn giá</th>
             <th>Tổng giá</th>
+            <th>Đánh giá</th>
           </tr>
         </thead>
         <tbody>
           {order.order_details.map((detail) => (
             <tr key={detail.id}>
               <td>{detail.variant.product.name}</td>
+              <td><img src={`http://127.0.0.1:8000${detail.variant.product.image}`} alt={detail.variant.product.name} width={50} /></td>
               <td>
-                <img
-                  src={`http://127.0.0.1:8000${detail.variant.product.image}`}
-                  alt={detail.variant.product.name}
-                  width={50}
-                />
+                {detail.variant.weight ? `${detail.variant.weight.weight} ${detail.variant.weight.unit}` : "Không xác định"}
               </td>
               <td>{detail.quantity}</td>
               <td>{formatPrice(detail.variant.selling_price)} VNĐ</td>
               <td>{formatPrice(detail.total)} VNĐ</td>
+              <td>
+                {order.status === "completed" ? (
+                  <>
+                    <div>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <IoStar
+                          key={star}
+                          size={24}
+                          color={star <= (ratings[detail.variant.id] || 0) ? "#ffc107" : "#e4e5e9"}
+                          onClick={() => handleRatingChange(detail.variant.id, star)}
+                          style={{ cursor: "pointer" }}
+                        />
+                      ))}
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Nhập bình luận"
+                      value={comments[detail.variant.id] || ""}
+                      onChange={(e) => handleCommentChange(detail.variant.id, e.target.value)}
+                      className="form-control mt-2"
+                    />
+                    <button
+                      onClick={() => submitComment(detail.variant.product.id, detail.variant.id)}
+                      disabled={!comments[detail.variant.id] || !ratings[detail.variant.id]}
+                      className="btn btn-primary mt-2"
+                    >
+                      Gửi đánh giá
+                    </button>
+                  </>
+                ) : (
+                  "Chỉ đánh giá khi đơn hàng hoàn thành"
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
