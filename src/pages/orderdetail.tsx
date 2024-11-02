@@ -7,7 +7,7 @@ import { IoStar } from "react-icons/io5";
 
 interface User {
   id: number;
-  userName: string;
+  name: string;
   email: string;
   email_verified_at: string | null;
   phone: string;
@@ -73,6 +73,18 @@ interface Order {
   user_id: number;
   user: User;
   order_details: OrderDetail[];
+}
+interface Comment {
+  id: number;
+  order_id: number;
+  product_id: number;
+  user_id: number;
+  variant_id: number;
+  content: string;
+  rating: number;
+  created_at: string;
+  updated_at: string;
+  user: User;
 }
 
 const OrderDetail = () => {
@@ -202,11 +214,9 @@ const OrderDetail = () => {
   if (!order) {
     return <div>Loading...</div>;
   }
-
   return (
     <div className="container mt-4 mb-5">
       <ToastContainer />
-      <hr />
       <h3 className="text-center">Chi tiết đơn hàng</h3>
       <div className="order-details">
         <div className="mb-3">
@@ -316,13 +326,44 @@ const OrderDetail = () => {
         </button>
         {order.status === "delivering" && (
           <button
-            className="btn btn-info animate__animated animate__pulse"
+            className="btn btn-info"
             style={{ marginLeft: "10px", color: "white" }}
             onClick={handleReceivedOrder}
           >
             Đã nhận được hàng
           </button>
         )}
+      </div>
+
+      {/* Phần hiển thị bình luận đã có */}
+      <div className="existing-comments mt-5">
+        <h4>Đánh giá của khách hàng về sản phẩm</h4>
+        {order?.order_details.map((detail) => (
+          <div key={`${detail.variant.product.id}-${detail.variant.id}`} className="product-comments mb-4 p-3" style={{ border: "1px solid #ddd", borderRadius: "5px" }}>
+            <h5 style={{ color: "#333", marginBottom: "10px" }}>{detail.variant.product.name}</h5>
+            <div>
+              {(existingComments[`${detail.variant.product.id}-${detail.variant.id}`] as Comment[])?.map((comment, index) => (
+                <div key={index} style={{ marginBottom: "8px", padding: "10px", backgroundColor: "#f9f9f9", borderRadius: "5px", boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)" }}>
+                  <p><strong>{comment.user.name || "Không xác định"}</strong></p>
+                  <p>Kích thước: <strong>
+                    {detail.variant.weight ? `${detail.variant.weight.weight} ${detail.variant.weight.unit}` : "Không xác định"}
+                  </strong></p>
+                  <p><strong>Nội dung:</strong> {comment.content}</p>
+                  <p>
+                    {[...Array(5)].map((_, i) => (
+                      <IoStar
+                        key={i}
+                        size={20}
+                        color={i < (comment.rating as number) ? "#ffc107" : "#e4e5e9"}
+                        style={{ marginLeft: "4px" }}
+                      />
+                    ))}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
