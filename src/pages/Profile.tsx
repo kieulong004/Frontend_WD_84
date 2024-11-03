@@ -50,10 +50,12 @@ const Profile = () => {
           },
         }
       );
-      toast.success("Cập nhật thông tin cá nhân thành công!");
+      toast.success("Cập nhật thông tin cá nhân thành công!", ({
+        autoClose: 1000,
+      }));
       setTimeout(() => {
         window.location.reload();
-      }, 4000);
+      }, 1000);
     } catch (error) {
       console.log(error)
       toast.error("Có lỗi xảy ra khi cập nhật thông tin cá nhân.");
