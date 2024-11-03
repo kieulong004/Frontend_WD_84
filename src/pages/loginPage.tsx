@@ -26,11 +26,11 @@ const LoginPage: React.FC = () => {
         "http://127.0.0.1:8000/api/login",
         data
       );
-      const { user, token, status_code } = response.data;
+      const { user, authorisation, status_code } = response.data;
       console.log(response.data);
       if (status_code === 200) {
         localStorage.setItem("user", JSON.stringify(user));
-        localStorage.setItem("token", token);
+        localStorage.setItem("token", authorisation.token);
         toast.success("Đăng nhập thành công!");
             toast.info("Chuyển hướng đến trang chủ...");
             setTimeout(() => {

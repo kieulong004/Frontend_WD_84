@@ -4,6 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { IoStar } from "react-icons/io5";
+import { getToken } from "@/components/utils";
 
 interface User {
   id: number;
@@ -74,16 +75,12 @@ interface Order {
   user: User;
   order_details: OrderDetail[];
 }
+
 interface Comment {
   id: number;
-  order_id: number;
-  product_id: number;
-  user_id: number;
-  variant_id: number;
   content: string;
   rating: number;
   created_at: string;
-  updated_at: string;
   user: User;
 }
 
@@ -94,20 +91,21 @@ const OrderDetail = () => {
   const [comments, setComments] = useState<Record<number, string>>({});
   const [ratings, setRatings] = useState<Record<number, number>>({});
   const [existingComments, setExistingComments] = useState<Record<string, Comment[]>>({});
+  const token = getToken();
 
   useEffect(() => {
     const fetchOrderDetail = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:8000/api/orders/order-detail/${id}`);
+        const { data } = await axios.get(`http://localhost:8000/api/orders/order-detail/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
         if (data.status) {
           setOrder(data.data);
-
-          // Lấy đánh giá cho từng biến thể của sản phẩm trong đơn hàng
           const orderDetails = data.data?.order_details;
           if (Array.isArray(orderDetails) && orderDetails.length > 0) {
             orderDetails.forEach((detail) => {
               if (detail.variant && detail.variant.product) {
-                // Gọi hàm fetchComments với cả productId và variantId
                 fetchComments(detail.variant.product.id, detail.variant.id);
               }
             });
@@ -124,18 +122,28 @@ const OrderDetail = () => {
     if (id) {
       fetchOrderDetail();
     }
-  }, [id]);
+  }, [id, token]);
 
   // Lấy danh sách đánh giá cho một sản phẩm và biến thể cụ thể
   const fetchComments = async (productId: number, variantId: number) => {
     try {
-      const { data } = await axios.get(`http://localhost:8000/api/comments/product/${productId}/variant/${variantId}`);
-      setExistingComments((prev) => {
-        const updatedComments = { ...prev, [`${productId}-${variantId}`]: data.data || [] };
-        return updatedComments;
-      });
+      const { data } = await axios.post(
+        `http://localhost:8000/api/comments/product`,
+        { product_id: productId, variant_id: variantId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (data.status) {
+        setExistingComments((prev) => {
+          const updatedComments = { ...prev, [`${productId}-${variantId}`]: data.data || [] };
+          return updatedComments;
+        });
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
       console.error("Error fetching comments:", error);
+      toast.error("Có lỗi xảy ra khi lấy danh sách bình luận.");
     }
   };
 
@@ -147,7 +155,6 @@ const OrderDetail = () => {
     setRatings((prev) => ({ ...prev, [variantId]: value }));
   };
 
-  // Gửi đánh giá mới cho một biến thể cụ thể của sản phẩm
   const submitComment = async (productId: number, variantId: number) => {
     if (!ratings[variantId] || ratings[variantId] < 1 || ratings[variantId] > 5) {
       toast.error("Vui lòng nhập số sao hợp lệ (1-5).");
@@ -160,18 +167,22 @@ const OrderDetail = () => {
     }
 
     try {
-      await axios.post("http://localhost:8000/api/comments/add", {
-        order_id: order?.id,
-        product_id: productId,
-        variant_id: variantId, // Thêm variant_id vào dữ liệu gửi lên
-        user_id: order?.user_id,
-        content: comments[variantId],
-        rating: ratings[variantId],
-      });
+      await axios.post(
+        "http://localhost:8000/api/comments/add",
+        {
+          order_id: order?.id,
+          product_id: productId,
+          variant_id: variantId,
+          user_id: order?.user_id,
+          content: comments[variantId],
+          rating: ratings[variantId],
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       toast.success("Đánh giá đã được thêm thành công.");
       setComments((prev) => ({ ...prev, [variantId]: "" }));
       setRatings((prev) => ({ ...prev, [variantId]: 0 }));
-      fetchComments(productId, variantId); // Tải lại đánh giá sau khi thêm mới
+      fetchComments(productId, variantId);
     } catch (error) {
       console.error("Lỗi khi thêm đánh giá:", error);
       toast.error("Bạn chỉ có thể đánh giá một lần cho mỗi sản phẩm");
@@ -184,7 +195,9 @@ const OrderDetail = () => {
 
   const handleCancelOrder = async () => {
     try {
-      await axios.get(`http://localhost:8000/api/orders/cancel-order/${order?.id}`);
+      await axios.get(`http://localhost:8000/api/orders/cancel-order/${order?.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       toast.success("Đơn hàng đã được hủy thành công.");
       setTimeout(() => {
         navigate("/order-list");
@@ -200,7 +213,9 @@ const OrderDetail = () => {
 
   const handleReceivedOrder = async () => {
     try {
-      await axios.get(`http://localhost:8000/api/orders/order-markAsCompleted/${order?.id}`);
+      await axios.get(`http://localhost:8000/api/orders/order-markAsCompleted/${order?.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       toast.success("Đơn hàng đã được xác nhận là đã nhận.");
       setTimeout(() => {
         navigate("/order-list");
