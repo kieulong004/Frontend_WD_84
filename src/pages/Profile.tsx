@@ -89,14 +89,17 @@ const Profile = () => {
         <div className="mb-3">
           <label htmlFor="phone" className="form-label">Số điện thoại</label>
           <input
-            type="text"
+            type="tel"
             className="form-control"
             id="phone"
+            pattern="[0-9]{10}"
+            placeholder="0901234567"
+            required
             {...register("phone", {
               required: "Số điện thoại là bắt buộc",
               pattern: {
-                value: /^0[0-9]{3} [0-9]{3} [0-9]{3}$/,
-                message: "Số điện thoại phải có định dạng 0xxx xxx xxx",
+                value: /^[0-9]{10}$/,
+                message: "Số điện thoại không hợp lệ",
               },
             })}
           />

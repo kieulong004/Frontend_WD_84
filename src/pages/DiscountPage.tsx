@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "../css/DiscountPage.css";
 import axios from 'axios';
-import { getUser } from "@/components/utils";
+import { getToken, getUser } from "@/components/utils";
 import DiscountCard from '@/components/DiscountCard';
 import { toast } from 'react-toastify';
+
 export interface Discount {
   id: number;
   name: string;
@@ -20,38 +21,46 @@ const DiscountPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const userFromStorage = getUser();
+  const token = getToken();
   const userId = userFromStorage?.id;
+
   useEffect(() => {
     const fetchVouchers = async () => {
-     
-if(userFromStorage){
-  try {
-    const { data } = await axios.get('http://127.0.0.1:8000/api/vouchers/getVoucherList');
-    setDiscounts(data.data);
-    setError(null);
-  } catch (error) {
-    console.error('Lỗi khi lấy voucher:', error);
-    setError('Không thể tải voucher. Vui lòng thử lại sau.');
-  } finally {
-    setIsLoading(false);
-  }
-};
-}
+      if (userFromStorage) {
+        try {
+          const { data } = await axios.get('http://127.0.0.1:8000/api/vouchers/getVoucherList', {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          setDiscounts(data.data);
+          setError(null);
+        } catch (error) {
+          console.error('Lỗi khi lấy voucher:', error);
+          setError('Không thể tải voucher. Vui lòng thử lại sau.');
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
     fetchVouchers();
   }, []);
 
   const handleSave = async (discount: Discount) => {
-
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/vouchers/storeUserVoucher', {
         user_id: userId,
         voucher_id: discount.id,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       console.log('Voucher saved:', response.data);
       toast.success('Voucher đã được lưu thành công!'); // Hiển thị thông báo thành công
     } catch (error: any) {
       console.error('Lỗi khi lưu voucher:', error.response ? error.response.data : error.message);
-      toast.error('Bạn đã lưu voucher này rồi',error.response ? error.response.data : error.message); // Hiển thị thông báo lỗi
+      toast.error('Bạn đã lưu voucher này rồi', error.response ? error.response.data : error.message); // Hiển thị thông báo lỗi
     }
   };
 

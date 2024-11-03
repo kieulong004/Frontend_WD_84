@@ -4,9 +4,11 @@ import React, { useState } from 'react';
 interface Coupon {
   id: number;
   code: string;
-  expiryDate: string; // Thời gian hết hạn
-  maxDiscount: number; // Giá trị giảm tối đa
-  minOrderValue: number; // Giá trị đơn hàng tối thiểu
+  discount_min_price: string;
+  discount_type: string;
+  discount_value: string;
+  end_date: string;
+  name: string;
 }
 
 // Định nghĩa kiểu cho các props của component
@@ -27,7 +29,7 @@ const CouponPopup: React.FC<CouponPopupProps> = ({ coupons, onSelect, onClose })
   // Lọc danh sách mã giảm giá theo từ khóa
   const filteredCoupons = coupons.filter((coupon) =>
     coupon.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    coupon.expiryDate.toLowerCase().includes(searchTerm.toLowerCase())
+    coupon.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -48,12 +50,13 @@ const CouponPopup: React.FC<CouponPopupProps> = ({ coupons, onSelect, onClose })
           {filteredCoupons.length > 0 ? (
             filteredCoupons.map((coupon) => (
               <li key={coupon.id} onClick={() => onSelect(coupon)}>
-                <strong>{coupon.code}</strong> - <small>Giảm: {coupon.maxDiscount > 1 ? coupon.maxDiscount.toLocaleString() + ' VNĐ' : (coupon.maxDiscount * 100).toFixed(0) + '%'} </small>
+                <strong>{coupon.code}</strong> - <small>{coupon.name}</small>
                 <br />
-               <small>Đơn hàng tối thiểu: {coupon.minOrderValue.toLocaleString() + ' VNĐ'}</small> {/* Hiển thị giá trị đơn hàng tối thiểu */} <br />
-                <small>Hết hạn: {coupon.expiryDate}</small> {/* Hiển thị thời gian hết hạn */}
-                <br /> 
-                
+                <small>Giảm: {coupon.discount_value}</small>
+                <br />
+                <small>Đơn hàng tối thiểu: {coupon.discount_min_price}</small>
+                <br />
+                <small>Hết hạn: {coupon.end_date}</small>
               </li>
             ))
           ) : (

@@ -3,9 +3,10 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getUser } from "@/components/utils";
+import { getToken, getUser } from "@/components/utils";
 import CouponPopup from "@/components/CouponPopup";
 import '../css/CouponPopup.css';
+
 type Product = {
   id: number;
   name: string;
@@ -49,12 +50,15 @@ type OrderResponse = {
   vnpay_url: string;
   payment_method: string;
 };
+
 interface Coupon {
   id: number;
   code: string;
-  expiryDate: string; // Thời gian hết hạn
-  maxDiscount: number; // Giá trị giảm tối đa
-  minOrderValue: number; // Giá trị đơn hàng tối thiểu
+  discount_min_price: string;
+  discount_type: string;
+  discount_value: string;
+  end_date: string;
+  name: string;
 }
 
 const CheckoutPage: React.FC = () => {
@@ -62,80 +66,100 @@ const CheckoutPage: React.FC = () => {
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const navigate = useNavigate();
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const userFromStorage = getUser();
-  const userId = userFromStorage?.id;
- 
-  // Thêm các state để lưu thông tin người dùng
-  const [name, setName] = useState(userFromStorage?.name || "");
-  const [phone, setPhone] = useState(userFromStorage?.phone || "");
-  const [address, setAddress] = useState(userFromStorage?.address || "");
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
-  const coupons = [
-    {
-      id: 1,
-      code: 'DISCOUNT10',
-     
-      expiryDate: '2024-11-30',
-      maxDiscount: 200000, // Giá trị giảm tối đa (200k)
-      minOrderValue: 1000000, // Giá trị đơn hàng tối thiểu (1tr)
-    },
-    {
-      id: 2,
-      code: 'DISCOUNT20',
-     
-      expiryDate: '2024-12-15',
-      maxDiscount: 500000, 
-      minOrderValue: 2000000, // Giá trị đơn hàng tối thiểu (2tr)
-    },
-    {
-      id: 3,
-      code: 'DISCOUNT30',
-      expiryDate: '2024-12-31',
-      maxDiscount: 1000000, 
-      minOrderValue: 3000000, // Giá trị đơn hàng tối thiểu (3tr)
-    },
-    // Thêm các phiếu giảm giá khác ở đây
-  ];
-  
-  
+  const [name, setName] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
+  const [paymentMethod, setPaymentMethod] = useState<string>("cod");
+  const navigate = useNavigate();
+  const userFromStorage = getUser();
+  const userId = userFromStorage?.id;
+  const token = getToken();
 
-   const openPopup = () => setShowPopup(true);
+  useEffect(() => {
+    const fetchCoupons = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/vouchers/getVoucherList', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setCoupons(response.data.data);
+      } catch (error) {
+        console.error('Error fetching coupons:', error);
+        toast.error('Failed to fetch coupons.');
+      }
+    };
+
+    fetchCoupons();
+  }, [token]);
+
+  const openPopup = () => setShowPopup(true);
   const closePopup = () => setShowPopup(false);
+
   const handlePaymentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPaymentMethod(event.target.value);
   };
-  const handleSelectCoupon = (coupon: Coupon) => {
-    setSelectedCoupon(coupon);
-  //  toast(`Bạn đã chọn mã giảm giá: ${coupon.code}`);
+
+  const handleSelectCoupon = async (coupon: Coupon) => {
+    try {
+      const response = await axios.post('http://localhost:8000/api/vouchers/checkVoucher', {
+        voucher_id: coupon.id,
+        total_price: totalPrice
+      });
+
+      console.log('Voucher check response:', response.data);
+
+      if (response.data.status) {
+        setSelectedCoupon(coupon);
+        toast.success('Voucher hợp lệ!');
+      } else {
+        toast.error(response.data.message);
+        // Kiểm tra thêm điều kiện coupons.discount_type
+        if (coupon.discount_type === 'condition') {
+          // Loại bỏ voucher không đủ điều kiện khỏi danh sách
+          setCoupons((prevCoupons) => prevCoupons.filter((c) => c.id !== coupon.id));
+        }
+      }
+    } catch (error) {
+      console.error('Lỗi khi kiểm tra voucher:', error);
+      toast.error('Có lỗi xảy ra khi kiểm tra voucher.');
+    }
     closePopup();
   };
 
-  useEffect(() => {
-    const fetchCartItems = async () => {
-      if (userFromStorage) {
-        try {
-          const response = await axios.get<CartResponse>(
-            `http://localhost:8000/api/carts/cart-list/${userId}`
-          );
-
-          if (response.data.status) {
-            setCartItems(response.data.cart_items);
-            const total = response.data.cart_items.reduce(
-              (acc, item) => acc + item.price * item.quantity,
-              0
-            );
-            setTotalPrice(total);
-          } else {
-            setError(
-              response.data.message || "Không có sản phẩm trong giỏ hàng"
-            );
-            setTotalPrice(0);
+  const fetchCartItems = async (retryCount = 0) => {
+    if (userFromStorage) {
+      try {
+        const response = await axios.get<CartResponse>(
+          `http://localhost:8000/api/carts/cart-list/${userId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
           }
-        } catch (error) {
-          if (axios.isAxiosError(error)) {
+        );
+
+        if (response.data.status) {
+          setCartItems(response.data.cart_items);
+          const total = response.data.cart_items.reduce(
+            (acc, item) => acc + item.price * item.quantity,
+            0
+          );
+          setTotalPrice(total);
+        } else {
+          setError(
+            response.data.message || "Không có sản phẩm trong giỏ hàng"
+          );
+          setTotalPrice(0);
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 429 && retryCount < 3) {
+            // Retry after 1 second if too many attempts
+            setTimeout(() => fetchCartItems(retryCount + 1), 1000);
+          } else {
             console.error(
               "Lỗi khi lấy các sản phẩm trong giỏ hàng:",
               error.response?.data
@@ -143,22 +167,33 @@ const CheckoutPage: React.FC = () => {
             setError(
               error.response?.data.message || "Lỗi khi lấy các sản phẩm trong giỏ hàng"
             );
-          } else {
-            console.error("Lỗi không xác định:", error);
-            setError("Có lỗi không xác định xảy ra");
           }
+        } else {
+          console.error("Lỗi không xác định:", error);
+          setError("Có lỗi không xác định xảy ra");
         }
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchCartItems();
-  }, []);
+  }, [ userId, token]);
 
   const formatCurrency = (value: number): string => {
     return value.toLocaleString("vi-VN", {
       style: "currency",
       currency: "VND",
     });
+  };
+
+  const calculateTotalPrice = (): number => {
+    let total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    if (selectedCoupon) {
+      const discountValue = parseFloat(selectedCoupon.discount_value);
+      total -= discountValue;
+    }
+    return total;
   };
 
   const handleOrderConfirmation = async (event: React.FormEvent) => {
@@ -174,7 +209,7 @@ const CheckoutPage: React.FC = () => {
       phone: phone,
       address: address,
       payment_method: paymentMethod,
-      total_price: totalPrice,
+      total_price: calculateTotalPrice(),
       products: cartItems.map((item) => ({
         product_id: item.product.id,
         variant_id: item.variant?.id || null,
@@ -231,7 +266,11 @@ const CheckoutPage: React.FC = () => {
   const clearCart = async () => {
     try {
       const clearCartResponse = await axios.delete(
-        `http://localhost:8000/api/carts/delete-cart/${userId}`
+        `http://localhost:8000/api/carts/delete-cart/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       );
       if (clearCartResponse.data.status) {
         toast.success("Giỏ hàng đã được làm trống sau khi đặt hàng.");
@@ -358,30 +397,32 @@ const CheckoutPage: React.FC = () => {
               {/* Hiển thị phí vận chuyển */}
             </li>
 
+            {/* Chọn và hiển thị phiếu giảm giá */}
+            <li className="list-group-item d-flex justify-content-between align-items-center">
+              <span>Gemstone voucher</span>
+              <button className="btn btn-outline-primary" onClick={openPopup}>Chọn phiếu giảm giá</button>
+            </li>
+            {selectedCoupon && (
+              <li className="list-group-item d-flex justify-content-between align-items-center">
+                <span>Phiếu giảm giá đã chọn: <strong>{selectedCoupon.code}</strong></span>
+                <span>Giảm: <strong>{formatCurrency(parseFloat(selectedCoupon.discount_value))}</strong></span>
+              </li>
+            )}
+
             {/* Tổng cộng không bao gồm phí vận chuyển */}
             <li className="list-group-item d-flex justify-content-between">
               <span>Tổng cộng</span>
-              <strong>{formatCurrency(totalPrice)}</strong>{" "}
+              <strong>{formatCurrency(calculateTotalPrice())}</strong>{" "}
               {/* Tổng tiền chỉ bao gồm tổng sản phẩm */}
             </li>
           </ul>
-          <div className="popup">
-    <p><strong>Gemstone voucher : </strong>  <button className="btn btn-outline-primary" onClick={openPopup}>Chọn phiếu giảm giá</button></p>
-      
-      {showPopup && (
-        <CouponPopup 
-          coupons={coupons} 
-          onSelect={handleSelectCoupon} 
-          onClose={closePopup} 
-        />
-      )}
-
-      {selectedCoupon && (
-        <div>
-          <p>Phiếu giảm giá đã chọn: <strong>{selectedCoupon.code}</strong></p>
-        </div>
-      )}
-    </div>
+          {showPopup && (
+            <CouponPopup 
+              coupons={coupons} 
+              onSelect={handleSelectCoupon} 
+              onClose={closePopup} 
+            />
+          )}
           <h4 className="mb-3">Phương thức thanh toán</h4>
           <form>
             <div className="form-check mb-2">
@@ -419,4 +460,3 @@ const CheckoutPage: React.FC = () => {
 };
 
 export default CheckoutPage;
-
