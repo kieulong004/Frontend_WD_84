@@ -79,6 +79,14 @@ const CheckoutPage: React.FC = () => {
   const token = getToken();
 
   useEffect(() => {
+    if (userFromStorage) {
+      setName(userFromStorage.name || "");
+      setPhone(userFromStorage.phone || "");
+      setAddress(userFromStorage.address || "");
+    }
+  }, [userFromStorage]);
+
+  useEffect(() => {
     const fetchCoupons = async () => {
       try {
         const response = await axios.get('http://localhost:8000/api/vouchers/getVoucherList', {
@@ -114,18 +122,11 @@ const CheckoutPage: React.FC = () => {
 
       if (response.data.status) {
         setSelectedCoupon(coupon);
-        toast.success('Voucher hợp lệ!');
       } else {
         toast.error(response.data.message);
-        // Kiểm tra thêm điều kiện coupons.discount_type
-        if (coupon.discount_type === 'condition') {
-          // Loại bỏ voucher không đủ điều kiện khỏi danh sách
-          setCoupons((prevCoupons) => prevCoupons.filter((c) => c.id !== coupon.id));
-        }
       }
     } catch (error) {
       console.error('Lỗi khi kiểm tra voucher:', error);
-      toast.error('Có lỗi xảy ra khi kiểm tra voucher.');
     }
     closePopup();
   };
@@ -421,6 +422,7 @@ const CheckoutPage: React.FC = () => {
               coupons={coupons} 
               onSelect={handleSelectCoupon} 
               onClose={closePopup} 
+              totalPrice={totalPrice}
             />
           )}
           <h4 className="mb-3">Phương thức thanh toán</h4>

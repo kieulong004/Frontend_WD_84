@@ -102,3 +102,38 @@
 .popup-content button:hover {
   background-color: #ff3b3b;
 }
+
+/* Thêm lớp CSS cho nút không đủ điều kiện */
+.btn-disabled {
+  background-color: #ddd;
+  color: #aaa;
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.6; /* Thêm lớp mờ */
+}
+
+/* Đảm bảo các nút có kích thước bằng nhau */
+.coupon-button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.coupon-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.coupon-button.btn-disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Thông báo lỗi */
+.error-message {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 5px;
+}
