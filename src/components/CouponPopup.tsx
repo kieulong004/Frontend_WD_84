@@ -8,6 +8,7 @@ interface Coupon {
   discount_value: string;
   end_date: string;
   name: string;
+  total_uses: number; // Thêm thuộc tính total_uses
 }
 
 interface CouponPopupProps {
@@ -42,16 +43,22 @@ const CouponPopup: React.FC<CouponPopupProps> = ({ coupons, onSelect, onClose, t
         <ul>
           {filteredCoupons.length > 0 ? (
             filteredCoupons.map((coupon) => {
-              const isDisabled = parseFloat(coupon.discount_min_price) > totalPrice;
+              const isDisabled = (coupon.discount_type !== 'all' && parseFloat(coupon.discount_min_price) > totalPrice ) || coupon.total_uses <= 0;
               return (
                 <li key={coupon.id}>
                   <button
                     className={`coupon-button btn btn-outline-primary ${isDisabled ? 'btn-disabled' : ''}`}
                     onClick={() => onSelect(coupon)}
+                    disabled={isDisabled} // Vô hiệu hóa nút nếu không đủ điều kiện
                   >
                     {coupon.name} - Giảm: {coupon.discount_value}
                   </button>
-                  {isDisabled && <div className="error-message">Đơn hàng không đủ điều kiện</div>}
+                  {parseFloat(coupon.discount_min_price) > totalPrice && coupon.discount_type !== 'all' && (
+                    <div className="error-message">Đơn hàng không đủ điều kiện</div>
+                  )}
+                  {coupon.total_uses <= 0 && (
+                    <div className="error-message">Voucher đã hết lượt sử dụng</div>
+                  )}
                 </li>
               );
             })

@@ -58,6 +58,7 @@ interface Coupon {
   discount_type: string;
   discount_value: string;
   end_date: string;
+  total_uses:number
   name: string;
 }
 
@@ -89,12 +90,12 @@ const CheckoutPage: React.FC = () => {
   useEffect(() => {
     const fetchCoupons = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/vouchers/getVoucherList', {
+        const {data} = await axios.get('http://localhost:8000/api/vouchers/getUserVouchers', {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
-        setCoupons(response.data.data);
+        setCoupons(data);
       } catch (error) {
         console.error('Error fetching coupons:', error);
         toast.error('Failed to fetch coupons.');
