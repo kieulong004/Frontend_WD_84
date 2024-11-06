@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
+import { getToken } from './utils';
 
 export interface Discount {
   id: number;
@@ -8,6 +10,7 @@ export interface Discount {
   discount_value: number | null;
   discount_min_price: number | null;
   end_date: string;
+  total_uses: number; // Thêm thuộc tính total_uses
   code?: string;
 }
 
@@ -18,33 +21,42 @@ interface DiscountCardProps {
 
 const DiscountCard: React.FC<DiscountCardProps> = ({ discount, onSave }) => {
   const [isSaved, setIsSaved] = useState(false);
-
-  const currentDate = new Date();
-  const expirationDate = new Date(discount.end_date);
+  const [isLoading, setIsLoading] = useState(true); // Thêm trạng thái loading
+  const [isOutOfUses, setIsOutOfUses] = useState(false); // Thêm trạng thái hết lượt sử dụng
+  const token = getToken();
+  console.log(token);
 
   const formatCurrency = (value: number | null) => {
     if (value === null) return 'N/A';
     return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   };
 
-  const isExpired = expirationDate < currentDate;
-
   // Check if the voucher is already saved when the component mounts
   useEffect(() => {
     const checkIfSaved = async () => {
+      if (discount.total_uses === 0) {
+        setIsOutOfUses(true);
+        setIsLoading(false);
+        return;
+      }
+
       try {
-        const response = await axios.post('/api/storeUserVoucher', {
-          voucher_id: discount.id,
-          checkOnly: true, // Pass the check-only flag to only verify status
+        const {data} = await axios.get('http://127.0.0.1:8000/api/vouchers/getUserVouchers', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
-        setIsSaved(response.data.isSaved);
+        const voucherIds = data.map((voucher: any) => voucher.id); // Extract ids from objects
+        setIsSaved(voucherIds.includes(discount.id)); // Compare discount.id with the array of IDs
       } catch (error) {
         console.error("Error checking if voucher is saved:", error);
+      } finally {
+        setIsLoading(false); // Kết thúc trạng thái loading
       }
     };
 
     checkIfSaved();
-  }, [discount.id]);
+  }, [token, discount.id, discount.total_uses]);
 
   // Save the voucher and update the button if successful
   const handleSave = async () => {
@@ -73,12 +85,14 @@ const DiscountCard: React.FC<DiscountCardProps> = ({ discount, onSave }) => {
           <strong>Hết hạn:</strong> {new Date(discount.end_date).toLocaleDateString()}
         </p>
 
-        {isSaved ? (
-          <button className="btn btn-success mt-auto mx-auto" onClick={handleRedirect}>
+        {isLoading ? (
+          <p>Đang tải...</p> // Hiển thị trạng thái tải
+        ) : isOutOfUses ? (
+          <p className="text-secondary mt-3 "><strong>Hết lượt sử dụng</strong></p> // Hiển thị thông báo hết lượt sử dụng với màu xám
+        ) : isSaved ? (
+          <button className="btn btn-outline-primary mt-auto mx-auto" onClick={handleRedirect}>
             Mua hàng ngay
           </button>
-        ) : isExpired ? (
-          <p className="text-danger mt-3"><strong>Voucher đã hết hạn</strong></p>
         ) : (
           <button 
             className="btn btn-primary mt-auto mx-auto" 
