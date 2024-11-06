@@ -26,10 +26,15 @@ const DiscountCard: React.FC<DiscountCardProps> = ({ discount, onSave }) => {
   const token = getToken();
   console.log(token);
 
-  const formatCurrency = (value: number | null) => {
+  const formatCurrency = (value: number | string | null): string => {
     if (value === null) return 'N/A';
-    return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    const numericValue = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(numericValue)) return 'N/A';
+    
+    return numericValue.toLocaleString('vi-VN', { minimumFractionDigits: 0 });
   };
+  
+  
 
   // Check if the voucher is already saved when the component mounts
   useEffect(() => {
@@ -71,7 +76,8 @@ const DiscountCard: React.FC<DiscountCardProps> = ({ discount, onSave }) => {
   const handleRedirect = () => {
     window.location.href = '/products'; // Redirect to the products page
   };
-
+console.log(typeof discount.discount_value)
+console.log(discount.discount_min_price)
   return (
     <div className="card h-100 text-center">
       <div className="card-body d-flex flex-column">

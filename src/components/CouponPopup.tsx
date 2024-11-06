@@ -28,7 +28,13 @@ const CouponPopup: React.FC<CouponPopupProps> = ({ coupons, onSelect, onClose, t
   const filteredCoupons = coupons.filter((coupon) =>
     coupon.name.toLowerCase().includes(searchTerm) // Chuyển đổi coupon.name thành chữ thường
   );
-
+  const formatCurrency = (value: number | string | null): string => {
+    if (value === null) return 'N/A';
+    const numericValue = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(numericValue)) return 'N/A';
+    
+    return numericValue.toLocaleString('vi-VN', { minimumFractionDigits: 0 });
+  };
   return (
     <div className="popup-overlay">
       <div className="popup-content">
@@ -51,7 +57,7 @@ const CouponPopup: React.FC<CouponPopupProps> = ({ coupons, onSelect, onClose, t
                     onClick={() => onSelect(coupon)}
                     disabled={isDisabled} // Vô hiệu hóa nút nếu không đủ điều kiện
                   >
-                    {coupon.name} - Giảm: {coupon.discount_value}
+                    {coupon.name} - Giảm: {formatCurrency(coupon.discount_value) +' VND'}
                   </button>
                   {parseFloat(coupon.discount_min_price) > totalPrice && coupon.discount_type !== 'all' && (
                     <div className="error-message">Đơn hàng không đủ điều kiện</div>

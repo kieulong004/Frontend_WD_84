@@ -182,11 +182,12 @@ const CheckoutPage: React.FC = () => {
     fetchCartItems();
   }, [ userId, token]);
 
-  const formatCurrency = (value: number): string => {
-    return value.toLocaleString("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    });
+  const formatCurrency = (value: number | string | null): string => {
+    if (value === null) return 'N/A';
+    const numericValue = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(numericValue)) return 'N/A';
+    
+    return numericValue.toLocaleString('vi-VN', { minimumFractionDigits: 0 });
   };
 
   const calculateTotalPrice = (): number => {
@@ -389,6 +390,7 @@ const CheckoutPage: React.FC = () => {
                   )}
                 </div>
                 <strong>{formatCurrency(item.price * item.quantity)}</strong>
+                <strong style={{ marginLeft: '4px' }}>VND</strong>
               </li>
             ))}
 
@@ -407,14 +409,14 @@ const CheckoutPage: React.FC = () => {
             {selectedCoupon && (
               <li className="list-group-item d-flex justify-content-between align-items-center">
                 <span>Phiếu giảm giá đã chọn: <strong>{selectedCoupon.code}</strong></span>
-                <span>Giảm: <strong>{formatCurrency(parseFloat(selectedCoupon.discount_value))}</strong></span>
+                <span>Giảm: <strong>{formatCurrency(parseFloat(selectedCoupon.discount_value)) +' VND'}</strong></span>
               </li>
             )}
 
             {/* Tổng cộng không bao gồm phí vận chuyển */}
             <li className="list-group-item d-flex justify-content-between">
               <span>Tổng cộng</span>
-              <strong>{formatCurrency(calculateTotalPrice())}</strong>{" "}
+              <strong>{formatCurrency(calculateTotalPrice()) +' VND'}</strong>{" "}
               {/* Tổng tiền chỉ bao gồm tổng sản phẩm */}
             </li>
           </ul>
