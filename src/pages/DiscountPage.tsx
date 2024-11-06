@@ -11,7 +11,8 @@ export interface Discount {
   name: string;
   discount_value: number | null;          // Giá trị giảm giá
   discount_min_price: number | null;      // Giá trị tối thiểu của đơn hàng để áp dụng voucher
-  end_date: string;                       // Ngày hết hạn
+  end_date: string;    
+  total_uses: number;                        // Thêm thuộc tính total_uses                   
   code?: string;                          // Nếu cần thêm thuộc tính code
 }
 
@@ -27,11 +28,7 @@ const DiscountPage: React.FC = () => {
      
 if(userFromStorage){
   try {
-    const { data } = await axios.get('http://127.0.0.1:8000/api/vouchers/getVoucherList', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const { data } = await axios.get('http://127.0.0.1:8000/api/vouchers/getVoucherList',);
     setDiscounts(data.data);
     setError(null);
   } catch (error) {
