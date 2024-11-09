@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/ProductSection.css"; // Import file CSS riêng
 
 type Product = {
@@ -32,7 +33,6 @@ type ProductSectionProps = {
 };
 
 const ProductSection: React.FC<ProductSectionProps> = ({
-  title,
   products,
   limit,
 }) => {
@@ -51,9 +51,8 @@ const ProductSection: React.FC<ProductSectionProps> = ({
   };
 
   return (
-    <section className="mx-5 mt-5">
-      <h2 className="h2 mb-4 text-center">{title}</h2>
-      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
+    <section className="">
+      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
         {displayedProducts.map((product) => {
           const firstVariant = product.variants[0];
           return (
