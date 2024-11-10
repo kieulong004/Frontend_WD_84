@@ -81,8 +81,11 @@ interface Comment {
   content: string;
   rating: number;
   created_at: string;
-  user: User;
+  user: { id: number; name: string } | null;
+  product: { id: number; name: string };
+  variant: { id: number; name: string | null };
 }
+
 
 const OrderDetail = () => {
   const { id } = useParams();
@@ -99,17 +102,9 @@ const OrderDetail = () => {
         const { data } = await axios.get(`http://localhost:8000/api/orders/order-detail/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
         if (data.status) {
           setOrder(data.data);
-          const orderDetails = data.data?.order_details;
-          if (Array.isArray(orderDetails) && orderDetails.length > 0) {
-            orderDetails.forEach((detail) => {
-              if (detail.variant && detail.variant.product) {
-                fetchComments(detail.variant.product.id, detail.variant.id);
-              }
-            });
-          }
+          fetchComments(data.data.id); // Gọi fetchComments với order_id
         } else {
           toast.error(data.message);
         }
@@ -125,19 +120,22 @@ const OrderDetail = () => {
   }, [id, token]);
 
   // Lấy danh sách đánh giá cho một sản phẩm và biến thể cụ thể
-  const fetchComments = async (productId: number, variantId: number) => {
+  const fetchComments = async (orderId: number) => {
     try {
       const { data } = await axios.post(
         `http://localhost:8000/api/comments/product`,
-        { product_id: productId, variant_id: variantId },
+        { order_id: orderId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
       if (data.status) {
-        setExistingComments((prev) => {
-          const updatedComments = { ...prev, [`${productId}-${variantId}`]: data.data || [] };
-          return updatedComments;
-        });
+        const commentsData = data.data || [];
+        const updatedComments = commentsData.reduce((acc: Record<string, Comment[]>, comment: Comment) => {
+          const key = `${comment.product.id}-${comment.variant.id}`;
+          if (!acc[key]) acc[key] = [];
+          acc[key].push(comment);
+          return acc;
+        }, {} as Record<string, Comment[]>);
+        setExistingComments(updatedComments);
       } else {
         toast.error(data.message);
       }
@@ -146,6 +144,8 @@ const OrderDetail = () => {
       toast.error("Có lỗi xảy ra khi lấy danh sách bình luận.");
     }
   };
+
+
 
   const handleCommentChange = (variantId: number, value: string) => {
     setComments((prev) => ({ ...prev, [variantId]: value }));
@@ -156,6 +156,11 @@ const OrderDetail = () => {
   };
 
   const submitComment = async (productId: number, variantId: number) => {
+    if (!order || !order.id) {
+      toast.error("Đơn hàng không tồn tại hoặc chưa được tải.");
+      return;
+    }
+
     if (!ratings[variantId] || ratings[variantId] < 1 || ratings[variantId] > 5) {
       toast.error("Vui lòng nhập số sao hợp lệ (1-5).");
       return;
@@ -182,7 +187,7 @@ const OrderDetail = () => {
       toast.success("Đánh giá đã được thêm thành công.");
       setComments((prev) => ({ ...prev, [variantId]: "" }));
       setRatings((prev) => ({ ...prev, [variantId]: 0 }));
-      fetchComments(productId, variantId);
+      await fetchComments(order.id); 
     } catch (error) {
       console.error("Lỗi khi thêm đánh giá:", error);
       toast.error("Bạn chỉ có thể đánh giá một lần cho mỗi sản phẩm");
@@ -227,7 +232,13 @@ const OrderDetail = () => {
   };
 
   if (!order) {
-    return <div>Loading...</div>;
+    return (
+      <div className="text-center my-5">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
   }
   return (
     <div className="container mt-4 mb-5">
@@ -278,7 +289,7 @@ const OrderDetail = () => {
             <th>Số lượng</th>
             <th>Đơn giá</th>
             <th>Tổng giá</th>
-            <th>Đánh giá</th>
+            {order.status === "completed" && <th>Đánh giá</th>}
           </tr>
         </thead>
         <tbody>
@@ -292,39 +303,35 @@ const OrderDetail = () => {
               <td>{detail.quantity}</td>
               <td>{formatPrice(detail.variant.selling_price)} VNĐ</td>
               <td>{formatPrice(detail.total)} VNĐ</td>
-              <td>
-                {order.status === "completed" ? (
-                  <>
-                    <div>
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <IoStar
-                          key={star}
-                          size={24}
-                          color={star <= (ratings[detail.variant.id] || 0) ? "#ffc107" : "#e4e5e9"}
-                          onClick={() => handleRatingChange(detail.variant.id, star)}
-                          style={{ cursor: "pointer" }}
-                        />
-                      ))}
-                    </div>
-                    <input
-                      type="text"
-                      placeholder="Nhập bình luận"
-                      value={comments[detail.variant.id] || ""}
-                      onChange={(e) => handleCommentChange(detail.variant.id, e.target.value)}
-                      className="form-control mt-2"
-                    />
-                    <button
-                      onClick={() => submitComment(detail.variant.product.id, detail.variant.id)}
-                      disabled={!comments[detail.variant.id] || !ratings[detail.variant.id]}
-                      className="btn btn-primary mt-2"
-                    >
-                      Gửi đánh giá
-                    </button>
-                  </>
-                ) : (
-                  "Chỉ đánh giá khi đơn hàng hoàn thành"
-                )}
-              </td>
+              {order.status === "completed" && (
+                <td>
+                  <div>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <IoStar
+                        key={star}
+                        size={24}
+                        color={star <= (ratings[detail.variant.id] || 0) ? "#ffc107" : "#e4e5e9"}
+                        onClick={() => handleRatingChange(detail.variant.id, star)}
+                        style={{ cursor: "pointer" }}
+                      />
+                    ))}
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Nhập bình luận"
+                    value={comments[detail.variant.id] || ""}
+                    onChange={(e) => handleCommentChange(detail.variant.id, e.target.value)}
+                    className="form-control mt-2"
+                  />
+                  <button
+                    onClick={() => submitComment(detail.variant.product.id, detail.variant.id)}
+                    disabled={!comments[detail.variant.id] || !ratings[detail.variant.id]}
+                    className="btn btn-primary mt-2"
+                  >
+                    Gửi đánh giá
+                  </button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
@@ -353,33 +360,37 @@ const OrderDetail = () => {
       {/* Phần hiển thị bình luận đã có */}
       <div className="existing-comments mt-5">
         <h4>Đánh giá của khách hàng về sản phẩm</h4>
-        {order?.order_details.map((detail) => (
-          <div key={`${detail.variant.product.id}-${detail.variant.id}`} className="product-comments mb-4 p-3" style={{ border: "1px solid #ddd", borderRadius: "5px" }}>
-            <h5 style={{ color: "#333", marginBottom: "10px" }}>{detail.variant.product.name}</h5>
-            <div>
-              {(existingComments[`${detail.variant.product.id}-${detail.variant.id}`] as Comment[])?.map((comment, index) => (
-                <div key={index} style={{ marginBottom: "8px", padding: "10px", backgroundColor: "#f9f9f9", borderRadius: "5px", boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)" }}>
-                  <p><strong>{comment.user.name || "Không xác định"}</strong></p>
-                  <p>Kích thước: <strong>
-                    {detail.variant.weight ? `${detail.variant.weight.weight} ${detail.variant.weight.unit}` : "Không xác định"}
-                  </strong></p>
-                  <p><strong>Nội dung:</strong> {comment.content}</p>
-                  <p>
-                    {[...Array(5)].map((_, i) => (
-                      <IoStar
-                        key={i}
-                        size={20}
-                        color={i < (comment.rating as number) ? "#ffc107" : "#e4e5e9"}
-                        style={{ marginLeft: "4px" }}
-                      />
-                    ))}
-                  </p>
-                </div>
-              ))}
+        {order?.order_details.map((detail) => {
+          const key = `${detail.variant.product.id}-${detail.variant.id}`;
+          const comments = existingComments[key] || []; // Lấy comments cho product-variant cụ thể
+          return (
+            <div key={key} className="product-comments mb-4 p-3" style={{ border: "1px solid #ddd", borderRadius: "5px" }}>
+              <h5 style={{ color: "#333", marginBottom: "10px" }}>{detail.variant.product.name}</h5>
+              <div>
+                {comments.map((comment: Comment, index: number) => (
+                  <div key={index} style={{ marginBottom: "8px", padding: "10px", backgroundColor: "#f9f9f9", borderRadius: "5px", boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)" }}>
+                    <p>Kích thước: <strong>{detail.variant.weight ? `${detail.variant.weight.weight} ${detail.variant.weight.unit}` : "Không xác định"}</strong></p>
+                    <p><strong>Nội dung:</strong> {comment.content}</p>
+                    <p>
+                      {[...Array(5)].map((_, i) => (
+                        <IoStar
+                          key={i}
+                          size={20}
+                          color={i < (comment.rating as number) ? "#ffc107" : "#e4e5e9"}
+                          style={{ marginLeft: "4px" }}
+                        />
+                      ))}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
+
+
+
     </div>
   );
 };

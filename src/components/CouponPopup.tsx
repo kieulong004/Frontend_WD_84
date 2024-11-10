@@ -32,7 +32,7 @@ const CouponPopup: React.FC<CouponPopupProps> = ({ coupons, onSelect, onClose, t
     if (value === null) return 'N/A';
     const numericValue = typeof value === 'string' ? parseFloat(value) : value;
     if (isNaN(numericValue)) return 'N/A';
-    
+
     return numericValue.toLocaleString('vi-VN', { minimumFractionDigits: 0 });
   };
   return (
@@ -49,22 +49,23 @@ const CouponPopup: React.FC<CouponPopupProps> = ({ coupons, onSelect, onClose, t
         <ul>
           {filteredCoupons.length > 0 ? (
             filteredCoupons.map((coupon) => {
-              const isDisabled = (coupon.discount_type !== 'all' && parseFloat(coupon.discount_min_price) > totalPrice ) || coupon.total_uses <= 0;
+              const isDisabled = (coupon.discount_type === 'condition' && parseFloat(coupon.discount_min_price) > totalPrice) || coupon.total_uses <= 0;
               return (
                 <li key={coupon.id}>
                   <button
-                    className={`coupon-button btn btn-outline-primary ${isDisabled ? 'btn-disabled' : ''}`}
+                    className={`coupon-button ${isDisabled ? '' : 'btn btn-outline-primary'}  ${isDisabled ? 'btn-disabled' : ''}`}
                     onClick={() => onSelect(coupon)}
-                    disabled={isDisabled} // Vô hiệu hóa nút nếu không đủ điều kiện
+                    disabled={isDisabled}
                   >
-                    {coupon.name} - Giảm: {formatCurrency(coupon.discount_value) +' VND'}
+                    {coupon.name} - Giảm: {formatCurrency(coupon.discount_value) + ' VND'}
+                    {!(coupon.discount_type === 'all' && coupon.discount_min_price == null) && (
+                      <p>Đơn hàng tối thiểu: {coupon.discount_min_price}</p>
+                    )}
+                    {(coupon.discount_type === 'all' && coupon.discount_min_price == null) && (
+                      <p>Hết hạn: {coupon.end_date}</p>
+                    )}
+
                   </button>
-                  {parseFloat(coupon.discount_min_price) > totalPrice && coupon.discount_type !== 'all' && (
-                    <div className="error-message">Đơn hàng không đủ điều kiện</div>
-                  )}
-                  {coupon.total_uses <= 0 && (
-                    <div className="error-message">Voucher đã hết lượt sử dụng</div>
-                  )}
                 </li>
               );
             })

@@ -198,7 +198,7 @@ const CheckoutPage: React.FC = () => {
     }
     return total;
   };
-
+console.log(selectedCoupon?.id)
   const handleOrderConfirmation = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!name || !phone || !address || cartItems.length === 0) {
@@ -219,6 +219,7 @@ const CheckoutPage: React.FC = () => {
         price: item.price,
         quantity: item.quantity,
       })),
+      voucher_id: selectedCoupon ? selectedCoupon.id : null, // Thêm coupon_id vào orderData nếu có mã giảm giá được chọn
     };
 
     setLoading(true);
