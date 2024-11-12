@@ -19,6 +19,7 @@ import ComfirmCancel from "./pages/ComfirmCancel";
 import Profile from "./pages/Profile";
 import OrderHistory from "./pages/OrderHistory";
 import DiscountPage from "./pages/DiscountPage";
+import About from "./pages/About";
 
 function App() {
   return (
@@ -74,6 +75,14 @@ function App() {
             element={
               <PrivateRoute>
                 <Confirm />
+              </PrivateRoute>
+            }
+          />
+           <Route
+            path="/about"
+            element={
+              <PrivateRoute>
+                <About />
               </PrivateRoute>
             }
           />

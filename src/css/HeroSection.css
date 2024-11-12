@@ -1,0 +1,20 @@
+
+.slide-image {
+  width: 100%;
+  max-width: 1920px; /* Giới hạn chiều rộng tối đa */
+  max-height: 700px; /* Giới hạn chiều cao tối đa */
+  object-fit: cover; /* Ảnh sẽ tự động cắt để khớp với khung hình */
+
+}
+.slick-slide > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.slick-slider,
+.slick-list,
+.slick-track,
+.slick-slide > div {
+  width: 100vw;
+  height: 100vh;
+}

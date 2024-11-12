@@ -1,0 +1,497 @@
+.about-us-container {
+    display: flex;
+    width: 100%;
+    max-width: 1920px;
+    align-items: center;
+    gap: 17px;
+    color: #000;
+    text-align: center;
+    flex-wrap: wrap;
+    font: 600 40px/1 'Open Sans', sans-serif;
+}
+
+.horizontal-divider {
+    border-top: 3px solid #000;
+    align-self: stretch;
+    width: 550px;
+    max-width: 100%;
+    height: 1px;
+    margin: auto 0;
+}
+
+.about-us-heading {
+    font-weight: bold;
+    align-self: stretch;
+    flex-grow: 1;
+    width: 221px;
+}
+.about-gemstone {
+    color: #000;
+    margin-top: 54px;
+    font: 400 16px/26px 'Open Sans', sans-serif;
+  }
+  
+  @media (max-width: 991px) {
+    .about-Gemstone {
+      max-width: 100%;
+      margin-top: 40px;
+    }
+  }
+  .handmade-content {
+    max-width: 1374px;
+    margin: 0 auto;
+}
+
+.handmade-title {
+    font-size: 35px;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 47px;
+}
+
+.handmade-description {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 26px;
+}
+
+@media (max-width: 991px) {
+    .handmade-section {
+        padding: 20px;
+    }
+
+    .handmade-title {
+        margin-bottom: 40px;
+    }
+}
+.handmade-section {
+    background-color: #000;
+    width: 100%;
+    padding: 41px 80px 69px;
+    margin-top: 35px;
+    font-family: 'Open Sans', sans-serif;
+    color: #fff;
+}
+.custom-jewelry-container {
+    z-index: 10;
+    margin-top: -40px;
+    width: 100%;
+    max-width: 1420px;
+  }
+  
+  .custom-jewelry-content {
+    gap: 20px;
+    display: flex;
+  }
+  
+  .text-column {
+    display: flex;
+    flex-direction: column;
+    line-height: normal;
+    width: 38%;
+    margin-left: 0;
+  }
+  
+  .text-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    font-family: Open Sans, sans-serif;
+    font-weight: 400;
+    margin: auto 0;
+  }
+  
+  .section-heading {
+    font-size: 30px;
+    color: #000;
+    line-height: 30px;
+  }
+  
+  .section-description {
+    color: #353535;
+    font-size: 16px;
+    line-height: 26px;
+    margin-top: 24px;
+  }
+  
+  .image-column {
+    display: flex;
+    flex-direction: column;
+    line-height: normal;
+    width: 62%;
+    margin-left: 20px;
+  }
+  
+  .image-background {
+    background-color: #fff;
+    display: flex;
+    min-height: 813px;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 10px;
+  }
+  
+  .image-wrapper {
+    background-color: rgba(255, 255, 255, 0.002);
+    box-shadow: 0 1px 20px rgba(0, 0, 0, 0.5);
+    align-self: stretch;
+    display: flex;
+    min-width: 240px;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    flex-basis: 0;
+    margin: auto 0;
+    padding: 15px;
+    border: 15px solid #fff;
+  }
+  
+  .jewelry-image {
+    aspect-ratio: 1;
+    object-fit: contain;
+    object-position: center;
+    width: 100%;
+    max-width: 793px;
+  }
+  
+  @media (max-width: 991px) {
+    .custom-jewelry-container {
+      max-width: 100%;
+    }
+  
+    .custom-jewelry-content {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+  
+    .text-column,
+    .image-column {
+      width: 100%;
+      margin-left: 0;
+    }
+  
+    .text-wrapper {
+      max-width: 100%;
+      margin-top: 40px;
+    }
+  
+    .section-heading,
+    .section-description {
+      max-width: 100%;
+    }
+  
+    .section-description {
+      margin-right: 10px;
+    }
+  
+    .image-background {
+      margin-top: 40px;
+    }
+  
+    .image-wrapper,
+    .jewelry-image {
+      max-width: 100%;
+    }
+  }
+  .eco-friendly-section {
+    z-index: 10;
+    margin-top: -63px;
+    width: 100%;
+    max-width: 1420px;
+  }
+  
+  .content-wrapper {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .image-column {
+    width: 63%;
+  }
+  
+  .image-background {
+    background-color: #fff;
+    display: flex;
+    min-height: 823px;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 10px;
+  }
+  
+  .image-container {
+    background-color: rgba(255, 255, 255, 0.002);
+    box-shadow: 0 1px 20px rgba(0, 0, 0, 0.5);
+    align-self: stretch;
+    display: flex;
+    min-width: 240px;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    flex-basis: 0;
+    margin: auto 0;
+    padding: 15px;
+    border: 15px solid #fff;
+  }
+  
+  .eco-friendly-image {
+    aspect-ratio: 1;
+    object-fit: contain;
+    object-position: center;
+    width: 100%;
+    max-width: 803px;
+  }
+  
+  .text-column {
+    width: 37%;
+    margin-left: 20px;
+  }
+  
+  .text-content {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    margin: auto 0;
+  }
+  
+  .section-title {
+    font-size: 30px;
+    color: #000;
+    line-height: 30px;
+  }
+  
+  .section-description {
+    color: #353535;
+    font-size: 14px;
+    line-height: 22px;
+    margin-top: 25px;
+  }
+  
+  @media (max-width: 991px) {
+    .eco-friendly-section {
+      max-width: 100%;
+    }
+  
+    .content-wrapper {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+  
+    .image-column,
+    .text-column {
+      width: 100%;
+      margin-left: 0;
+    }
+  
+    .image-background {
+      margin-top: 40px;
+    }
+  
+    .image-container,
+    .eco-friendly-image,
+    .section-title,
+    .section-description {
+      max-width: 100%;
+    }
+  
+    .text-content {
+      margin-top: 40px;
+    }
+  }
+  .mission-container {
+    z-index: 10;
+    margin-top: -40px;
+    width: 100%;
+    max-width: 1420px;
+  }
+  
+  .mission-content {
+    gap: 20px;
+    display: flex;
+  }
+  
+  .mission-text-column {
+    display: flex;
+    flex-direction: column;
+    line-height: normal;
+    width: 38%;
+    margin-left: 0;
+  }
+  
+  .mission-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    font-family: Open Sans, sans-serif;
+    font-weight: 400;
+    margin: auto 0;
+  }
+  
+  .mission-title {
+    color: #000;
+    font-size: 30px;
+    line-height: 1;
+    align-self: start;
+  }
+  
+  .mission-description {
+    color: #353535;
+    font-size: 16px;
+    line-height: 26px;
+    margin-top: 21px;
+  }
+  
+  .mission-image-column {
+    display: flex;
+    flex-direction: column;
+    line-height: normal;
+    width: 62%;
+    margin-left: 20px;
+  }
+  
+  .mission-image-background {
+    background-color: #fff;
+    display: flex;
+    min-height: 810px;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 10px;
+  }
+  
+  .mission-image-wrapper {
+    background-color: rgba(255, 255, 255, 0.002);
+    box-shadow: 0 1px 20px rgba(0, 0, 0, 0.5);
+    align-self: stretch;
+    display: flex;
+    min-width: 240px;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    flex-basis: 0;
+    margin: auto 0;
+    padding: 15px;
+    border: 15px solid #fff;
+  }
+  
+  .mission-image {
+    aspect-ratio: 1;
+    object-fit: contain;
+    object-position: center;
+    width: 100%;
+    max-width: 790px;
+  }
+  
+  @media (max-width: 991px) {
+    .mission-container {
+      max-width: 100%;
+    }
+  
+    .mission-content {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+  
+    .mission-text-column,
+    .mission-image-column {
+      width: 100%;
+    }
+  
+    .mission-text-wrapper {
+      max-width: 100%;
+      margin-top: 40px;
+    }
+  
+    .mission-description {
+      max-width: 100%;
+    }
+  
+    .mission-image-background {
+      margin-top: 40px;
+    }
+  
+    .mission-image-wrapper,
+    .mission-image {
+      max-width: 100%;
+    }
+  }
+  .features-container {
+    max-width: 100%;
+    width: 1420px;
+    padding: 12px 11px;
+  }
+  
+  .features-grid {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .feature-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 25%;
+  }
+  
+  .feature-icon-wrapper {
+    display: flex;
+    width: 50px;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  
+  .feature-icon {
+    aspect-ratio: 1;
+    object-fit: contain;
+    object-position: center;
+    width: 50px;
+  }
+  
+  .feature-title {
+    color: #000;
+    text-align: center;
+    margin-top: 20px;
+    font: 400 16px/1.6 Open Sans, sans-serif;
+  }
+  
+  .feature-description {
+    color: #000;
+    text-align: center;
+    align-self: stretch;
+    margin-top: 12px;
+    font: 400 14px/22px Open Sans, sans-serif;
+  }
+  
+  @media (max-width: 991px) {
+    .features-container {
+      padding-left: 20px;
+    }
+  
+    .features-grid {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+  
+    .feature-item {
+      width: 100%;
+      margin-top: 40px;
+    }
+  }

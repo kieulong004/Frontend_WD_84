@@ -228,7 +228,7 @@ const Header: React.FC = () => {
                   />
                   <span className="ms-2 fw-bold text-dark">{userName}</span>
                 </Link>
-                <ul className="dropdown-menu" aria-labelledby="userDropdown">
+                <ul className="dropdown-menu user-dropdown-menu" aria-labelledby="userDropdown">
                     <li>
                       <Link className="dropdown-item text-decoration-none" to="/order-list/profile">
                         Tài khoản của tôi

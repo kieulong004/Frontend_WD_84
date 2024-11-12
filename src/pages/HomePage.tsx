@@ -3,7 +3,7 @@ import ProductSection from "@/components/product/ProductSection";
 import HeroSection from "./../components/banner/HeroSection";
 import ProposalSection from "./../components/banner/ProposalSection";
 import BlogProduct from "@/components/blogProduct";
-
+import "../css/HomePage.css";
 type Product = {
   id: string;
   image?: string;
@@ -55,8 +55,9 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <div>
+    <div className="container">
       <HeroSection />
+      <h3 className="text-center mt-5">Sản phẩm mới nhất</h3>
       <ProductSection
         title="Sản phẩm mới nhất"
         products={products} // Truyền sản phẩm đã sắp xếp và giới hạn
