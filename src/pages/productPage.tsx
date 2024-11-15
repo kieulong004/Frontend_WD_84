@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import ProductSection from "@/components/product/ProductSection";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css"; // Import Bootstrap Icons
 import "../css/ProductPage.css";
 
 type Product = {
@@ -20,7 +17,6 @@ type Category = {
   name: string;
   id: string;
 };
-
 type Variant = {
   id: string;
   listed_price: number;
@@ -30,11 +26,10 @@ type Variant = {
 
 const ProductPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]); // State lưu danh sách danh mục
-  const [selectedCategory, setSelectedCategory] = useState<string>(""); // State lưu danh mục được chọn
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1); // State lưu trang hiện tại
   const [searchTerm, setSearchTerm] = useState(""); // State lưu giá trị tìm kiếm
+
 
   useEffect(() => {
     // Lấy trạng thái trang hiện tại từ localStorage nếu có
@@ -43,7 +38,6 @@ const ProductPage: React.FC = () => {
       setCurrentPage(parseInt(savedPage, 10));
     }
     fetchProducts(); // Gọi hàm để lấy sản phẩm
-    fetchCategories(); // Gọi hàm để lấy danh mục
   }, []);
 
   const fetchProducts = () => {
@@ -73,29 +67,16 @@ const ProductPage: React.FC = () => {
       });
   };
 
-  const fetchCategories = async () => {
-    try {
-      const { data } = await axios.get(
-        "http://127.0.0.1:8000/api/categories/list-category"
-      );
-      const category = data.data;
-      setCategories(category);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
-
   if (error) {
     return <div>Error: {error}</div>;
   }
 
   // Số lượng sản phẩm mỗi trang
-  const itemsPerPage = 8;
+  const itemsPerPage = 10;
 
-  // Lọc sản phẩm theo từ khóa tìm kiếm và danh mục được chọn
+  // Lọc sản phẩm theo từ khóa tìm kiếm
   const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (selectedCategory === "" || product.category_id === selectedCategory)
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Tính toán số trang dựa trên tổng số sản phẩm đã lọc
@@ -119,67 +100,37 @@ const ProductPage: React.FC = () => {
     setCurrentPage(1); // Reset lại trang hiện tại khi thay đổi tìm kiếm
   };
 
-  // Hàm cập nhật danh mục được chọn
-  const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategory(categoryId);
-    setCurrentPage(1); // Reset lại trang hiện tại khi thay đổi danh mục
-  };
-
   return (
-    <div className="container-fluid">
-      <div className="row">
-        <div className="col-md-3 filter-section p-3">
-          <div className="container mb-4">
-            <h5 className="px-4">Danh mục sản phẩm</h5>
-            <ul className="list-group-item px-4 my-4">
-              {categories.map((category) => (
-                <li
-                  key={category.id}
-                  className="list-group-item my-1"
-                  onClick={() => handleCategoryChange(category.id)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <span className={selectedCategory === category.id ? "text-danger fw-bold" : ""}>
-                    {category.name}
-                  </span>
-                  <hr />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+    <div className="flex overflow-hidden flex-col pb-2.5 bg-white mb-5">
+      <div className="mx-5 mb-4 d-flex align-items-center">
+        <label htmlFor="searchInput" className="form-label me-2 mb-0">
+          Tìm kiếm sản phẩm:
+        </label>
+        <input
+          type="text"
+          id="searchInput"
+          className="form-control me-2"
+          placeholder="Nhập tên sản phẩm..."
+          style={{ width: "300px" }}
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+      </div>
 
-        <div className="col-md-9 product-section p-3">
-          <div className="mb-4 d-flex justify-content-between align-items-center">
-            <label htmlFor="searchInput" className="form-label mb-0">
-            </label>
-            <input
-              type="text"
-              id="searchInput"
-              className="form-control"
-              placeholder="Nhập tên sản phẩm..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              style={{ maxWidth: "300px" }}
-            />
-          </div>
+      {/* Hiển thị danh sách sản phẩm của trang hiện tại */}
+      <ProductSection title="Danh sách sản phẩm" products={currentProducts} />
 
-          {/* Hiển thị danh sách sản phẩm của trang hiện tại */}
-          <ProductSection title="Danh sách sản phẩm" products={currentProducts} />
-
-          {/* Hiển thị phân trang */}
-          <div className="pagination justify-content-center mt-4">
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index}
-                onClick={() => handlePageChange(index + 1)}
-                className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
-        </div>
+      {/* Hiển thị phân trang */}
+      <div className="pagination">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+          >
+            {index + 1}
+          </button>
+        ))}
       </div>
     </div>
   );

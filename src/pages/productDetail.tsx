@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Button, Modal, Pagination } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import { getUser } from "@/components/utils";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -99,7 +99,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
 
   const [product, setProduct] = useState<Product | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]); 
+  const [comments, setComments] = useState<Comment[]>([]);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [variants, setVariants] = useState<Variant[]>([]);
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
@@ -108,14 +108,7 @@ const ProductDetail = () => {
   const [showWarning, setShowWarning] = useState(false);
   const userFromStorage = getUser();
   const userId = userFromStorage?.id;
-  const [currentPage, setCurrentPage] = useState(1);              // lưu trữ trang hiện tại của phần bình luận
-  const commentsPerPage = 3;                                      //số lượng bình luận muốn hiển thị trên mỗi trang
-  const indexOfLastComment = currentPage * commentsPerPage;
-  const indexOfFirstComment = indexOfLastComment - commentsPerPage;
-  const currentComments = comments.slice(indexOfFirstComment, indexOfLastComment);
-  const totalPages = Math.ceil(comments.length / commentsPerPage);
-
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  
 
   useEffect(() => {
     const fetchProductDetail = async () => {
@@ -144,7 +137,10 @@ const ProductDetail = () => {
           `http://localhost:8000/api/comments/getAllCommentsForProduct`,
           { product_id: id }
         );
-        setComments(data.data);
+        const sortedComments = (data.data as any[])
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          .slice(0, 3); // Chỉ lấy 3 đánh giá mới nhất
+        setComments(sortedComments);
       } catch (error) {
         console.error("Error fetching product comments:", error);
       }
@@ -374,90 +370,44 @@ const ProductDetail = () => {
       <div className="existing-comments mt-4 container" style={{ maxWidth: "800px", textAlign: "left", marginLeft: "20px" }}>
         <h4 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "20px" }}>Đánh giá của khách hàng về sản phẩm</h4>
         <div className="comments-list" style={{ marginLeft: "20px" }}>
-          {currentComments.map((comment, index) => (
-            <div key={index} className="product-comments mb-4 p-3">
-              <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
-                <img
-                  src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMRBqTeY-dTImnv-0qS4j32of8dVtWelSEMw&s"}
-                  alt="Avatar"
-                  style={{ width: "40px", height: "40px", borderRadius: "50%", marginRight: "10px" }}
-                />
-                <div>
-                  <p style={{ margin: 0, fontWeight: "bold" }}>{comment.user?.name || "Không xác định"}</p>
-                  <p style={{ margin: 0, color: "#999", fontSize: "0.9rem" }}>{new Date(comment.created_at).toLocaleString()}</p>
-                </div>
-              </div>
-
-              <p style={{ marginBottom: "8px" }}>
-                {[...Array(5)].map((_, i) => (
-                  <IoStar
-                    key={i}
-                    size={20}
-                    color={i < (comment.rating as number) ? "#ffc107" : "#e4e5e9"}
-                    style={{ marginRight: "2px" }}
+          {comments.length > 0 ? (
+            comments.map((comment, index) => (
+              <div key={index} className="product-comments mb-4 p-3">
+                <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+                  <img
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMRBqTeY-dTImnv-0qS4j32of8dVtWelSEMw&s"
+                    alt="Avatar"
+                    style={{ width: "40px", height: "40px", borderRadius: "50%", marginRight: "10px" }}
                   />
-                ))}
-              </p>
-              <p style={{ marginBottom: "10px", fontSize: "1rem" }}><strong>Nội dung:</strong> {comment.content}</p>
-              <p style={{ marginBottom: "10px", fontSize: "0.9rem", color: "#555" }}>
-                <strong>Kích thước:</strong> {comment.variant?.weight ? `${comment.variant.weight.weight} ${comment.variant.weight.unit}` : "Không xác định"}
-              </p>
-              <div className="separator" style={{ borderBottom: '1px solid #e0e0e0', width: '190%', margin: '0 auto', marginBottom: '-20px' }}></div>
-
-            </div>
-
-          ))}
+                  <div>
+                    <p style={{ margin: 0, fontWeight: "bold" }}>{comment.user?.name || "Không xác định"}</p>
+                    <p style={{ margin: 0, color: "#999", fontSize: "0.9rem" }}>{new Date(comment.created_at).toLocaleString()}</p>
+                  </div>
+                </div>
+                <p style={{ marginBottom: "8px" }}>
+                  {[...Array(5)].map((_, i) => (
+                    <IoStar
+                      key={i}
+                      size={20}
+                      color={i < comment.rating ? "#ffc107" : "#e4e5e9"}
+                      style={{ marginRight: "2px" }}
+                    />
+                  ))}
+                </p>
+                <p style={{ marginBottom: "10px", fontSize: "1rem" }}>
+                  <strong>Nội dung:</strong> {comment.content}
+                </p>
+                <p style={{ marginBottom: "10px", fontSize: "0.9rem", color: "#555" }}>
+                  <strong>Kích thước:</strong> {comment.variant?.weight ? `${comment.variant.weight.weight} ${comment.variant.weight.unit}` : "Không xác định"}
+                </p>
+                <div className="separator" style={{ borderBottom: '1px solid #e0e0e0', width: '100%', margin: '0 auto' }}></div>
+              </div>
+            ))
+          ) : (
+            <p style={{ color: "#555", fontSize: "1rem" }}>Chưa có đánh giá nào</p>
+          )}
         </div>
       </div>
-      <div className="pagination-container" style={{ textAlign: "center", marginTop: "20px" }}>
-        <Pagination style={{ display: 'inline-flex', gap: '1px' }}>
-          <Pagination.Prev
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-            style={{
-              cursor: currentPage === 1 ? 'default' : 'pointer',
-              color: currentPage === 1 ? '#ccc' : '#007bff',
-              padding: '0.01rem 0.01rem', 
-              borderRadius: '1px',
-              border: '1px solid #ddd',
-              fontSize: '0.1rem' 
-            }}
-          />
-          {[...Array(totalPages)].map((_, i) => (
-            <Pagination.Item
-              key={i + 1}
-              active={i + 1 === currentPage}
-              onClick={() => paginate(i + 1)}
-              style={{
-                padding: '0.01rem 0.05rem', 
-                backgroundColor: i + 1 === currentPage ? '#007bff' : 'transparent',
-                color: i + 1 === currentPage ? '#fff' : '#007bff',
-                border: '1px solid #ddd',
-                cursor: 'pointer',
-                fontSize: '0.1rem' 
-              }}
-            >
-              {i + 1}
-            </Pagination.Item>
-          ))}
-          <Pagination.Next
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            style={{
-              cursor: currentPage === totalPages ? 'default' : 'pointer',
-              color: currentPage === totalPages ? '#ccc' : '#007bff',
-              padding: '0.01rem 0.05rem', // Giảm thêm padding
-              borderRadius: '1px',
-              border: '1px solid #ddd',
-              fontSize: '0.1rem' // Giảm thêm kích thước chữ
-            }}
-          />
-        </Pagination>
-      </div>
-
-
-
-
 
 
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>

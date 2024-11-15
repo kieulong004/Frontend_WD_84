@@ -57,7 +57,6 @@ const HomePage: React.FC = () => {
   return (
     <div className="container">
       <HeroSection />
-      <h3 className="text-center mt-5">Sản phẩm mới nhất</h3>
       <ProductSection
         title="Sản phẩm mới nhất"
         products={products} // Truyền sản phẩm đã sắp xếp và giới hạn
