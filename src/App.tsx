@@ -40,7 +40,9 @@ function App() {
           <Route
             path="products/cart"
             element={
+              <PrivateRoute>
                 <CartPage />
+              </PrivateRoute>
             }
           />
           <Route
@@ -81,9 +83,7 @@ function App() {
            <Route
             path="/about"
             element={
-              <PrivateRoute>
                 <About />
-              </PrivateRoute>
             }
           />
           <Route

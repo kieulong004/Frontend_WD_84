@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { Button, Modal } from "react-bootstrap";
@@ -42,7 +43,6 @@ type CartResponse = {
 const CartPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
-  const [error, setError] = useState<string>("");
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
   const userFromStorage = getUser();
@@ -64,10 +64,10 @@ const CartPage: React.FC = () => {
             );
             setTotalPrice(total);
           } else {
-            setError(response.data.message);
+            console.error(response.data.message);
           }
         } catch (error) {
-          setError("Không có sản phẩm nào.");
+          console.error("Không có sản phẩm nào.");
         } finally {
           setLoading(false);
         }
@@ -102,7 +102,9 @@ console.log(cartItems);
       setTotalPrice(updatedTotal);
     } catch (error) {
       console.error("Error updating quantity:", error);
-      setError("Có lỗi xảy ra khi cập nhật số lượng sản phẩm.");
+      toast.error("Đã vượt quá số lượng hàng còn lại.", {
+        autoClose: 2000,
+      });
     }
   };
 
@@ -123,7 +125,7 @@ console.log(cartItems);
             cartItems.find((item) => item.id === cartId)!.quantity
         );
       } else {
-        setError("Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng.");
+        toast.error("Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng.");
       }
       setShowModal(true);
       setTimeout(() => {
@@ -131,7 +133,7 @@ console.log(cartItems);
       }, 2000);
     } catch (error) {
       console.error("Error deleting cart item:", error);
-      setError("Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng.");
+      toast.error("Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng.");
     }
   };
 
@@ -167,7 +169,6 @@ console.log(cartItems);
         </div>
       ) : (
         <>
-          {error && <div className="alert alert-danger">{error}</div>}
           <div className="table-responsive shadow-sm rounded">
             <table className="table table-bordered table-hover text-center">
               <thead className="table-dark">
@@ -269,7 +270,7 @@ console.log(cartItems);
           </div>
         </>
       )}
-
+<ToastContainer/>
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Thông báo</Modal.Title>

@@ -58,6 +58,14 @@ const OrderHistory = () => {
     order.code.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Hàm định dạng giá tiền theo VNĐ
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+  };
+
   return (
     <div>
       {orders.length > 0 && (
@@ -94,7 +102,7 @@ const OrderHistory = () => {
               <tr>
                 <th scope="col">Mã đặt hàng</th>
                 <th scope="col">Ngày</th>
-                <th scope="col">Tổng giá</th>
+                <th scope="col">Tổng đơn</th>
                 <th scope="col">Thanh toán</th>
                 <th scope="col">Trạng thái thanh toán</th>
                 <th scope="col">Trạng thái đơn hàng</th>
@@ -109,7 +117,7 @@ const OrderHistory = () => {
                   <td className="text-center">
                     {new Date(order.created_at).toLocaleDateString()}
                   </td>
-                  <td className="text-center">{order.total_price} đ</td>
+                  <td className="text-center">{formatCurrency(Number(order.total_price))}</td>
                   <td className="text-center">
                     {order.payment_method === "cod"
                       ? "Thanh toán khi nhận hàng (COD)"

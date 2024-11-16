@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { getToken, getUser } from "@/components/utils";
 import CouponPopup from "@/components/CouponPopup";
 import '../css/CouponPopup.css';
@@ -65,7 +64,6 @@ interface Coupon {
 const CheckoutPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
-  const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [showPopup, setShowPopup] = useState(false);
@@ -151,9 +149,7 @@ const CheckoutPage: React.FC = () => {
           );
           setTotalPrice(total);
         } else {
-          setError(
-            response.data.message || "Không có sản phẩm trong giỏ hàng"
-          );
+          toast.error(response.data.message || "Không có sản phẩm trong giỏ hàng");
           setTotalPrice(0);
         }
       } catch (error) {
@@ -166,13 +162,13 @@ const CheckoutPage: React.FC = () => {
               "Lỗi khi lấy các sản phẩm trong giỏ hàng:",
               error.response?.data
             );
-            setError(
+            toast.error(
               error.response?.data.message || "Lỗi khi lấy các sản phẩm trong giỏ hàng"
             );
           }
         } else {
           console.error("Lỗi không xác định:", error);
-          setError("Có lỗi không xác định xảy ra");
+          toast.error("Có lỗi không xác định xảy ra");
         }
       }
     }
@@ -187,7 +183,7 @@ const CheckoutPage: React.FC = () => {
     const numericValue = typeof value === 'string' ? parseFloat(value) : value;
     if (isNaN(numericValue)) return 'N/A';
     
-    return numericValue.toLocaleString('vi-VN', { minimumFractionDigits: 0 });
+    return numericValue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   };
 
   const calculateTotalPrice = (): number => {
@@ -196,9 +192,9 @@ const CheckoutPage: React.FC = () => {
       const discountValue = parseFloat(selectedCoupon.discount_value);
       total -= discountValue;
     }
-    return total;
+    return Math.max(total, 0);
   };
-console.log(selectedCoupon?.id)
+
   const handleOrderConfirmation = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!name || !phone || !address || cartItems.length === 0) {
@@ -284,6 +280,7 @@ console.log(selectedCoupon?.id)
       console.log(clearCartResponse);
     } catch (error) {
       console.error("Lỗi khi xóa giỏ hàng:", error);
+      toast.error("Lỗi khi xóa giỏ hàng.");
     }
   };
 
@@ -348,7 +345,6 @@ console.log(selectedCoupon?.id)
         </div>
         <div className="col-md-5">
           <h2 className="mb-4">Tóm tắt đơn hàng</h2>
-          {error && <div className="alert alert-danger">{error}</div>}
           <ul className="list-group mb-3">
             {cartItems.map((item) => (
               <li
@@ -391,7 +387,6 @@ console.log(selectedCoupon?.id)
                   )}
                 </div>
                 <strong>{formatCurrency(item.price * item.quantity)}</strong>
-                <strong style={{ marginLeft: '4px' }}>VND</strong>
               </li>
             ))}
 
@@ -410,14 +405,14 @@ console.log(selectedCoupon?.id)
             {selectedCoupon && (
               <li className="list-group-item d-flex justify-content-between align-items-center">
                 <span>Phiếu giảm giá đã chọn: <strong>{selectedCoupon.code}</strong></span>
-                <span>Giảm: <strong>{formatCurrency(parseFloat(selectedCoupon.discount_value)) +' VND'}</strong></span>
+                <span>Giảm: <strong>{formatCurrency(parseFloat(selectedCoupon.discount_value))}</strong></span>
               </li>
             )}
 
             {/* Tổng cộng không bao gồm phí vận chuyển */}
             <li className="list-group-item d-flex justify-content-between">
               <span>Tổng cộng</span>
-              <strong>{formatCurrency(calculateTotalPrice()) +' VND'}</strong>{" "}
+              <strong>{formatCurrency(calculateTotalPrice())}</strong>{" "}
               {/* Tổng tiền chỉ bao gồm tổng sản phẩm */}
             </li>
           </ul>

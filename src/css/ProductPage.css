@@ -34,3 +34,60 @@
   color: #a1a1a1; /* Màu chữ cho nút không khả dụng */
   cursor: not-allowed; /* Con trỏ không cho phép */
 }
+/* ProductPage.css */
+.container-fluid {
+  padding: 0;
+}
+
+.product-section {
+  flex-grow: 1;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.page-item {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.page-item.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.input-group-text {
+  background-color: transparent;
+  border: none;
+}
+
+.input-group-text .bi-search {
+  color: #6c757d;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.product-section {
+  padding: 20px;
+}
+
+.product-section .input-group,
+.product-section .form-select {
+  max-width: 300px;
+  width: 100%;
+  margin-bottom: 15px;
+}

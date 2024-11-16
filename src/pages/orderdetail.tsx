@@ -86,7 +86,6 @@ interface Comment {
   variant: { id: number; name: string | null };
 }
 
-
 const OrderDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -106,11 +105,10 @@ const OrderDetail = () => {
           setOrder(data.data);
           fetchComments(data.data.id); // Gọi fetchComments với order_id
         } else {
-          toast.error(data.message);
+          console.error(data.message);
         }
       } catch (error) {
         console.error("Error fetching order details:", error);
-        toast.error("Có lỗi xảy ra khi lấy chi tiết đơn hàng.");
       }
     };
 
@@ -145,8 +143,6 @@ const OrderDetail = () => {
     }
   };
 
-
-
   const handleCommentChange = (variantId: number, value: string) => {
     setComments((prev) => ({ ...prev, [variantId]: value }));
   };
@@ -157,17 +153,23 @@ const OrderDetail = () => {
 
   const submitComment = async (productId: number, variantId: number) => {
     if (!order || !order.id) {
-      toast.error("Đơn hàng không tồn tại hoặc chưa được tải.");
+      toast.error("Đơn hàng không tồn tại hoặc chưa được tải.", {
+        autoClose: 1000,
+      });
       return;
     }
 
     if (!ratings[variantId] || ratings[variantId] < 1 || ratings[variantId] > 5) {
-      toast.error("Vui lòng nhập số sao hợp lệ (1-5).");
+      toast.error("Vui lòng nhập số sao hợp lệ (1-5).", {
+        autoClose: 1000,
+      });
       return;
     }
 
     if (!comments[variantId]) {
-      toast.error("Vui lòng nhập nội dung đánh giá.");
+      toast.error("Vui lòng nhập nội dung đánh giá.", {
+        autoClose: 1000,
+      });
       return;
     }
 
@@ -184,18 +186,25 @@ const OrderDetail = () => {
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      toast.success("Đánh giá đã được thêm thành công.");
+      toast.success("Đánh giá đã được thêm thành công.", {
+        autoClose: 1000,
+      });
       setComments((prev) => ({ ...prev, [variantId]: "" }));
       setRatings((prev) => ({ ...prev, [variantId]: 0 }));
       await fetchComments(order.id); 
     } catch (error) {
       console.error("Lỗi khi thêm đánh giá:", error);
-      toast.error("Bạn chỉ có thể đánh giá một lần cho mỗi sản phẩm");
+      toast.error("Bạn chỉ có thể đánh giá một lần cho mỗi sản phẩm", {
+        autoClose: 1000,
+      });
     }
   };
 
-  const formatPrice = (price: string) => {
-    return new Intl.NumberFormat("vi-VN").format(Number(price));
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
   };
 
   const handleCancelOrder = async () => {
@@ -203,13 +212,17 @@ const OrderDetail = () => {
       await axios.get(`http://localhost:8000/api/orders/cancel-order/${order?.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success("Đơn hàng đã được hủy thành công.");
+      toast.success("Đơn hàng đã được hủy thành công.", {
+        autoClose: 1000,
+      });
       setTimeout(() => {
         navigate("/order-list");
       }, 2000);
     } catch (error) {
       console.error("Lỗi khi hủy đơn hàng:", error);
-      toast.error("Đơn hàng đã được xác nhận không thể hủy");
+      toast.error("Đơn hàng đã được xác nhận không thể hủy", {
+        autoClose: 1000,
+      });
       setTimeout(() => {
         window.location.reload();
       }, 3000);
@@ -221,13 +234,14 @@ const OrderDetail = () => {
       await axios.get(`http://localhost:8000/api/orders/order-markAsCompleted/${order?.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success("Đơn hàng đã được xác nhận là đã nhận.");
+      toast.success("Đơn hàng đã được xác nhận là đã nhận.", {
+        autoClose: 1000,
+      });
       setTimeout(() => {
         navigate("/order-list");
       }, 2000);
     } catch (error) {
       console.error("Lỗi khi xác nhận đơn hàng:", error);
-      toast.error("Có lỗi xảy ra khi xác nhận đơn hàng.");
     }
   };
 
@@ -301,8 +315,8 @@ const OrderDetail = () => {
                 {detail.variant.weight ? `${detail.variant.weight.weight} ${detail.variant.weight.unit}` : "Không xác định"}
               </td>
               <td>{detail.quantity}</td>
-              <td>{formatPrice(detail.variant.selling_price)} VNĐ</td>
-              <td>{formatPrice(detail.total)} VNĐ</td>
+              <td>{formatCurrency(Number(detail.variant.selling_price))}</td>
+              <td>{formatCurrency(Number(detail.total))}</td>
               {order.status === "completed" && (
                 <td>
                   <div>
@@ -356,41 +370,6 @@ const OrderDetail = () => {
           </button>
         )}
       </div>
-
-      {/* Phần hiển thị bình luận đã có */}
-      <div className="existing-comments mt-5">
-        <h4>Đánh giá của khách hàng về sản phẩm</h4>
-        {order?.order_details.map((detail) => {
-          const key = `${detail.variant.product.id}-${detail.variant.id}`;
-          const comments = existingComments[key] || []; // Lấy comments cho product-variant cụ thể
-          return (
-            <div key={key} className="product-comments mb-4 p-3" style={{ border: "1px solid #ddd", borderRadius: "5px" }}>
-              <h5 style={{ color: "#333", marginBottom: "10px" }}>{detail.variant.product.name}</h5>
-              <div>
-                {comments.map((comment: Comment, index: number) => (
-                  <div key={index} style={{ marginBottom: "8px", padding: "10px", backgroundColor: "#f9f9f9", borderRadius: "5px", boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)" }}>
-                    <p>Kích thước: <strong>{detail.variant.weight ? `${detail.variant.weight.weight} ${detail.variant.weight.unit}` : "Không xác định"}</strong></p>
-                    <p><strong>Nội dung:</strong> {comment.content}</p>
-                    <p>
-                      {[...Array(5)].map((_, i) => (
-                        <IoStar
-                          key={i}
-                          size={20}
-                          color={i < (comment.rating as number) ? "#ffc107" : "#e4e5e9"}
-                          style={{ marginLeft: "4px" }}
-                        />
-                      ))}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-
-
     </div>
   );
 };

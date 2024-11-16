@@ -5,7 +5,9 @@ import "../css/DiscountPage.css";
 import axios from 'axios';
 import { getToken, getUser } from "@/components/utils";
 import DiscountCard from '@/components/DiscountCard';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 export interface Discount {
   id: number;
   name: string;
@@ -19,31 +21,27 @@ export interface Discount {
 const DiscountPage: React.FC = () => {
   const [discounts, setDiscounts] = useState<Discount[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const userFromStorage = getUser();
   const token = getToken();
   const userId = userFromStorage?.id;
+
   useEffect(() => {
     const fetchVouchers = async () => {
-     
-if(userFromStorage){
-  try {
-    const { data } = await axios.get('http://127.0.0.1:8000/api/vouchers/getVoucherList',);
-    setDiscounts(data.data);
-    setError(null);
-  } catch (error) {
-    console.error('Lỗi khi lấy voucher:', error);
-    setError('Không thể tải voucher. Vui lòng thử lại sau.');
-  } finally {
-    setIsLoading(false);
-  }
-};
-}
+      if (userFromStorage) {
+        try {
+          const { data } = await axios.get('http://127.0.0.1:8000/api/vouchers/getVoucherList');
+          setDiscounts(data.data);
+        } catch (error) {
+          console.error('Lỗi khi lấy voucher:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
     fetchVouchers();
-  }, []);
+  }, [userFromStorage]);
 
   const handleSave = async (discount: Discount) => {
-
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/vouchers/storeUserVoucher', {
         user_id: userId,
@@ -56,17 +54,16 @@ if(userFromStorage){
       console.log('Voucher saved:', response.data);
     } catch (error: any) {
       console.error('Lỗi khi lưu voucher:', error.response ? error.response.data : error.message);
-      toast.error('Bạn đã lưu voucher này rồi',error.response ? error.response.data : error.message); // Hiển thị thông báo lỗi
+      toast.error('Bạn đã lưu voucher này rồi', error.response ? error.response.data : error.message); // Hiển thị thông báo lỗi
     }
   };
 
   return (
     <div className="container mt-5">
+      <ToastContainer />
       <h1 className="text-center mb-4">Gemstone Voucher</h1>
       {isLoading ? (
         <div className="text-center">Đang tải...</div>
-      ) : error ? (
-        <div className="text-center text-danger">{error}</div>
       ) : (
         <div className="row justify-content-center">
           {discounts.length > 0 ? (
@@ -76,7 +73,11 @@ if(userFromStorage){
               </div>
             ))
           ) : (
-            <div>Không có Gemstone voucher nào để hiển thị.</div>
+            <div className="alert alert-info text-center" role="alert">
+              <h4 className="alert-heading">Không có Gemstone voucher nào để hiển thị</h4>
+              <p>Hiện tại không có voucher nào khả dụng. Vui lòng quay lại sau để kiểm tra các ưu đãi mới nhất.</p>
+              <p className="mb-0">Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
+            </div>
           )}
         </div>
       )}

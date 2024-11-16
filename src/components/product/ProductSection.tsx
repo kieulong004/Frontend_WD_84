@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/ProductSection.css"; // Import file CSS riêng
 
 type Product = {
@@ -36,11 +37,8 @@ const ProductSection: React.FC<ProductSectionProps> = ({
   products,
   limit,
 }) => {
-  // Sắp xếp sản phẩm theo created_at từ mới nhất
-  const sortedProducts = [...products].sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
-  const displayedProducts = limit ? sortedProducts.slice(0, limit) : sortedProducts;
+  console.log(products);
+  const displayedProducts = limit ? products.slice(0, limit) : products;
 
   // Hàm định dạng giá tiền theo VNĐ
   const formatCurrency = (value: number) => {
@@ -51,7 +49,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
   };
 
   return (
-    <section className="mx-5 mt-5">
+    <section className="mx-5">
       <h2 className="h2 mb-4 text-center">{title}</h2>
       <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
         {displayedProducts.map((product) => {
@@ -62,7 +60,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
                 <div className="product-image-container position-relative">
                   <img
                     loading="lazy"
-                    src={`http://127.0.0.1:8000${product.image}`}
+                    src={product.image ? `http://127.0.0.1:8000${product.image}` : 'placeholder-image-url'}
                     alt={product.name}
                     className="img-fluid rounded mb-3"
                     style={{

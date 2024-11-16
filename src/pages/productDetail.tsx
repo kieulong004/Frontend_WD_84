@@ -159,7 +159,9 @@ const ProductDetail = () => {
     }
 
     if (selectedVariant.quantity === 0) {
-      toast.error("Sản phẩm này hiện đã hết hàng và không thể mua được.");
+      toast.error("Sản phẩm này hiện đã hết hàng và không thể mua được.", {
+        autoClose: 1000,
+      });
       return;
     }
 
@@ -181,7 +183,7 @@ const ProductDetail = () => {
       }, 2000);
     } catch (error) {
       console.error("Error adding product to cart:", error);
-      toast.error("Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.");
+      toast.error("Đã vượt quá số lượng hàng còn lại.");
     }
   };
 
@@ -193,7 +195,9 @@ const ProductDetail = () => {
     }
 
     if (selectedVariant.quantity === 0) {
-      toast.error("Sản phẩm này hiện đã hết hàng và không thể mua được.");
+      toast.error("Sản phẩm này hiện đã hết hàng và không thể mua được.", {
+        autoClose: 1000,
+      });
       return;
     }
 
@@ -275,7 +279,9 @@ const ProductDetail = () => {
                                 setSelectedVariant(variant);
                                 setShowWarning(false); // Ẩn cảnh báo khi chọn biến thể
                                 if (variant.quantity === 0) {
-                                  toast.error("Sản phẩm này hiện đã hết hàng và không thể mua được.");
+                                  toast.error("Sản phẩm này hiện đã hết hàng và không thể mua được.", {
+                                    autoClose: 1000,
+                                  });
                                 }
                               }
                             }}
