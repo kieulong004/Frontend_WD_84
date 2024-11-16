@@ -50,7 +50,9 @@ const ProductSection: React.FC<ProductSectionProps> = ({
 
   return (
     <section className="mx-5">
-      <h2 className="h2 mb-4 text-center">{title}</h2>
+      <h2 className={`text-2xl font-bold mb-4 ${title?.includes("Danh mục") ? "text-left text-blue-600 border-b-2 border-blue-600 pb-2" : "text-center"}`}>
+        {title}
+      </h2>
       <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
         {displayedProducts.map((product) => {
           const firstVariant = product.variants[0];

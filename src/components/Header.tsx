@@ -6,9 +6,16 @@ import axios from "axios";
 import { getToken } from "./utils";
 import { toast } from "react-toastify";
 
+interface Category {
+  id: number;
+  name: string;
+}
+
 const Header: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); 
   const [userName, setUserName] = useState<string | null>(null);
   const [userType, setUserType] = useState<string | null>(null); // Add state for user type
   const navigate = useNavigate();
@@ -50,6 +57,20 @@ const Header: React.FC = () => {
     if (token) {
       fetchUserData();
     }
+    const fetchCategories = async () => {
+      try {
+        const { data } = await axios.get(
+          "http://127.0.0.1:8000/api/categories/list-category"
+        );
+        const category = data.data;
+        setCategories(category);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setIsLoading(false); // Kết thúc tải dữ liệu
+      }
+    };
+    fetchCategories();
   }, []);
 
   const handleMouseEnter = () => {
@@ -126,11 +147,26 @@ const Header: React.FC = () => {
 
           <div className="collapse navbar-collapse" id="navbarNavDropdown">
             <ul className="navbar-nav me-auto">
+            <li className="nav-item">
+                <Link to="/products" className="nav-link text-decoration-none">
+                  Cửa hàng
+                </Link>
+              </li>
               <li
                 className="nav-item dropdown position-relative"
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
+                <Link
+                  className="nav-link text-decoration-none"
+                  to="#"
+                  id="navbarDropdown"
+                  role="button"
+                  aria-expanded={isDropdownOpen}
+                  style={{ paddingRight: "1rem", cursor: "pointer" }}
+                >
+                  Danh mục
+                </Link>
                 <ul
                   className={`dropdown-menu border-0 shadow-lg p-2 ${
                     isDropdownOpen ? "show" : ""
@@ -138,14 +174,24 @@ const Header: React.FC = () => {
                   aria-labelledby="navbarDropdown"
                   style={{ borderRadius: "0.5rem", minWidth: "200px" }}
                 >
+                  {isLoading ? (
+                    <li className="dropdown-item">Đang tải...</li>
+                  ) : (
+                    categories.map((category) => (
+                      <li key={category.id}>
+                        <Link
+                          className="dropdown-item text-decoration-none"
+                          to={`/category/${category.id}`}
+                        >
+                          {category.name}
+                        </Link>
+                      </li>
+                    ))
+                  )}
                 </ul>
               </li>
 
-              <li className="nav-item">
-                <Link to="/products" className="nav-link text-decoration-none">
-                  Cửa hàng
-                </Link>
-              </li>
+
               <li className="nav-item">
                 <Link to="/voucher" className="nav-link text-decoration-none">
                   Mã giảm giá

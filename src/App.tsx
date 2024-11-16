@@ -20,6 +20,7 @@ import Profile from "./pages/Profile";
 import OrderHistory from "./pages/OrderHistory";
 import DiscountPage from "./pages/DiscountPage";
 import About from "./pages/About";
+import CategoryPage from "./pages/CategoryPage";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="products" element={<Productpage />} />
           <Route path="products/:id" element={<ProductDetail />} />
+          <Route path="category/:id" element={<CategoryPage />} />
           <Route
             path="voucher"
             element={
