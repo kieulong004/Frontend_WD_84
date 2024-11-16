@@ -153,28 +153,22 @@ const OrderDetail = () => {
 
   const submitComment = async (productId: number, variantId: number) => {
     if (!order || !order.id) {
-      toast.error("Đơn hàng không tồn tại hoặc chưa được tải.", {
-        autoClose: 1000,
-      });
+      toast.error("Đơn hàng không tồn tại hoặc chưa được tải.");
       return;
     }
 
     if (!ratings[variantId] || ratings[variantId] < 1 || ratings[variantId] > 5) {
-      toast.error("Vui lòng nhập số sao hợp lệ (1-5).", {
-        autoClose: 1000,
-      });
+      toast.error("Vui lòng nhập số sao hợp lệ (1-5).");
       return;
     }
 
     if (!comments[variantId]) {
-      toast.error("Vui lòng nhập nội dung đánh giá.", {
-        autoClose: 1000,
-      });
+      toast.error("Vui lòng nhập nội dung đánh giá.");
       return;
     }
 
     try {
-      await axios.post(
+      const response = await axios.post(
         "http://localhost:8000/api/comments/add",
         {
           order_id: order?.id,
@@ -186,19 +180,40 @@ const OrderDetail = () => {
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      toast.success("Đánh giá đã được thêm thành công.", {
-        autoClose: 1000,
-      });
-      setComments((prev) => ({ ...prev, [variantId]: "" }));
-      setRatings((prev) => ({ ...prev, [variantId]: 0 }));
-      await fetchComments(order.id); 
+
+      if (response.data.status) {
+        toast.success("Đánh giá đã được thêm thành công.", {
+          autoClose: 1000,
+        });
+
+        const newComment: Comment = {
+          id: response.data.data.id,
+          content: comments[variantId],
+          rating: ratings[variantId],
+          created_at: new Date().toISOString(),
+          user: { id: order.user_id, name: order.name },
+          product: { id: productId, name: order.order_details.find(detail => detail.variant.id === variantId)?.variant.product.name || "" },
+          variant: { id: variantId, name: null },
+        };
+
+        setExistingComments((prev) => {
+          const key = `${productId}-${variantId}`;
+          const updatedComments = { ...prev };
+          if (!updatedComments[key]) {
+            updatedComments[key] = [];
+          }
+          updatedComments[key].push(newComment);
+          return updatedComments;
+        });
+
+        setComments((prev) => ({ ...prev, [variantId]: "" }));
+        setRatings((prev) => ({ ...prev, [variantId]: 0 }));
+      }
     } catch (error) {
       console.error("Lỗi khi thêm đánh giá:", error);
-      toast.error("Bạn chỉ có thể đánh giá một lần cho mỗi sản phẩm", {
-        autoClose: 1000,
-      });
     }
   };
+
 
   const formatCurrency = (value: number) => {
     return value.toLocaleString("vi-VN", {
@@ -319,31 +334,55 @@ const OrderDetail = () => {
               <td>{formatCurrency(Number(detail.total))}</td>
               {order.status === "completed" && (
                 <td>
-                  <div>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <IoStar
-                        key={star}
-                        size={24}
-                        color={star <= (ratings[detail.variant.id] || 0) ? "#ffc107" : "#e4e5e9"}
-                        onClick={() => handleRatingChange(detail.variant.id, star)}
-                        style={{ cursor: "pointer" }}
+                  {existingComments[`${detail.variant.product.id}-${detail.variant.id}`]?.length ? (
+                    <div>
+                      {existingComments[`${detail.variant.product.id}-${detail.variant.id}`].map((comment) => (
+                        <div key={comment.id}>
+                          <div>
+                            {[...Array(5)].map((_, i) => (
+                              <IoStar
+                                key={i}
+                                size={24}
+                                color={i < comment.rating ? "#ffc107" : "#e4e5e9"}
+                                style={{ cursor: "default" }}
+                              />
+                            ))}
+                          </div>
+                          <p className="mt-2" style={{ color: "#555" }}>
+                            <strong>Bình luận của bạn:</strong> {comment.content}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div>
+                      <div>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <IoStar
+                            key={star}
+                            size={24}
+                            color={star <= (ratings[detail.variant.id] || 0) ? "#ffc107" : "#e4e5e9"}
+                            onClick={() => handleRatingChange(detail.variant.id, star)}
+                            style={{ cursor: "pointer" }}
+                          />
+                        ))}
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Nhập bình luận"
+                        value={comments[detail.variant.id] || ""}
+                        onChange={(e) => handleCommentChange(detail.variant.id, e.target.value)}
+                        className="form-control mt-2"
                       />
-                    ))}
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Nhập bình luận"
-                    value={comments[detail.variant.id] || ""}
-                    onChange={(e) => handleCommentChange(detail.variant.id, e.target.value)}
-                    className="form-control mt-2"
-                  />
-                  <button
-                    onClick={() => submitComment(detail.variant.product.id, detail.variant.id)}
-                    disabled={!comments[detail.variant.id] || !ratings[detail.variant.id]}
-                    className="btn btn-primary mt-2"
-                  >
-                    Gửi đánh giá
-                  </button>
+                      <button
+                        onClick={() => submitComment(detail.variant.product.id, detail.variant.id)}
+                        disabled={!comments[detail.variant.id] || !ratings[detail.variant.id]}
+                        className="btn btn-primary mt-2"
+                      >
+                        Gửi đánh giá
+                      </button>
+                    </div>
+                  )}
                 </td>
               )}
             </tr>
