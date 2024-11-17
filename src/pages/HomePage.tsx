@@ -4,7 +4,6 @@ import ProductSection from "@/components/product/ProductSection";
 import HeroSection from "./../components/banner/HeroSection";
 import ProposalSection from "./../components/banner/ProposalSection";
 import BlogProduct from "@/components/blogProduct";
-import "../css/HomePage.css";
 
 type Product = {
   id: string;
@@ -50,7 +49,7 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="container">
+    <div>
       <HeroSection />
       <ProductSection
         title="Sản phẩm mới nhất"

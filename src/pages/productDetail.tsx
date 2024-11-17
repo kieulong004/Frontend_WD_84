@@ -381,7 +381,7 @@ const ProductDetail = () => {
               <div key={index} className="product-comments mb-4 p-3">
                 <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
                   <img
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMRBqTeY-dTImnv-0qS4j32of8dVtWelSEMw&s"
+                    src="../../src/components/image/user.png"
                     alt="Avatar"
                     style={{ width: "40px", height: "40px", borderRadius: "50%", marginRight: "10px" }}
                   />

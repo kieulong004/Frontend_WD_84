@@ -4,12 +4,14 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import axios from "axios";
 import "../../css/HeroSection.css";
+
 interface Slide {
   image: string;
+  link?: string; // Định nghĩa `link` là tùy chọn
 }
 
 const HeroSection: React.FC = () => {
-  const [slides, setSlides] = useState<Slide[]>([]); // Trạng thái để lưu trữ ảnh từ API
+const [slides, setSlides] = useState<Slide[]>([]); // Trạng thái để lưu trữ ảnh từ API
   const [loading, setLoading] = useState<boolean>(true); // Trạng thái tải dữ liệu
 
   const settings = {
@@ -39,6 +41,16 @@ const HeroSection: React.FC = () => {
     fetchSlides(); // Gọi hàm fetchSlides khi component mount
   }, []); // Chỉ gọi một lần khi component mount
 
+  if (loading) {
+    return (
+      <div className="text-center mb-5 ">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <section className="hero">
       {loading ? (
@@ -47,13 +59,29 @@ const HeroSection: React.FC = () => {
         <Slider {...settings}>
           {slides.map((slide, index) => (
             <div key={index} style={{ textAlign: "center" }}>
-              <img
-                loading="lazy"
-                src={`http://127.0.0.1:8000/storage/${slide?.image}`}
-                className="img-fluid w-100 slide-image"
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.8")}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-              />
+              {slide.link ? (
+                <a
+                  href={slide.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    loading="lazy"
+                    src={`http://127.0.0.1:8000/storage/${slide.image}`}
+                    className="img-fluid w-100 slide-image"
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.8")}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                  />
+                </a>
+              ) : (
+                <img
+                  loading="lazy"
+                  src={`http://127.0.0.1:8000/storage/${slide.image}`}
+                  className="img-fluid w-100 slide-image"
+                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.8")}
+                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                />
+              )}
             </div>
           ))}
         </Slider>

@@ -21,6 +21,7 @@ import OrderHistory from "./pages/OrderHistory";
 import DiscountPage from "./pages/DiscountPage";
 import About from "./pages/About";
 import CategoryPage from "./pages/CategoryPage";
+import Contact from "./pages/Contact";
 
 function App() {
   return (
@@ -82,12 +83,6 @@ function App() {
               </PrivateRoute>
             }
           />
-           <Route
-            path="/about"
-            element={
-                <About />
-            }
-          />
           <Route
             path="/confirm-cancel"
             element={
@@ -106,6 +101,8 @@ function App() {
           />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
         </Route>
       </Routes>
       <ToastContainer /> {/* Thêm ToastContainer để hiển thị thông báo */}

@@ -1,20 +1,46 @@
-
-.slide-image {
-  width: 100%;
-  max-width: 1920px; /* Giới hạn chiều rộng tối đa */
-  max-height: 700px; /* Giới hạn chiều cao tối đa */
-  object-fit: cover; /* Ảnh sẽ tự động cắt để khớp với khung hình */
-
-}
-.slick-slide > div {
+/* Đảm bảo slider chiếm toàn bộ màn hình */
+.hero {
+  width: 100vw; /* Chiều rộng full màn hình */
+  height: 100vh; /* Chiều cao full màn hình */
+  margin: 0 auto;
+  overflow: hidden;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: center; /* Căn giữa nội dung ngang */
+  align-items: center; /* Căn giữa nội dung dọc */
 }
+
+/* Hình ảnh trong slide */
+.slide-image {
+  width: 100%; /* Chiều rộng 100% của container */
+  height: 100%; /* Chiều cao 100% của container */
+  object-fit: cover; /* Đảm bảo ảnh phủ đầy vùng chứa và giữ tỷ lệ */
+  display: block; /* Đảm bảo không bị lỗi inline */
+}
+
+/* Container của mỗi slide */
+.slick-slide > div {
+  width: 100vw; /* Chiều rộng toàn màn hình */
+  height: 100vh; /* Chiều cao toàn màn hình */
+  display: flex;
+  justify-content: center; /* Căn giữa nội dung ngang */
+  align-items: center; /* Căn giữa nội dung dọc */
+}
+
+/* Tổng thể Slick Slider */
 .slick-slider,
 .slick-list,
-.slick-track,
-.slick-slide > div {
+.slick-track {
   width: 100vw;
   height: 100vh;
+  margin: 0 auto; /* Đảm bảo căn giữa slider */
+  overflow: hidden;
+}
+
+/* Định dạng dots */
+.slick-dots {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
 }

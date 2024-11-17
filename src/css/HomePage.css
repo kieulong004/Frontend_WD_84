@@ -1,7 +1,0 @@
-.container {
-    max-width: 100vw; /* Đảm bảo không tràn quá chiều rộng của cửa sổ */
-  }
-  html, body {
-    overflow-x: hidden; /* Ẩn thanh cuộn ngang */
-  }
-  
