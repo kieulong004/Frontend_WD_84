@@ -1,7 +1,10 @@
-import React from 'react';
+import { useEffect } from 'react';
 import '../css/About.css'; // Đảm bảo bạn tạo và nhập file CSS
 
 const About = () => {
+  useEffect(() => {
+    document.title = "Giới thiệu";
+  }, []);
   return (
     <div className="about-us-container">
         <hr className="horizontal-divider" aria-hidden="true" />

@@ -32,6 +32,9 @@ const OrderHistory = () => {
   const userFromStorage = getUser();
   const { register, handleSubmit } = useForm<SearchFormData>();
 
+  useEffect(() => {
+    document.title = "Lịch sử đơn hàng";
+  }, []);
   const fetchOrders = async () => {
     if (userFromStorage) {
       const userId = userFromStorage.id;

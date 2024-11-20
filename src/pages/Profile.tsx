@@ -17,6 +17,9 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    document.title = "Tài khoản";
+  }, []);
+  useEffect(() => {
     const fetchUserData = async () => {
       try {
         const {data} = await axios.get("http://127.0.0.1:8000/api/user", {
@@ -51,7 +54,7 @@ const Profile = () => {
         }
       );
       toast.success("Cập nhật thông tin cá nhân thành công!", ({
-        autoClose: 1000,
+        autoClose: 2000,
       }));
       setTimeout(() => {
         window.location.reload();

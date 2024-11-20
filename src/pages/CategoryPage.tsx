@@ -33,6 +33,9 @@ const CategoryPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    document.title = "Danh mục";
+  }, []);
+  useEffect(() => {
     if (id) {
       fetchProductsByCategory(id);
     }

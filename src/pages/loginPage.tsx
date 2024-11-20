@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -19,6 +19,9 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
+  useEffect(() => {
+    document.title = "Đăng nhập";
+  }, []);
   const onSubmit = async (data: LoginFormInputs) => {
     toast.info("Đang xử lý đăng nhập...");
     try {

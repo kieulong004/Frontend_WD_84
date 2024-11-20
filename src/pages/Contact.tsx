@@ -1,5 +1,9 @@
+import { useEffect } from "react";
 import "../css/Contact.css"
 const Contact = () => {
+    useEffect(() => {
+        document.title = "Liên hệ";
+      }, []);
     return (
         <div className="contact-page">
             {/* Phần tiêu đề */}

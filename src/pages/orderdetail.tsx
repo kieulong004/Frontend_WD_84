@@ -96,6 +96,9 @@ const OrderDetail = () => {
   const token = getToken();
 
   useEffect(() => {
+    document.title = "Chi tiết đơn hàng";
+  }, []);
+  useEffect(() => {
     const fetchOrderDetail = async () => {
       try {
         const { data } = await axios.get(`http://localhost:8000/api/orders/order-detail/${id}`, {

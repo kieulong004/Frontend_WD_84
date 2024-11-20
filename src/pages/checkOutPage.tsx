@@ -78,6 +78,9 @@ const CheckoutPage: React.FC = () => {
   const token = getToken();
 
   useEffect(() => {
+    document.title = "Thanh toán";
+  }, []);
+  useEffect(() => {
     if (userFromStorage) {
       setName(userFromStorage.name || "");
       setPhone(userFromStorage.phone || "");

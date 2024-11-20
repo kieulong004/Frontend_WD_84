@@ -26,6 +26,9 @@ const DiscountPage: React.FC = () => {
   const userId = userFromStorage?.id;
 
   useEffect(() => {
+    document.title = "Mã giảm giá";
+  }, []);
+  useEffect(() => {
     const fetchVouchers = async () => {
       if (userFromStorage) {
         try {

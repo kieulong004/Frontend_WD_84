@@ -1,7 +1,11 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Confirm = () => {
   const navigate = useNavigate();
+  useEffect(() => {
+    document.title = "Xác nhận";
+  }, []);
 
   return (
     <div className="container py-5">

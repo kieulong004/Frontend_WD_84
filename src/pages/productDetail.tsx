@@ -7,6 +7,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { checkAuthorizations } from "@/components/authUtils";
 import { IoStar } from "react-icons/io5";
+// @ts-ignore
+import he from "he";
 
 type Product = {
   id: number;
@@ -108,8 +110,10 @@ const ProductDetail = () => {
   const [showWarning, setShowWarning] = useState(false);
   const userFromStorage = getUser();
   const userId = userFromStorage?.id;
-  
 
+  useEffect(() => {
+    document.title = "Chi tiết sản phẩm";
+  }, []);
   useEffect(() => {
     const fetchProductDetail = async () => {
       try {
@@ -211,7 +215,7 @@ const ProductDetail = () => {
       currency: "VND",
     });
   };
-
+  const prouctsDescription = he.decode(product?.description || "");
   return (
     <div>
       <ToastContainer />
@@ -239,7 +243,7 @@ const ProductDetail = () => {
                   </span>
                 )}
               </div>
-              <p className="product-description lead">{product?.description}</p>
+              <p className="product-description lead">{prouctsDescription}</p>
               {variants.length > 0 && (
                 <>
                   <p className="text-muted py-2">

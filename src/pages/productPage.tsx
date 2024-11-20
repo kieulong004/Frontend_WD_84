@@ -37,6 +37,9 @@ const ProductPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState(""); // State lưu giá trị tìm kiếm
 
   useEffect(() => {
+    document.title = "Cửa hàng";
+  }, []);
+  useEffect(() => {
     // Lấy trạng thái trang hiện tại từ localStorage nếu có
     const savedPage = localStorage.getItem("currentPage");
     if (savedPage) {

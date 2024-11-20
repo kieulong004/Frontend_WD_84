@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const ProposalSection: React.FC = () => {
   return (
@@ -17,9 +18,11 @@ const ProposalSection: React.FC = () => {
         Những chi tiết quyến rũ và những chiếc nhẫn phù hợp - chúng tôi <br />
         có những chiếc nhẫn hoàn hảo để khẳng định phong cách của bạn.
       </p>
+      <Link to="/products">
       <button className="position-relative px-4 py-2 mt-3 mb-0 fw-bold btn btn-light">
-        MUA NHẪN ĐÍNH HÔN
+        KHÁM PHÁ NGAY CÁC SẢN PHẨM
       </button>
+      </Link>
     </section>
   );
 };

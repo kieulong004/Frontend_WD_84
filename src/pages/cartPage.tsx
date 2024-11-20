@@ -49,6 +49,9 @@ const CartPage: React.FC = () => {
   const userId = userFromStorage.id;
 
   useEffect(() => {
+    document.title = "Giỏ hàng";
+  }, []);
+  useEffect(() => {
     const fetchCartItems = async () => {
         try {
           setLoading(true);
