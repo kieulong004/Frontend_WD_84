@@ -344,7 +344,6 @@
     color: #000;
     font-size: 30px;
     line-height: 1;
-    align-self: start;
   }
   
   .mission-description {
@@ -434,7 +433,7 @@
   }
   .features-container {
     max-width: 100%;
-    width: 1420px;
+    width: 1920px;
     padding: 12px 11px;
   }
   
