@@ -141,7 +141,7 @@ const ProductPage: React.FC = () => {
   return (
     <div className="container-fluid">
       <div className="row">
-        <div className="col-md-12 product-section p-3">
+        <div className=" product-section p-3">
           <div className="mx-5">
             <div className="d-flex align-items-center">
               <label htmlFor="searchInput" className="form-label mb-0 me-2 visually-hidden">

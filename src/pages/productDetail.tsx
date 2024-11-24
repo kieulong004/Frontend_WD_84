@@ -442,7 +442,7 @@ const ProductDetail = () => {
       </Modal>
 
       <section className="Related py-5">
-        <div className="container">
+        <div className="p-4">
           <div className="section-heading text-center mb-4">
             <h2 className="section-heading__title">Sản phẩm cùng danh mục</h2>
           </div>

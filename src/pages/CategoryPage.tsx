@@ -61,7 +61,7 @@ const CategoryPage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className=" mx-auto p-4">
       <div className="flex flex-col items-center">
         {/* Hiển thị danh sách sản phẩm của danh mục hiện tại */}
         {error ? (

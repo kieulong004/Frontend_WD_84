@@ -171,7 +171,6 @@ const CheckoutPage: React.FC = () => {
           }
         } else {
           console.error("Lỗi không xác định:", error);
-          toast.error("Có lỗi không xác định xảy ra");
         }
       }
     }
@@ -245,7 +244,7 @@ const CheckoutPage: React.FC = () => {
         }
         console.log(response.data.payment_method);
       } else {
-        toast.error(`Lỗi: ${response.data.message}`);
+        console.error(`Lỗi: ${response.data.message}`);
       }
 
     } catch (error) {
@@ -254,12 +253,11 @@ const CheckoutPage: React.FC = () => {
           "Lỗi khi gửi đơn hàng:",
           error.response?.data || error.message
         );
-        toast.error(
+        console.error(
           `Có lỗi xảy ra: ${error.response?.data?.message || error.message}`
         );
       } else {
         console.error("Lỗi không xác định:", error);
-        toast.error("Có lỗi xảy ra trong quá trình xác nhận đơn hàng.");
       }
     } finally {
       setLoading(false);
@@ -276,14 +274,13 @@ const CheckoutPage: React.FC = () => {
         }
       );
       if (clearCartResponse.data.status) {
-        toast.success("Giỏ hàng đã được làm trống sau khi đặt hàng.");
+        console.log("Giỏ hàng đã được làm trống sau khi đặt hàng.");
       } else {
-        toast.error("Không thể xóa giỏ hàng.");
+        console.error("Không thể xóa giỏ hàng.");
       }
       console.log(clearCartResponse);
     } catch (error) {
       console.error("Lỗi khi xóa giỏ hàng:", error);
-      toast.error("Lỗi khi xóa giỏ hàng.");
     }
   };
 

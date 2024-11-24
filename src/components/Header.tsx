@@ -15,10 +15,11 @@ const Header: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); 
+  const [isLoading, setIsLoading] = useState(true);
   const [userName, setUserName] = useState<string | null>(null);
   const [userType, setUserType] = useState<string | null>(null); // Add state for user type
   const navigate = useNavigate();
+  const token = getToken();
 
   const handleCartClick = () => {
     if (!isLoggedIn) {
@@ -34,7 +35,6 @@ const Header: React.FC = () => {
   };
 
   useEffect(() => {
-    const token = getToken();
     setIsLoggedIn(!!token); // Chuyển đổi token thành boolean để xác định trạng thái đăng nhập
 
     const fetchUserData = async () => {
@@ -53,7 +53,6 @@ const Header: React.FC = () => {
         toast.error("Có lỗi xảy ra khi lấy thông tin người dùng.");
       }
     };
-
     if (token) {
       fetchUserData();
     }
@@ -71,8 +70,8 @@ const Header: React.FC = () => {
       }
     };
     fetchCategories();
-  }, []);
-
+  }, [token]);
+  console.log(token)
   const handleMouseEnter = () => {
     setIsDropdownOpen(true);
   };
@@ -147,7 +146,7 @@ const Header: React.FC = () => {
 
           <div className="collapse navbar-collapse" id="navbarNavDropdown">
             <ul className="navbar-nav me-auto">
-            <li className="nav-item">
+              <li className="nav-item">
                 <Link to="/products" className="nav-link text-decoration-none">
                   Cửa hàng
                 </Link>
@@ -168,9 +167,8 @@ const Header: React.FC = () => {
                   Danh mục
                 </Link>
                 <ul
-                  className={`dropdown-menu border-0 shadow-lg p-2 ${
-                    isDropdownOpen ? "show" : ""
-                  }`}
+                  className={`dropdown-menu border-0 shadow-lg p-2 ${isDropdownOpen ? "show" : ""
+                    }`}
                   aria-labelledby="navbarDropdown"
                   style={{ borderRadius: "0.5rem", minWidth: "200px" }}
                 >
@@ -230,16 +228,25 @@ const Header: React.FC = () => {
                   <span className="ms-2 fw-bold text-dark">{userName}</span>
                 </Link>
                 <ul className="dropdown-menu user-dropdown-menu" aria-labelledby="userDropdown">
-                    <li>
-                      <Link className="dropdown-item text-decoration-none" to="/order-list/profile">
-                        Tài khoản của tôi
-                      </Link>
-                    </li>
+                  <li>
+                    <Link className="dropdown-item text-decoration-none" to="/order-list/profile">
+                      Tài khoản của tôi
+                    </Link>
+                  </li>
                   {userType === "admin" && (
                     <li>
-                      <Link className="dropdown-item text-decoration-none" to="http://localhost/DATN/public/admin">
-                        Đăng nhập vào trang quản trị
-                      </Link>
+                      {userType === "admin" && (
+                        <Link
+                          to="#"
+                          className="dropdown-item text-decoration-none"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            window.location.replace("/backend/public/admin/login");
+                          }}
+                        >
+                          Đăng nhập vào trang quản trị
+                        </Link>
+                      )}
                     </li>
                   )}
                   <li>

@@ -78,8 +78,8 @@ const Profile = () => {
             className="form-control"
             id="email"
             {...register("email", { required: true })}
+            disabled
           />
-          {errors.email && <span className="text-danger">Email là bắt buộc</span>}
         </div>
         <div className="mb-3">
           <label htmlFor="name" className="form-label">Tên</label>
