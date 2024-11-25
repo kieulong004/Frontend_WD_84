@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { IoStar } from "react-icons/io5";
 import { getToken } from "@/components/utils";
-
+import Swal from "sweetalert2";
 interface User {
   id: number;
   name: string;
@@ -226,8 +226,31 @@ const OrderDetail = () => {
   };
 
   const handleCancelOrder = async () => {
+    if (!order) {
+      toast.error("Đơn hàng không tồn tại.");
+      return;
+    }
+  
+    // Kiểm tra trạng thái thanh toán
+    if (order.payment_status === "paid") {
+      const result = await Swal.fire({
+        title: "Xác nhận hủy đơn hàng",
+        text: "Đơn hàng đã được thanh toán. Bạn phải liên hệ tới 0998888888 để nhận lại tiền do đơn của bạn đã được thanh toán trước, bạn có chắc chắn muốn hủy?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Hủy đơn hàng",
+        cancelButtonText: "Không",
+      });
+  
+      if (!result.isConfirmed) {
+        return; // Hủy hành động nếu người dùng chọn "Không"
+      }
+    }
+  
     try {
-      await axios.get(`http://localhost:8000/api/orders/cancel-order/${order?.id}`, {
+      await axios.get(`http://localhost:8000/api/orders/cancel-order/${order.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Đơn hàng đã được hủy thành công.", {
