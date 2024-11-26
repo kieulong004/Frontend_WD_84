@@ -70,7 +70,7 @@ const LoginPage: React.FC = () => {
     <main className="container">
       <div className="login_container">
         <div className="login_title">
-          <span>Login</span>
+          <span>Đăng nhập</span>
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="input_wrapper">
@@ -123,7 +123,7 @@ const LoginPage: React.FC = () => {
           </div>
           <div className="input_wrapper">
             <button type="submit" className="input_submit">
-              Login
+              Đăng nhập
             </button>
           </div>
         </form>

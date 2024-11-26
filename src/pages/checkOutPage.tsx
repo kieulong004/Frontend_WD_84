@@ -70,8 +70,15 @@ const CheckoutPage: React.FC = () => {
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
   const [name, setName] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
+  const [province, setProvince] = useState<string>("");
+  const [district, setDistrict] = useState<string>("");
+  const [ward, setWard] = useState<string>("");
   const [address, setAddress] = useState<string>("");
   const [paymentMethod, setPaymentMethod] = useState<string>("cod");
+  const [shippingFee, setShippingFee] = useState<number>(0);
+  const [provinces, setProvinces] = useState<{ id: string; full_name: string }[]>([]);
+  const [districts, setDistricts] = useState<{ id: string; full_name: string }[]>([]);
+  const [wards, setWards] = useState<{ id: string; full_name: string }[]>([]);
   const navigate = useNavigate();
   const userFromStorage = getUser();
   const userId = userFromStorage?.id;
@@ -86,7 +93,7 @@ const CheckoutPage: React.FC = () => {
       setPhone(userFromStorage.phone || "");
       setAddress(userFromStorage.address || "");
     }
-  }, [userFromStorage]);
+  }, []);
 
   useEffect(() => {
     const fetchCoupons = async () => {
@@ -194,6 +201,7 @@ const CheckoutPage: React.FC = () => {
       const discountValue = parseFloat(selectedCoupon.discount_value);
       total -= discountValue;
     }
+    total += shippingFee; // Thêm phí vận chuyển vào tổng giá
     return Math.max(total, 0);
   };
 
@@ -211,6 +219,7 @@ const CheckoutPage: React.FC = () => {
       address: address,
       payment_method: paymentMethod,
       total_price: calculateTotalPrice(),
+      shipping_fee: shippingFee,
       products: cartItems.map((item) => ({
         product_id: item.product.id,
         variant_id: item.variant?.id || null,
@@ -283,6 +292,66 @@ const CheckoutPage: React.FC = () => {
       console.error("Lỗi khi xóa giỏ hàng:", error);
     }
   };
+console.log(province)
+console.log(district)
+console.log(ward)
+  const calculateShippingFee = async (province: string, district: string, ward: string) => {
+    try {
+      const response = await axios.post('http://localhost:8000/api/shipping-fee', {
+        province,
+        district,
+        ward,
+      });
+
+      if (response.data.success) {
+        return response.data.fee;
+      } else {
+        toast.error(response.data.message || 'Không thể tính phí ship');
+        return 0;
+      }
+    } catch (error) {
+      console.error('Lỗi khi tính phí ship:', error);
+      toast.error('Lỗi khi tính phí ship');
+      return 0;
+    }
+  };
+
+  useEffect(() => {
+    const fetchShippingFee = async () => {
+      if (province && district && ward ) {
+        const fee = await calculateShippingFee(province, district, ward, );
+        setShippingFee(fee);
+      }
+    };
+
+    fetchShippingFee();
+  }, [province, district, ward]);
+
+  useEffect(() => {
+    // Lấy danh sách tỉnh
+    const fetchProvinces = async () => {
+      const response = await axios.get('https://esgoo.net/api-tinhthanh/1/0.htm');
+      if (response.data.error === 0) {
+        setProvinces(response.data.data);
+      }
+    };
+    fetchProvinces();
+  }, []);
+
+  const fetchDistricts = async (provinceId:string) => {
+    const response = await axios.get(`https://esgoo.net/api-tinhthanh/2/${provinceId}.htm`);
+    if (response.data.error === 0) {
+      setDistricts(response.data.data);
+      setWards([]); // Reset wards khi thay đổi tỉnh
+    }
+  };
+
+  const fetchWards = async (districtId:string) => {
+    const response = await axios.get(`https://esgoo.net/api-tinhthanh/3/${districtId}.htm`);
+    if (response.data.error === 0) {
+      setWards(response.data.data);
+    }
+  };
 
   return (
     <div className="container py-5">
@@ -321,16 +390,81 @@ const CheckoutPage: React.FC = () => {
               />
             </div>
             <div className="mb-3">
-              <label htmlFor="address" className="form-label">
-                Địa chỉ
-              </label>
+              <label htmlFor="province" className="form-label">Tỉnh</label>
+              <select
+                className="form-control"
+                id="province"
+                value={provinces.find((prov) => prov.full_name === province)?.id || ""}
+                onChange={(e) => {
+                  const selectedProvince = provinces.find((prov) => prov.id === e.target.value);
+                  if (selectedProvince) {
+                    setProvince(selectedProvince.full_name);
+                    fetchDistricts(selectedProvince.id); // Gọi hàm fetchDistricts với id của tỉnh
+                  }
+                }}
+                required
+              >
+                <option value="">Chọn Tỉnh</option>
+                {provinces.map((prov: { id: string; full_name: string }) => {
+                  return (
+                    <option key={prov.id} value={prov.id}>{prov.full_name}</option>
+                  );
+                })}
+              </select>
+            </div>
+            <div className="mb-3">
+              <label htmlFor="district" className="form-label">Quận</label>
+              <select
+                className="form-control"
+                id="district"
+                value={districts.find((dist) => dist.full_name === district)?.id || ""}
+                onChange={(e) => {
+                  const selectedDistrict = districts.find((dist) => dist.id === e.target.value);
+                  if(selectedDistrict){
+                    setDistrict(selectedDistrict.full_name);
+                    fetchWards(selectedDistrict.id);
+                  }
+                }}
+                required
+              >
+                <option value="">Chọn Quận</option>
+                {districts.map((dist: { id: string; full_name: string }) => {
+                  return (
+                    <option key={dist.id} value={dist.id}>{dist.full_name}</option>
+                  );
+                })}
+              </select>
+            </div>
+            <div className="mb-3">
+              <label htmlFor="ward" className="form-label">Phường/Xã</label>
+              <select
+                className="form-control"
+                id="ward"
+                value={wards.find((w) => w.full_name === ward)?.id || ""}
+                onChange={(e) => {
+                  const selectedWard = wards.find((ward) => ward.id === e.target.value);
+                  if (selectedWard) {
+                    setWard(selectedWard.full_name);
+                  }
+                }}
+                required
+              >
+                <option value="">Chọn Phường/Xã</option>
+                {wards.map((ward:{id:string,full_name:string}) => {
+                  return(
+                    <option key={ward.id} value={ward.id}>{ward.full_name}</option>
+                  )
+                })}
+              </select>
+            </div>
+            <div className="mb-3">
+              <label htmlFor="address" className="form-label">Địa chỉ cụ thể</label>
               <input
                 type="text"
                 className="form-control"
                 id="address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="123 Đường ABC, Quận X, TP.HCM"
                 required
               />
             </div>
@@ -393,8 +527,7 @@ const CheckoutPage: React.FC = () => {
             {/* Phí vận chuyển */}
             <li className="list-group-item d-flex justify-content-between">
               <span>Phí vận chuyển</span>
-              <strong>Miễn phí</strong>{" "}
-              {/* Hiển thị phí vận chuyển */}
+              <strong>{formatCurrency(shippingFee)}</strong>
             </li>
 
             {/* Chọn và hiển thị phiếu giảm giá */}

@@ -61,7 +61,7 @@ const RegisterPage: React.FC = () => {
     <main className="container">
       <div className="login_container">
         <div className="login_title">
-          <span>Register</span>
+          <span>Đăng kí</span>
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="input_wrapper">
@@ -143,7 +143,7 @@ const RegisterPage: React.FC = () => {
           </div>
           <div className="input_wrapper">
             <button type="submit" className="input_submit">
-              Register
+              Đăng kí
             </button>
           </div>
         </form>

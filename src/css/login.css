@@ -48,7 +48,7 @@
 
 .login_title span {
     color: var(--black-color);
-    font-size: 30px;
+    font-size: 20px;
 }
 
 .login_title::before {
