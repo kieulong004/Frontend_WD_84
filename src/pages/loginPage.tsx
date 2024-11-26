@@ -85,7 +85,7 @@ const LoginPage: React.FC = () => {
               autoComplete="email"
             />
             <label htmlFor="email" className="label">
-              Email
+              Email của bạn
             </label>
             <i className="fa-regular fa-envelope icon" />
             {errors.email && (
@@ -108,7 +108,7 @@ const LoginPage: React.FC = () => {
               autoComplete="new-password"
             />
             <label htmlFor="password" className="label">
-              Password
+              Mật khẩu
             </label>
             <i
               className={`fa-solid ${

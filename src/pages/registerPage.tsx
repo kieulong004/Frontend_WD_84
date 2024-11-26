@@ -73,7 +73,7 @@ const RegisterPage: React.FC = () => {
               placeholder=" "
             />
             <label htmlFor="name" className="label">
-              Name
+              Họ và tên
             </label>
             <i className="fa-regular fa-user icon" />
             {errors.name && <div className="invalid-feedback">{errors.name.message}</div>}
@@ -89,7 +89,7 @@ const RegisterPage: React.FC = () => {
 
             />
             <label htmlFor="email" className="label">
-              Email
+              Email của bạn
             </label>
             <i className="fa-regular fa-envelope icon" />
             {errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
@@ -107,7 +107,7 @@ const RegisterPage: React.FC = () => {
               autoComplete="new-password"
             />
             <label htmlFor="password" className="label">
-              Password
+              Mật khẩu
             </label>
             <i
               className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"} icon`}
@@ -132,7 +132,7 @@ const RegisterPage: React.FC = () => {
               
             />
             <label htmlFor="confirmPassword" className="label">
-              Confirm Password
+              Nhập lại mật khẩu
             </label>
             <i
               className={`fa-solid ${showConfirmPassword ? "fa-eye-slash" : "fa-eye"} icon`}

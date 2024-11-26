@@ -28,6 +28,7 @@ const Header: React.FC = () => {
       });
       setTimeout(() => {
         navigate("/login");
+        window.location.reload()
       }, 1000);
     } else {
       navigate("/products/cart");
