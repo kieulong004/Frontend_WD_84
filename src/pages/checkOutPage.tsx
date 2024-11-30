@@ -57,7 +57,7 @@ interface Coupon {
   discount_type: string;
   discount_value: string;
   end_date: string;
-  total_uses:number
+  total_uses: number
   name: string;
 }
 
@@ -98,7 +98,7 @@ const CheckoutPage: React.FC = () => {
   useEffect(() => {
     const fetchCoupons = async () => {
       try {
-        const {data} = await axios.get('http://localhost:8000/api/vouchers/getUserVouchers', {
+        const { data } = await axios.get('http://localhost:8000/api/vouchers/getUserVouchers', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -145,10 +145,10 @@ const CheckoutPage: React.FC = () => {
       try {
         const response = await axios.get<CartResponse>(
           `http://localhost:8000/api/carts/cart-list/${userId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
+          headers: {
+            Authorization: `Bearer ${token}`
           }
+        }
         );
 
         if (response.data.status) {
@@ -185,13 +185,13 @@ const CheckoutPage: React.FC = () => {
 
   useEffect(() => {
     fetchCartItems();
-  }, [ userId, token]);
+  }, [userId, token]);
 
   const formatCurrency = (value: number | string | null): string => {
     if (value === null) return 'N/A';
     const numericValue = typeof value === 'string' ? parseFloat(value) : value;
     if (isNaN(numericValue)) return 'N/A';
-    
+
     return numericValue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   };
 
@@ -230,7 +230,6 @@ const CheckoutPage: React.FC = () => {
     };
 
     setLoading(true);
-
     try {
       const response = await axios.post<OrderResponse>(
         "http://127.0.0.1:8000/api/orders/storeOrder",
@@ -253,7 +252,12 @@ const CheckoutPage: React.FC = () => {
         }
         console.log(response.data.payment_method);
       } else {
-        console.error(`Lỗi: ${response.data.message}`);
+        toast.dismiss(); // Đóng tất cả toast hiện tại
+        setTimeout(() => {
+          toast.error(`${response.data.message}`, {
+            autoClose: 1000, // Thời gian tự động đóng sau 5 giây
+          });
+        }, 300); // Đợi 300ms để toast cũ được đóng trước khi tạo toast mới
       }
 
     } catch (error) {
@@ -277,10 +281,10 @@ const CheckoutPage: React.FC = () => {
     try {
       const clearCartResponse = await axios.delete(
         `http://localhost:8000/api/carts/delete-cart/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+        headers: {
+          Authorization: `Bearer ${token}`
         }
+      }
       );
       if (clearCartResponse.data.status) {
         console.log("Giỏ hàng đã được làm trống sau khi đặt hàng.");
@@ -292,9 +296,9 @@ const CheckoutPage: React.FC = () => {
       console.error("Lỗi khi xóa giỏ hàng:", error);
     }
   };
-console.log(province)
-console.log(district)
-console.log(ward)
+  console.log(province)
+  console.log(district)
+  console.log(ward)
   const calculateShippingFee = async (province: string, district: string, ward: string) => {
     try {
       const response = await axios.post('http://localhost:8000/api/shipping-fee', {
@@ -318,8 +322,8 @@ console.log(ward)
 
   useEffect(() => {
     const fetchShippingFee = async () => {
-      if (province && district && ward ) {
-        const fee = await calculateShippingFee(province, district, ward, );
+      if (province && district && ward) {
+        const fee = await calculateShippingFee(province, district, ward,);
         setShippingFee(fee);
       }
     };
@@ -338,7 +342,7 @@ console.log(ward)
     fetchProvinces();
   }, []);
 
-  const fetchDistricts = async (provinceId:string) => {
+  const fetchDistricts = async (provinceId: string) => {
     const response = await axios.get(`https://esgoo.net/api-tinhthanh/2/${provinceId}.htm`);
     if (response.data.error === 0) {
       setDistricts(response.data.data);
@@ -346,7 +350,7 @@ console.log(ward)
     }
   };
 
-  const fetchWards = async (districtId:string) => {
+  const fetchWards = async (districtId: string) => {
     const response = await axios.get(`https://esgoo.net/api-tinhthanh/3/${districtId}.htm`);
     if (response.data.error === 0) {
       setWards(response.data.data);
@@ -420,7 +424,7 @@ console.log(ward)
                 value={districts.find((dist) => dist.full_name === district)?.id || ""}
                 onChange={(e) => {
                   const selectedDistrict = districts.find((dist) => dist.id === e.target.value);
-                  if(selectedDistrict){
+                  if (selectedDistrict) {
                     setDistrict(selectedDistrict.full_name);
                     fetchWards(selectedDistrict.id);
                   }
@@ -450,8 +454,8 @@ console.log(ward)
                 required
               >
                 <option value="">Chọn Phường/Xã</option>
-                {wards.map((ward:{id:string,full_name:string}) => {
-                  return(
+                {wards.map((ward: { id: string, full_name: string }) => {
+                  return (
                     <option key={ward.id} value={ward.id}>{ward.full_name}</option>
                   )
                 })}
@@ -550,10 +554,10 @@ console.log(ward)
             </li>
           </ul>
           {showPopup && (
-            <CouponPopup 
-              coupons={coupons} 
-              onSelect={handleSelectCoupon} 
-              onClose={closePopup} 
+            <CouponPopup
+              coupons={coupons}
+              onSelect={handleSelectCoupon}
+              onClose={closePopup}
               totalPrice={totalPrice}
             />
           )}

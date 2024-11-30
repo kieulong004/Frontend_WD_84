@@ -1,26 +1,30 @@
 /* Đảm bảo slider chiếm toàn bộ màn hình */
 .hero {
-  width: 100vw; /* Chiều rộng full màn hình */
-  height: 100vh; /* Chiều cao full màn hình */
-  margin: 0 auto;
+  width: 100%; /* Đảm bảo chiều rộng luôn chiếm 100% màn hình */
+  height: 500px; /* Chiều cao cố định */
+  margin-top: -5px;
   overflow: hidden;
   display: flex;
   justify-content: center; /* Căn giữa nội dung ngang */
   align-items: center; /* Căn giữa nội dung dọc */
+  position: relative;
 }
 
 /* Hình ảnh trong slide */
 .slide-image {
-  width: 100%; /* Chiều rộng 100% của container */
-  height: 100%; /* Chiều cao 100% của container */
-  object-fit: cover; /* Đảm bảo ảnh phủ đầy vùng chứa và giữ tỷ lệ */
-  display: block; /* Đảm bảo không bị lỗi inline */
+  max-width: 100%; /* Giới hạn chiều rộng tối đa 100% */
+  max-height: 100%; /* Giới hạn chiều cao tối đa 100% */
+  width: auto; /* Đảm bảo giữ tỷ lệ chiều ngang */
+  height: auto; /* Đảm bảo giữ tỷ lệ chiều dọc */
+  object-fit: cover; /* Phủ đầy vùng chứa nhưng vẫn giữ tỷ lệ */
+  background-color: #000; /* Thêm màu nền nếu có khoảng trống */
+  display: block;
 }
 
 /* Container của mỗi slide */
 .slick-slide > div {
-  width: 100vw; /* Chiều rộng toàn màn hình */
-  height: 100vh; /* Chiều cao toàn màn hình */
+  width: 100%; /* Chiều rộng 100% */
+  height: 500px; /* Chiều cao cố định */
   display: flex;
   justify-content: center; /* Căn giữa nội dung ngang */
   align-items: center; /* Căn giữa nội dung dọc */
@@ -30,17 +34,52 @@
 .slick-slider,
 .slick-list,
 .slick-track {
-  width: 100vw;
-  height: 100vh;
+  width: 100%; /* Chiều rộng 100% */
+  height: 500px; /* Chiều cao cố định */
   margin: 0 auto; /* Đảm bảo căn giữa slider */
   overflow: hidden;
 }
 
 /* Định dạng dots */
 .slick-dots {
-  position: absolute;
-  bottom: 20px;
+  bottom: 10px; /* Đặt dots cách cạnh dưới */
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
+}
+
+.slick-dots li button {
+  display: none; /* Ẩn nút gốc */
+}
+
+.slick-dots li::before {
+  content: '●'; /* Hoặc sử dụng icon */
+  font-size: 14px;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.slick-dots li.slick-active::before {
+  color: #007bff;
+}
+
+/* Responsive cho thiết bị nhỏ */
+@media (max-width: 768px) {
+  .hero {
+    width: 100%; /* Chiều rộng 100% màn hình */
+    height: auto; /* Chiều cao tự động */
+  }
+  .slick-slider,
+  .slick-list,
+  .slick-track {
+    width: 100%;
+    height: auto;
+  }
+  .slick-slide > div {
+    width: 100%;
+    height: auto;
+  }
+  .slide-image {
+    object-fit: contain; /* Đảm bảo ảnh giữ nguyên tỷ lệ */
+  }
 }

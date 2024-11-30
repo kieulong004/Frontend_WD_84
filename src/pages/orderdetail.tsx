@@ -155,66 +155,83 @@ const OrderDetail = () => {
   };
 
   const submitComment = async (productId: number, variantId: number) => {
+    // Kiểm tra đơn hàng
     if (!order || !order.id) {
       toast.error("Đơn hàng không tồn tại hoặc chưa được tải.");
       return;
     }
 
+    // Kiểm tra đánh giá sao hợp lệ
     if (!ratings[variantId] || ratings[variantId] < 1 || ratings[variantId] > 5) {
       toast.error("Vui lòng nhập số sao hợp lệ (1-5).");
       return;
     }
 
+    // Kiểm tra nội dung đánh giá
     if (!comments[variantId]) {
       toast.error("Vui lòng nhập nội dung đánh giá.");
       return;
     }
 
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/api/comments/add",
-        {
-          order_id: order?.id,
-          product_id: productId,
-          variant_id: variantId,
-          user_id: order?.user_id,
-          content: comments[variantId],
-          rating: ratings[variantId],
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+    // Hiển thị popup xác nhận trước khi gửi đánh giá
+    Swal.fire({
+      title: 'Bạn chỉ có thể đánh giá một lần',
+      text: 'Bạn có chắc chắn muốn gửi đánh giá không?',
+      icon: 'warning',
+      confirmButtonColor: "#0D6EFD",
+      cancelButtonColor: "#ff0000",
+      showCancelButton: true,
+      confirmButtonText: 'Đồng ý',
+      cancelButtonText: 'Hủy',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.post(
+            "http://localhost:8000/api/comments/add",
+            {
+              order_id: order?.id,
+              product_id: productId,
+              variant_id: variantId,
+              user_id: order?.user_id,
+              content: comments[variantId],
+              rating: ratings[variantId],
+            },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
 
-      if (response.data.status) {
-        toast.success("Đánh giá đã được thêm thành công.", {
-          autoClose: 1000,
-        });
+          if (response.data.status) {
+            toast.success("Đánh giá đã được thêm thành công.", {
+              autoClose: 1000,
+            });
 
-        const newComment: Comment = {
-          id: response.data.data.id,
-          content: comments[variantId],
-          rating: ratings[variantId],
-          created_at: new Date().toISOString(),
-          user: { id: order.user_id, name: order.name },
-          product: { id: productId, name: order.order_details.find(detail => detail.variant.id === variantId)?.variant.product.name || "" },
-          variant: { id: variantId, name: null },
-        };
+            const newComment: Comment = {
+              id: response.data.data.id,
+              content: comments[variantId],
+              rating: ratings[variantId],
+              created_at: new Date().toISOString(),
+              user: { id: order.user_id, name: order.name },
+              product: { id: productId, name: order.order_details.find(detail => detail.variant.id === variantId)?.variant.product.name || "" },
+              variant: { id: variantId, name: null },
+            };
 
-        setExistingComments((prev) => {
-          const key = `${productId}-${variantId}`;
-          const updatedComments = { ...prev };
-          if (!updatedComments[key]) {
-            updatedComments[key] = [];
+            setExistingComments((prev) => {
+              const key = `${productId}-${variantId}`;
+              const updatedComments = { ...prev };
+              if (!updatedComments[key]) {
+                updatedComments[key] = [];
+              }
+              updatedComments[key].push(newComment);
+              return updatedComments;
+            });
+
+            setComments((prev) => ({ ...prev, [variantId]: "" }));
+            setRatings((prev) => ({ ...prev, [variantId]: 0 }));
           }
-          updatedComments[key].push(newComment);
-          return updatedComments;
-        });
-
-        setComments((prev) => ({ ...prev, [variantId]: "" }));
-        setRatings((prev) => ({ ...prev, [variantId]: 0 }));
+        } catch (error) {
+          console.error("Lỗi khi thêm đánh giá:", error);
+        }
       }
-    } catch (error) {
-      console.error("Lỗi khi thêm đánh giá:", error);
-    }
+    });
   };
 
 
@@ -230,7 +247,7 @@ const OrderDetail = () => {
       toast.error("Đơn hàng không tồn tại.");
       return;
     }
-  
+
     // Kiểm tra trạng thái thanh toán
     if (order.payment_status === "paid") {
       const result = await Swal.fire({
@@ -243,12 +260,12 @@ const OrderDetail = () => {
         confirmButtonText: "Hủy đơn hàng",
         cancelButtonText: "Không",
       });
-  
+
       if (!result.isConfirmed) {
         return; // Hủy hành động nếu người dùng chọn "Không"
       }
     }
-  
+
     try {
       await axios.get(`http://localhost:8000/api/orders/cancel-order/${order.id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -351,7 +368,7 @@ const OrderDetail = () => {
           {order.order_details.map((detail) => (
             <tr key={detail.id}>
               <td>{detail.variant.product.name}</td>
-              <td><img src={`http://127.0.0.1:8000${detail.variant.product.image}`} alt={detail.variant.product.name} width={50} /></td>
+              <td><img src={`http://127.0.0.1:8000${detail.variant.product.image}`} alt={detail.variant.product.name} width={100} /></td>
               <td>
                 {detail.variant.weight ? `${detail.variant.weight.weight} ${detail.variant.weight.unit}` : "Không xác định"}
               </td>

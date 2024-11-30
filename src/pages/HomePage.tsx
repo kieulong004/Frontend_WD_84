@@ -51,10 +51,12 @@ const HomePage: React.FC = () => {
   return (
     <div>
       <HeroSection />
-      <ProductSection
-        title="Sản phẩm mới nhất"
-        products={products} // Truyền sản phẩm đã sắp xếp và giới hạn
-      />
+      <div className="mt-3">
+        <ProductSection
+          title="Sản phẩm mới nhất"
+          products={products} // Truyền sản phẩm đã sắp xếp và giới hạn
+        />
+      </div>
       <ProposalSection />
       <BlogProduct />
     </div>
