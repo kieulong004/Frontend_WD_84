@@ -30,19 +30,25 @@ const Contact = () => {
 
                 {/* Form liên hệ */}
                 <div className="contact-form">
-                    <h2 className="form-title">Gửi tin nhắn cho chúng tôi</h2>
-                    <form>
-                        <input type="text" placeholder="Họ và Tên" className="form-input" />
-                        <input type="email" placeholder="Email" className="form-input" />
-                        <input type="tel" placeholder="Số điện thoại" className="form-input" />
-                        <textarea
-                            placeholder="Nội dung tin nhắn"
-                            className="form-textarea"
-                        ></textarea>
-                        <button type="submit" className="form-button">
-                            Gửi ngay
-                        </button>
-                    </form>
+                    <h2 className="form-title">Hỗ trợ khách hàng 24/7</h2>
+                    <div className="contact-item">
+                        <h3 className="contact-label">Số điện thoại:</h3>
+                        <p className="contact-detail">
+                            <a href="tel:+84387732069" className="contact-link">+84 38 773 2069</a>
+                        </p>
+                    </div>
+                    <div className="contact-item">
+                        <h3 className="contact-label">Email:</h3>
+                        <p className="contact-detail">
+                            <a href="mailto:support@gemstone.com" className="contact-link">gemstonetrangsuc@gmail.com</a>
+                        </p>
+                    </div>
+                    <div className="contact-item">
+                        <h3 className="contact-label">Facebook:</h3>
+                        <p className="contact-detail">
+                            <a href="https://www.facebook.com/gemstonetrangsuc" target="_blank" rel="noopener noreferrer" className="contact-link">Facebook của chúng tôi</a>
+                        </p>
+                    </div>
                 </div>
             </div>
 

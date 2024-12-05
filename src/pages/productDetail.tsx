@@ -243,11 +243,13 @@ const ProductDetail = () => {
                   </span>
                 )}
               </div>
-              <p className="product-description lead">{prouctsDescription}</p>
+              <p className="product-description lead mb-2 text-muted" style={{ lineHeight: "1.6" }}>
+                {prouctsDescription}
+              </p>
               {variants.length > 0 && (
                 <>
                   <p className="text-muted py-2">
-                    <del className="me-5">
+                    <del className="me-5 fw-bold">
                       {formatCurrency(
                         Number(
                           selectedVariant
@@ -256,7 +258,7 @@ const ProductDetail = () => {
                         )
                       )}
                     </del>
-                    <span className="text-danger ms-3 h6">
+                    <span className="text-danger ms-3 h6 fw-bold">
                       {formatCurrency(
                         Number(
                           selectedVariant

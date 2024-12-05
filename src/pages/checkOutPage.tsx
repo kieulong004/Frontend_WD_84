@@ -255,7 +255,7 @@ const CheckoutPage: React.FC = () => {
         toast.dismiss(); // Đóng tất cả toast hiện tại
         setTimeout(() => {
           toast.error(`${response.data.message}`, {
-            autoClose: 1000, // Thời gian tự động đóng sau 5 giây
+            autoClose: 2000, // Thời gian tự động đóng sau 5 giây
           });
         }, 300); // Đợi 300ms để toast cũ được đóng trước khi tạo toast mới
       }
@@ -296,9 +296,6 @@ const CheckoutPage: React.FC = () => {
       console.error("Lỗi khi xóa giỏ hàng:", error);
     }
   };
-  console.log(province)
-  console.log(district)
-  console.log(ward)
   const calculateShippingFee = async (province: string, district: string, ward: string) => {
     try {
       const response = await axios.post('http://localhost:8000/api/shipping-fee', {

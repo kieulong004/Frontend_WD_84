@@ -187,7 +187,7 @@ console.log(cartItems);
                 {cartItems.map((item) => (
                   <tr key={item.id} className="align-middle">
                     <td>
-                      <div className="d-flex align-items-center justify-content-center">
+                      <div className="d-flex align-items-center ">
                         <img
                           src={`http://127.0.0.1:8000${item.product.image}`}
                           alt={item.product.name}

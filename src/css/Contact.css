@@ -58,55 +58,85 @@
 }
 
 /* Form liên hệ */
+/* General Styles */
 .contact-form {
-    flex: 1;
-    background: white;
-    padding: 20px 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-top: -50px;
+    max-width: 600px;
+    padding: 40px;
+    background: linear-gradient(135deg, #f6f7fb, #ffffff);
+    border-radius: 12px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #444;
+    transition: all 0.3s ease;
 }
 
+/* Form Title */
 .form-title {
-    font-size: 1.8rem;
+    text-align: center;
+    font-size: 32px;
     font-weight: bold;
-    margin-bottom: 20px;
-    color: #4a148c;
+    color: #3b3b3b;
+    margin-bottom: 40px;
+    text-transform: uppercase;
 }
 
-.form-input,
-.form-textarea {
-    width: 100%;
-    padding: 10px 15px;
-    margin-bottom: 15px;
-    font-size: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    transition: border-color 0.3s ease;
+/* Contact Item */
+.contact-item {
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #eaeaea;
+    transition: all 0.3s ease;
 }
 
-.form-input:focus,
-.form-textarea:focus {
-    border-color: #6a1b9a;
-    outline: none;
+.contact-item:hover {
+    transform: scale(1.03);
+    background-color: #f4f6f9;
 }
 
-.form-textarea {
-    height: 100px;
+.contact-label {
+    font-size: 18px;
+    color: #555;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: inline-block;
 }
 
-.form-button {
-    width: 100%;
-    padding: 12px 20px;
-    font-size: 1.2rem;
-    color: #fff;
-    background: linear-gradient(to right, #002e45, #b8860b);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.3s ease, background-color 0.3s ease;
+.contact-detail {
+    font-size: 16px;
+    color: #333;
 }
 
-.form-button:hover {
-    transform: translateY(-2px);
-    background: linear-gradient(to right, #b8860b, #002e45);
+/* Contact Link */
+.contact-link {
+    text-decoration: none;
+    color: #5c6bc0;
+    font-weight: 600;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: inline-block;
 }
+
+.contact-link:hover {
+    color: #3949ab;
+    transform: translateX(5px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .contact-form {
+        padding: 20px;
+    }
+
+    .form-title {
+        font-size: 26px;
+    }
+
+    .contact-label {
+        font-size: 16px;
+    }
+
+    .contact-detail, .contact-link {
+        font-size: 15px;
+    }
+}
+

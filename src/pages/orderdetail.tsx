@@ -271,7 +271,7 @@ const OrderDetail = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Đơn hàng đã được hủy thành công.", {
-        autoClose: 1000,
+        autoClose: 2000,
       });
       setTimeout(() => {
         navigate("/order-list");
@@ -279,7 +279,7 @@ const OrderDetail = () => {
     } catch (error) {
       console.error("Lỗi khi hủy đơn hàng:", error);
       toast.error("Đơn hàng đã được xác nhận không thể hủy", {
-        autoClose: 1000,
+        autoClose: 2000,
       });
       setTimeout(() => {
         window.location.reload();
@@ -345,8 +345,7 @@ const OrderDetail = () => {
               <strong>Địa chỉ:</strong> {order.address}
             </p>
             <p>
-              <strong>Số điện thoại:</strong>
-              {order.phone}
+              <strong>Số điện thoại:</strong> {order.phone}
             </p>
           </div>
         </div>
@@ -354,7 +353,7 @@ const OrderDetail = () => {
 
       <table className="table table-bordered mt-4">
         <thead>
-          <tr>
+          <tr className="text-center">
             <th>Tên sản phẩm</th>
             <th>Ảnh sản phẩm</th>
             <th>Kích thước</th>
@@ -367,14 +366,14 @@ const OrderDetail = () => {
         <tbody>
           {order.order_details.map((detail) => (
             <tr key={detail.id}>
-              <td>{detail.variant.product.name}</td>
-              <td><img src={`http://127.0.0.1:8000${detail.variant.product.image}`} alt={detail.variant.product.name} width={100} /></td>
-              <td>
+              <td className="text-center">{detail.variant.product.name}</td>
+              <td className="text-center"><img src={`http://127.0.0.1:8000${detail.variant.product.image}`} alt={detail.variant.product.name} width={100} /></td>
+              <td className="text-center">
                 {detail.variant.weight ? `${detail.variant.weight.weight} ${detail.variant.weight.unit}` : "Không xác định"}
               </td>
-              <td>{detail.quantity}</td>
-              <td>{formatCurrency(Number(detail.variant.selling_price))}</td>
-              <td>{formatCurrency(Number(detail.total))}</td>
+              <td className="text-center">{detail.quantity}</td>
+              <td className="text-center">{formatCurrency(Number(detail.variant.selling_price))}</td>
+              <td className="text-center">{formatCurrency(Number(detail.total))}</td>
               {order.status === "completed" && (
                 <td>
                   {existingComments[`${detail.variant.product.id}-${detail.variant.id}`]?.length ? (
