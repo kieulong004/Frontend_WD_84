@@ -114,8 +114,11 @@ const ProductPage: React.FC = () => {
 
   // Hàm cập nhật giá trị tìm kiếm
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = event.target.value;
-    setSearchTerm(searchTerm);
+    setSearchTerm(event.target.value);
+  };
+
+  // Hàm xử lý tìm kiếm khi nhấn nút
+  const handleSearchClick = () => {
     setCurrentPage(1); // Reset lại trang hiện tại khi thay đổi tìm kiếm
     fetchProducts(searchTerm); // Gọi hàm fetchProducts với giá trị tìm kiếm mới
   };
@@ -156,6 +159,9 @@ const ProductPage: React.FC = () => {
                   value={searchTerm}
                   onChange={handleSearchChange}
                 />
+                <button className="btn btn-primary" onClick={handleSearchClick}>
+                  Tìm kiếm
+                </button>
               </div>
             </div>
             <div className="d-flex align-items-center">

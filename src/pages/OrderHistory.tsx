@@ -80,7 +80,6 @@ const OrderHistory = () => {
               className="form-control"
               placeholder="Tìm kiếm đơn hàng theo mã"
               {...register("searchTerm")}
-              onChange={(e) => setSearchTerm(e.target.value)}
             />
             <button type="submit" className="btn btn-primary">
               Tìm kiếm
