@@ -69,8 +69,11 @@ interface Order {
   phone: string;
   payment_method: string;
   payment_status: string;
+  final_price:number;
+  shipping_fee: number;
+  discount_value: number;
   status: string;
-  total_price: string;
+  total_price: number;
   user_id: number;
   user: User;
   order_details: OrderDetail[];
@@ -92,7 +95,9 @@ const OrderDetail = () => {
   const [order, setOrder] = useState<Order | null>(null);
   const [comments, setComments] = useState<Record<number, string>>({});
   const [ratings, setRatings] = useState<Record<number, number>>({});
-  const [existingComments, setExistingComments] = useState<Record<string, Comment[]>>({});
+  const [existingComments, setExistingComments] = useState<
+    Record<string, Comment[]>
+  >({});
   const token = getToken();
 
   useEffect(() => {
@@ -101,9 +106,12 @@ const OrderDetail = () => {
   useEffect(() => {
     const fetchOrderDetail = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:8000/api/orders/order-detail/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const { data } = await axios.get(
+          `http://localhost:8000/api/orders/order-detail/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         if (data.status) {
           setOrder(data.data);
           fetchComments(data.data.id); // Gọi fetchComments với order_id
@@ -130,12 +138,15 @@ const OrderDetail = () => {
       );
       if (data.status) {
         const commentsData = data.data || [];
-        const updatedComments = commentsData.reduce((acc: Record<string, Comment[]>, comment: Comment) => {
-          const key = `${comment.product.id}-${comment.variant.id}`;
-          if (!acc[key]) acc[key] = [];
-          acc[key].push(comment);
-          return acc;
-        }, {} as Record<string, Comment[]>);
+        const updatedComments = commentsData.reduce(
+          (acc: Record<string, Comment[]>, comment: Comment) => {
+            const key = `${comment.product.id}-${comment.variant.id}`;
+            if (!acc[key]) acc[key] = [];
+            acc[key].push(comment);
+            return acc;
+          },
+          {} as Record<string, Comment[]>
+        );
         setExistingComments(updatedComments);
       } else {
         toast.error(data.message);
@@ -162,7 +173,11 @@ const OrderDetail = () => {
     }
 
     // Kiểm tra đánh giá sao hợp lệ
-    if (!ratings[variantId] || ratings[variantId] < 1 || ratings[variantId] > 5) {
+    if (
+      !ratings[variantId] ||
+      ratings[variantId] < 1 ||
+      ratings[variantId] > 5
+    ) {
       toast.error("Vui lòng nhập số sao hợp lệ (1-5).");
       return;
     }
@@ -175,14 +190,14 @@ const OrderDetail = () => {
 
     // Hiển thị popup xác nhận trước khi gửi đánh giá
     Swal.fire({
-      title: 'Bạn chỉ có thể đánh giá một lần',
-      text: 'Bạn có chắc chắn muốn gửi đánh giá không?',
-      icon: 'warning',
+      title: "Bạn chỉ có thể đánh giá một lần",
+      text: "Bạn có chắc chắn muốn gửi đánh giá không?",
+      icon: "warning",
       confirmButtonColor: "#0D6EFD",
       cancelButtonColor: "#ff0000",
       showCancelButton: true,
-      confirmButtonText: 'Đồng ý',
-      cancelButtonText: 'Hủy',
+      confirmButtonText: "Đồng ý",
+      cancelButtonText: "Hủy",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
@@ -210,7 +225,13 @@ const OrderDetail = () => {
               rating: ratings[variantId],
               created_at: new Date().toISOString(),
               user: { id: order.user_id, name: order.name },
-              product: { id: productId, name: order.order_details.find(detail => detail.variant.id === variantId)?.variant.product.name || "" },
+              product: {
+                id: productId,
+                name:
+                  order.order_details.find(
+                    (detail) => detail.variant.id === variantId
+                  )?.variant.product.name || "",
+              },
               variant: { id: variantId, name: null },
             };
 
@@ -233,7 +254,6 @@ const OrderDetail = () => {
       }
     });
   };
-
 
   const formatCurrency = (value: number) => {
     return value.toLocaleString("vi-VN", {
@@ -267,9 +287,12 @@ const OrderDetail = () => {
     }
 
     try {
-      await axios.get(`http://localhost:8000/api/orders/cancel-order/${order.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.get(
+        `http://localhost:8000/api/orders/cancel-order/${order.id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       toast.success("Đơn hàng đã được hủy thành công.", {
         autoClose: 2000,
       });
@@ -289,9 +312,15 @@ const OrderDetail = () => {
 
   const handleReceivedOrder = async () => {
     try {
-      await axios.get(`http://localhost:8000/api/orders/order-markAsCompleted/${order?.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        `http://localhost:8000/api/orders/order-markAsCompleted/${order?.id}`,
+        {
+          user_id: order?.user_id,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       toast.success("Đơn hàng đã được xác nhận là đã nhận.", {
         autoClose: 1000,
       });
@@ -328,12 +357,70 @@ const OrderDetail = () => {
               ? "Thanh toán khi nhận hàng (COD)"
               : order.payment_method}
           </p>
-          <p><strong>Trạng thái:</strong>
-            <span className={`badge ${order.status === 'completed' ? 'bg-primary' : order.status === 'cancelled' ? 'bg-danger' : order.status === 'shipping' ? 'bg-info' : order.status === 'confirmed' ? 'bg-secondary' : order.status === 'pending' ? 'bg-warning text-dark' : order.status === 'failed' ? 'bg-dark' : order.status === 'delivering' ? 'bg-success' : 'bg-info'} text-white`}>
-              {order.status === 'completed' ? 'Hoàn thành / Đã nhận được hàng' : order.status === 'cancelled' ? 'Đã hủy' : order.status === 'shipping' ? 'Đang giao' : order.status === 'confirmed' ? 'Đã xác nhận' : order.status === 'pending' ? 'Chờ xác nhận' : order.status === 'failed' ? 'Giao hàng thất bại' : order.status === 'delivering' ? 'Giao hàng thành công' : 'Không xác định'}
+          <p>
+            <strong>Trạng thái:</strong>
+            <span
+              className={`badge ${
+                order.status === "completed"
+                  ? "bg-primary"
+                  : order.status === "cancelled"
+                  ? "bg-danger"
+                  : order.status === "shipping"
+                  ? "bg-info"
+                  : order.status === "confirmed"
+                  ? "bg-secondary"
+                  : order.status === "pending"
+                  ? "bg-warning text-dark"
+                  : order.status === "failed"
+                  ? "bg-dark"
+                  : order.status === "delivering"
+                  ? "bg-success"
+                  : "bg-info"
+              } text-white`}
+            >
+              {order.status === "completed"
+                ? "Hoàn thành / Đã nhận được hàng"
+                : order.status === "cancelled"
+                ? "Đã hủy"
+                : order.status === "shipping"
+                ? "Đang giao"
+                : order.status === "confirmed"
+                ? "Đã xác nhận"
+                : order.status === "pending"
+                ? "Chờ xác nhận"
+                : order.status === "failed"
+                ? "Giao hàng thất bại"
+                : order.status === "delivering"
+                ? "Giao hàng thành công"
+                : "Không xác định"}
             </span>
           </p>
         </div>
+
+        <p>
+          <strong>Trạng thái thanh toán:</strong>
+          <span
+            className={`badge ${
+              order.payment_status === "paid" ? "bg-success" : "bg-warning"
+            } text-white mb-1`}
+          >
+            {order.payment_status === "paid"
+              ? "Đã thanh toán"
+              : "Chưa thanh toán"}
+          </span>
+        </p>
+
+        <p>
+          <strong>Tổng tiền:</strong> {formatCurrency(Number(order.total_price))}          
+        </p>
+        <p>
+          <strong>Phí ship:</strong> {formatCurrency(Number(order.shipping_fee))}
+        </p>
+        {order.discount_value > 0 && (
+          <p>
+            <strong>Giảm giá:</strong> {formatCurrency(Number(order.discount_value))}
+          </p>
+        )}
 
         <div className="row mt-4">
           <div className="col-md-6">
@@ -367,31 +454,50 @@ const OrderDetail = () => {
           {order.order_details.map((detail) => (
             <tr key={detail.id}>
               <td className="text-center">{detail.variant.product.name}</td>
-              <td className="text-center"><img src={`http://127.0.0.1:8000${detail.variant.product.image}`} alt={detail.variant.product.name} width={100} /></td>
               <td className="text-center">
-                {detail.variant.weight ? `${detail.variant.weight.weight} ${detail.variant.weight.unit}` : "Không xác định"}
+                <img
+                  src={`http://127.0.0.1:8000${detail.variant.product.image}`}
+                  alt={detail.variant.product.name}
+                  width={100}
+                />
+              </td>
+              <td className="text-center">
+                {detail.variant.weight
+                  ? `${detail.variant.weight.weight} ${detail.variant.weight.unit}`
+                  : "Không xác định"}
               </td>
               <td className="text-center">{detail.quantity}</td>
-              <td className="text-center">{formatCurrency(Number(detail.variant.selling_price))}</td>
-              <td className="text-center">{formatCurrency(Number(detail.total))}</td>
+              <td className="text-center">
+                {formatCurrency(Number(detail.variant.selling_price))}
+              </td>
+              <td className="text-center">
+                {formatCurrency(Number(detail.total))}
+              </td>
               {order.status === "completed" && (
                 <td>
-                  {existingComments[`${detail.variant.product.id}-${detail.variant.id}`]?.length ? (
+                  {existingComments[
+                    `${detail.variant.product.id}-${detail.variant.id}`
+                  ]?.length ? (
                     <div>
-                      {existingComments[`${detail.variant.product.id}-${detail.variant.id}`].map((comment) => (
+                      {existingComments[
+                        `${detail.variant.product.id}-${detail.variant.id}`
+                      ].map((comment) => (
                         <div key={comment.id}>
                           <div>
                             {[...Array(5)].map((_, i) => (
                               <IoStar
                                 key={i}
                                 size={24}
-                                color={i < comment.rating ? "#ffc107" : "#e4e5e9"}
+                                color={
+                                  i < comment.rating ? "#ffc107" : "#e4e5e9"
+                                }
                                 style={{ cursor: "default" }}
                               />
                             ))}
                           </div>
                           <p className="mt-2" style={{ color: "#555" }}>
-                            <strong>Bình luận của bạn:</strong> {comment.content}
+                            <strong>Bình luận của bạn:</strong>{" "}
+                            {comment.content}
                           </p>
                         </div>
                       ))}
@@ -403,8 +509,14 @@ const OrderDetail = () => {
                           <IoStar
                             key={star}
                             size={24}
-                            color={star <= (ratings[detail.variant.id] || 0) ? "#ffc107" : "#e4e5e9"}
-                            onClick={() => handleRatingChange(detail.variant.id, star)}
+                            color={
+                              star <= (ratings[detail.variant.id] || 0)
+                                ? "#ffc107"
+                                : "#e4e5e9"
+                            }
+                            onClick={() =>
+                              handleRatingChange(detail.variant.id, star)
+                            }
                             style={{ cursor: "pointer" }}
                           />
                         ))}
@@ -413,12 +525,22 @@ const OrderDetail = () => {
                         type="text"
                         placeholder="Nhập bình luận"
                         value={comments[detail.variant.id] || ""}
-                        onChange={(e) => handleCommentChange(detail.variant.id, e.target.value)}
+                        onChange={(e) =>
+                          handleCommentChange(detail.variant.id, e.target.value)
+                        }
                         className="form-control mt-2"
                       />
                       <button
-                        onClick={() => submitComment(detail.variant.product.id, detail.variant.id)}
-                        disabled={!comments[detail.variant.id] || !ratings[detail.variant.id]}
+                        onClick={() =>
+                          submitComment(
+                            detail.variant.product.id,
+                            detail.variant.id
+                          )
+                        }
+                        disabled={
+                          !comments[detail.variant.id] ||
+                          !ratings[detail.variant.id]
+                        }
                         className="btn btn-primary mt-2"
                       >
                         Gửi đánh giá

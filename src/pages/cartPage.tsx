@@ -173,90 +173,90 @@ console.log(cartItems);
       ) : (
         <>
           <div className="table-responsive shadow-sm rounded">
-            <table className="table table-bordered table-hover text-center">
+            <table className="table table-bordered text-center">
               <thead className="table-dark">
-                <tr>
-                  <th scope="col">Sản phẩm</th>
-                  <th scope="col">Kích thước</th>
-                  <th scope="col">Số lượng</th>
-                  <th scope="col">Tổng</th>
-                  <th scope="col">Hành động</th>
-                </tr>
+          <tr>
+            <th scope="col">Sản phẩm</th>
+            <th scope="col">Kích thước</th>
+            <th scope="col">Số lượng</th>
+            <th scope="col">Tổng</th>
+            <th scope="col">Hành động</th>
+          </tr>
               </thead>
               <tbody>
-                {cartItems.map((item) => (
-                  <tr key={item.id} className="align-middle">
-                    <td>
-                      <div className="d-flex align-items-center ">
-                        <img
-                          src={`http://127.0.0.1:8000${item.product.image}`}
-                          alt={item.product.name}
-                          className="img-fluid rounded shadow-sm"
-                          style={{
-                            width: "80px",
-                            height: "80px",
-                            marginRight: "10px",
-                            objectFit: "cover",
-                          }}
-                        />
-                        <div className="text-left fw-bold">
-                          <p className="mb-1">{item.product.name}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="fw-bold">
-                      {item.variant && item.variant.weight
-                        ? `${item.variant.weight.weight} ${item.variant.weight.unit}`
-                        : "Không có trọng lượng"}
-                    </td>
-                    <td>
-                      <div
-                        className="input-group"
-                        style={{ maxWidth: "150px", margin: "0 auto" }}
-                      >
-                        <button
-                          className="btn btn-outline-secondary btn-sm fw"
-                          type="button"
-                          onClick={() =>
-                            handleQuantityChange(
-                              item.id,
-                              Math.max(1, item.quantity - 1)
-                            )
-                          }
-                        >
-                          <i className="bi bi-dash"></i>
-                        </button>
-                        <input
-                          type="number"
-                          className="form-control text-center"
-                          value={item.quantity}
-                          min="1"
-                          readOnly
-                        />
-                        <button
-                          className="btn btn-outline-secondary btn-sm"
-                          type="button"
-                          onClick={() =>
-                            handleQuantityChange(item.id, item.quantity + 1)
-                          }
-                        >
-                          <i className="bi bi-plus"></i>
-                        </button>
-                      </div>
-                    </td>
-                    <td className="fw-bold">
-                      {formatCurrency(Number(item.price * item.quantity))}
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleDeleteItem(item.id)}
-                      >
-                        <i className="bi bi-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+          {cartItems.map((item) => (
+            <tr key={item.id} className="align-middle">
+              <td>
+                <div className="d-flex align-items-center">
+            <img
+              src={`http://127.0.0.1:8000${item.product.image}`}
+              alt={item.product.name}
+              className="img-fluid rounded shadow-sm"
+              style={{
+                width: "80px",
+                height: "80px",
+                marginRight: "10px",
+                objectFit: "cover",
+              }}
+            />
+            <div className="text-left fw-bold">
+              <p className="mb-1">{item.product.name}</p>
+            </div>
+                </div>
+              </td>
+              <td className="fw-bold">
+                {item.variant && item.variant.weight
+            ? `${item.variant.weight.weight} ${item.variant.weight.unit}`
+            : "Không có trọng lượng"}
+              </td>
+              <td>
+                <div
+            className="input-group"
+            style={{ maxWidth: "150px", margin: "0 auto" }}
+                >
+            <button
+              className="btn btn-outline-secondary btn-sm fw"
+              type="button"
+              onClick={() =>
+                handleQuantityChange(
+                  item.id,
+                  Math.max(1, item.quantity - 1)
+                )
+              }
+            >
+              <i className="bi bi-dash"></i>
+            </button>
+            <input
+              type="number"
+              className="form-control text-center"
+              value={item.quantity}
+              min="1"
+              readOnly
+            />
+            <button
+              className="btn btn-outline-secondary btn-sm"
+              type="button"
+              onClick={() =>
+                handleQuantityChange(item.id, item.quantity + 1)
+              }
+            >
+              <i className="bi bi-plus"></i>
+            </button>
+                </div>
+              </td>
+              <td className="fw-bold">
+                {formatCurrency(Number(item.price * item.quantity))}
+              </td>
+              <td>
+                <button
+            className="btn btn-danger btn-sm"
+            onClick={() => handleDeleteItem(item.id)}
+                >
+            <i className="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          ))}
               </tbody>
             </table>
           </div>
