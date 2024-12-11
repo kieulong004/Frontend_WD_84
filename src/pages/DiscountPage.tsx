@@ -30,7 +30,6 @@ const DiscountPage: React.FC = () => {
   }, []);
   useEffect(() => {
     const fetchVouchers = async () => {
-      if (userFromStorage) {
         try {
           const { data } = await axios.get('http://127.0.0.1:8000/api/vouchers/getVoucherList');
           setDiscounts(data.data);
@@ -39,10 +38,9 @@ const DiscountPage: React.FC = () => {
         } finally {
           setIsLoading(false);
         }
-      }
     };
     fetchVouchers();
-  }, [userFromStorage]);
+  }, [token]);
 
   const handleSave = async (discount: Discount) => {
     try {

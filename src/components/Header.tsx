@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "./logo";
-import { search, shop, user } from "./icons";
+import { shop, user } from "./icons";
 import axios from "axios";
 import { getToken } from "./utils";
 import { toast } from "react-toastify";
@@ -276,14 +276,6 @@ const Header: React.FC = () => {
                 />
               </button>
             )}
-            <Link to="/search" className="btn btn-link p-0 mx-2 text-decoration-none">
-              <img
-                src={search}
-                alt="Search"
-                className="img-fluid"
-                style={{ width: "24px" }}
-              />
-            </Link>
             <button onClick={handleCartClick} className="btn btn-link p-0 mx-2 text-decoration-none">
               <img
                 src={shop}

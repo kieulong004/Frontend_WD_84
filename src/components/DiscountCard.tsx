@@ -76,8 +76,6 @@ const DiscountCard: React.FC<DiscountCardProps> = ({ discount, onSave }) => {
   const handleRedirect = () => {
     window.location.href = '/products'; // Redirect to the products page
   };
-console.log(typeof discount.discount_value)
-console.log(discount.discount_min_price)
   return (
     <div className="card h-100 text-center">
       <div className="card-body d-flex flex-column">
@@ -85,7 +83,7 @@ console.log(discount.discount_min_price)
           <strong>{discount.name} - Giảm:</strong> {formatCurrency(discount.discount_value)} VNĐ
         </p>
         <p className="card-text">
-          <strong>Đơn hàng tối thiểu:</strong> {formatCurrency(discount.discount_min_price)} VNĐ
+          <strong>Đơn hàng tối thiểu:</strong> {formatCurrency((discount.discount_min_price) || 0)} VNĐ
         </p>
         <p className="card-text">
           <strong>Hết hạn:</strong> {new Date(discount.end_date).toLocaleDateString()}
