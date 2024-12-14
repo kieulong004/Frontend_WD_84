@@ -243,9 +243,17 @@ const ProductDetail = () => {
                   </span>
                 )}
               </div>
-              <p className="product-description lead mb-2 text-muted" style={{ lineHeight: "1.6" }}>
+              <p
+                className="product-description lead mb-2 text-muted"
+                style={{
+                  lineHeight: "1.6",
+                  textAlign: "justify",
+                  textJustify: "inter-word",
+                }}
+              >
                 {prouctsDescription}
               </p>
+
               {variants.length > 0 && (
                 <>
                   <p className="text-muted py-2">

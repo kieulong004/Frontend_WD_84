@@ -249,7 +249,7 @@ const OrderDetail = () => {
             setRatings((prev) => ({ ...prev, [variantId]: 0 }));
           }
         } catch (error) {
-          console.error("Lỗi khi thêm đánh giá:", error);
+          toast.error("Bạn chỉ có thể đánh giá một lần cho mỗi biến thể sản phẩm");
         }
       }
     });
@@ -272,7 +272,7 @@ const OrderDetail = () => {
     if (order.payment_status === "paid") {
       const result = await Swal.fire({
         title: "Xác nhận hủy đơn hàng",
-        text: "Đơn hàng đã được thanh toán. Bạn phải liên hệ tới 0998888888 để nhận lại tiền do đơn của bạn đã được thanh toán trước, bạn có chắc chắn muốn hủy?",
+        text: "Đơn hàng đã được thanh toán. Bạn phải liên hệ tới 0387732069 để nhận lại tiền do đơn của bạn đã được thanh toán trước, bạn có chắc chắn muốn hủy?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#d33",
@@ -288,10 +288,12 @@ const OrderDetail = () => {
 
     try {
       await axios.get(
-        `http://localhost:8000/api/orders/cancel-order/${order.id}`,
+        `http://localhost:8000/api/orders/cancel-order/${order?.id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
+          params: { user_id: order?.user_id },
         }
+        
       );
       toast.success("Đơn hàng đã được hủy thành công.", {
         autoClose: 2000,

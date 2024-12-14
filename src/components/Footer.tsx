@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Footer = () => {
   return (
     <footer className="bg-light">
@@ -58,25 +60,37 @@ const Footer = () => {
               </li>
             </ul>
           </div>
+
           <div className="col-lg-4 col-md-12 mb-4">
             <div className="footer-item">
               <h4 className="footer-title mb-4">Bản tin</h4>
               <p className="text-muted pb-2">
-                Đăng ký để nhận bản tin của chúng tôi và nhận các ưu đãi độc
-                quyền.
+                Theo dõi thông tin và các ưu đãi mới nhất qua trang Facebook của chúng tôi.
               </p>
-              <form action="" className="newsletter">
-                <div className="input-group">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Nhập email..."
-                  />
-                  <button className="btn btn-primary" type="submit">
-                    Đăng ký
-                  </button>
-                </div>
-              </form>
+              <Link
+                to="https://www.facebook.com/gemstonetrangsuc"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-facebook"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  textDecoration: "none",
+                  borderRadius: "50px", // Làm nút tròn hơn
+                  padding: "12px 25px", // Tăng kích thước padding để nút lớn hơn
+                  fontWeight: "bold",
+                  backgroundColor: "#4267B2", // Màu nền giống Facebook
+                  color: "white", // Màu chữ trắng
+                  fontSize: "16px", // Tăng kích thước chữ
+                  transition: "all 0.3s ease-in-out", // Hiệu ứng chuyển động mượt mà
+                }}
+              >
+                <i
+                  className="bi bi-facebook"
+                  style={{ marginRight: "12px", fontSize: "20px" }} // Thêm khoảng cách giữa icon và text
+                ></i>
+                Truy cập trang Facebook
+              </Link>
             </div>
           </div>
         </div>
