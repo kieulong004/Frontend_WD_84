@@ -226,7 +226,7 @@ const CheckoutPage: React.FC = () => {
       toast.error("Vui lòng điền đầy đủ thông tin và kiểm tra giỏ hàng.");
       return;
     }
-  
+
     const orderData = {
       user_id: userId,
       name: name,
@@ -272,6 +272,7 @@ const CheckoutPage: React.FC = () => {
       } else {
         toast.dismiss(); // Đóng tất cả toast hiện tại
         setTimeout(() => {
+          // Thông báo Sản phẩm đã hết hàng
           toast.error(`${response.data.message}`, {
             autoClose: 2000, // Thời gian tự động đóng sau 5 giây
           });
@@ -284,9 +285,13 @@ const CheckoutPage: React.FC = () => {
           "Lỗi khi gửi đơn hàng:",
           error.response?.data || error.message
         );
-        console.error(
-          `Có lỗi xảy ra: ${error.response?.data?.message || error.message}`
-        );
+        toast.dismiss();
+        setTimeout(() => {
+          //  Thông báo Voucher đã hết lượt sử dụng
+          toast.error(`${error.response?.data?.message || error.message}`, {
+            autoClose: 2000, // Thời gian tự động đóng sau 5 giây
+          });
+        }, 300);
       } else {
         console.error("Lỗi không xác định:", error);
       }
@@ -346,12 +351,12 @@ const CheckoutPage: React.FC = () => {
     fetchShippingFee();
   }, [provinceId, districtId, wardId]);
 
-  
-    // Lấy danh sách tỉnh
-    const fetchProvinces = async () => {
-      const response = await axios.get("http://localhost:8000/api/provinces");
-      setProvinces(response.data.provinces);
-    };
+
+  // Lấy danh sách tỉnh
+  const fetchProvinces = async () => {
+    const response = await axios.get("http://localhost:8000/api/provinces");
+    setProvinces(response.data.provinces);
+  };
 
   const fetchDistricts = async (provinceId: string) => {
     const response = await axios.post(`http://localhost:8000/api/districts`, {

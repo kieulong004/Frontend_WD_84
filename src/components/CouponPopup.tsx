@@ -12,7 +12,7 @@ interface Coupon {
 }
 
 interface CouponPopupProps {
-  coupons: Coupon[];
+  coupons: Coupon[] | null;
   onSelect: (coupon: Coupon) => void;
   onClose: () => void;
   totalPrice: number; // Thêm totalPrice vào props
@@ -25,9 +25,10 @@ const CouponPopup: React.FC<CouponPopupProps> = ({ coupons, onSelect, onClose, t
     setSearchTerm(event.target.value.toLowerCase()); // Chuyển đổi searchTerm thành chữ thường
   };
 
-  const filteredCoupons = coupons.filter((coupon) =>
-    coupon.name.toLowerCase().includes(searchTerm) // Chuyển đổi coupon.name thành chữ thường
-  );
+  const filteredCoupons = coupons ? coupons.filter((coupon) =>
+    coupon?.name?.toLowerCase().includes(searchTerm || "") // Chuyển đổi coupon.name thành chữ thường
+  ) : [];
+  
   const formatCurrency = (value: number | string | null): string => {
     if (value === null) return 'N/A';
     const numericValue = typeof value === 'string' ? parseFloat(value) : value;
