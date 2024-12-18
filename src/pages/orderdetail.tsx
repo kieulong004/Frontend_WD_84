@@ -113,7 +113,45 @@ const OrderDetail = () => {
           }
         );
         if (data.status) {
-          setOrder(data.data);
+          const updatedOrderDetails = data.data.order_details.map((detail: OrderDetail) => {
+            if (detail.variant == null) {
+              console.error(`Sản phẩm với ID ${detail.id} đã bị hệ thống xóa.`);
+              return {
+                ...detail,
+                variant: {
+                  id: 0,
+                  product_id: 0,
+                  quantity: 0,
+                  selling_price: "0",
+                  import_price: "0",
+                  listed_price: "0",
+                  weight_id: 0,
+                  product: {
+                    id: 0,
+                    category_id: 0,
+                    name: "Sản phẩm không tồn tại",
+                    description: "",
+                    image: "/path-to-fallback-image.jpg", // Đường dẫn thay thế nếu không tải được ảnh
+                    sku: "",
+                    created_at: "",
+                    updated_at: "",
+                  },
+                  weight: {
+                    id: 0,
+                    weight: "Không tồn tại",
+                    unit: "",
+                    created_at: "",
+                    updated_at: "",
+                  },
+                  created_at: "",
+                  updated_at: "",
+                },
+              };
+            }
+            return detail;
+          });
+  
+          setOrder({ ...data.data, order_details: updatedOrderDetails });
           fetchComments(data.data.id); // Gọi fetchComments với order_id
         } else {
           console.error(data.message);
@@ -122,12 +160,11 @@ const OrderDetail = () => {
         console.error("Error fetching order details:", error);
       }
     };
-
+  
     if (id) {
       fetchOrderDetail();
     }
   }, [id, token]);
-
   // Lấy danh sách đánh giá cho một sản phẩm và biến thể cụ thể
   const fetchComments = async (orderId: number) => {
     try {

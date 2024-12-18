@@ -121,14 +121,35 @@ const ProductDetail = () => {
           `http://localhost:8000/api/product/product-detail/${id}`
         );
         console.log(data)
-        setProduct(data.data.product);
-        setRelatedProducts(data.data.relatedProducts);
-        setVariants(data.data.variants);
+        if (data.data.product) {
+          setProduct(data.data.product);
+          setRelatedProducts(data.data.relatedProducts);
+          setVariants(data.data.variants);
+        }
       } catch (error) {
         console.error("Error fetching product details:", error);
+          // Sản phẩm không tồn tại, tạo sản phẩm mẫu
+          setProduct({
+            id: 0,
+            category_id: 0,
+            sku: "N/A",
+            name: "Sản phẩm không tồn tại",
+            image: "https://via.placeholder.com/250",
+            description: "Sản phẩm không tồn tại.",
+            created_at: "",
+            updated_at: "",
+            category: {
+              id: 0,
+              name: "N/A",
+              created_at: "",
+              updated_at: "",
+            },
+            variants: [],
+          });
+          setVariants([]);
+          setRelatedProducts([]);
       }
     };
-
     if (id) {
       fetchProductDetail();
     }

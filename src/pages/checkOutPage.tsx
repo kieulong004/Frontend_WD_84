@@ -156,7 +156,6 @@ const CheckoutPage: React.FC = () => {
   };
 
   const fetchCartItems = async (retryCount = 0) => {
-    if (userFromStorage) {
       try {
         const response = await axios.get<CartResponse>(
           `http://localhost:8000/api/carts/cart-list/${userId}`, {
@@ -165,10 +164,13 @@ const CheckoutPage: React.FC = () => {
           }
         }
         );
-
+  
         if (response.data.status) {
-          setCartItems(response.data.cart_items);
-          const total = response.data.cart_items.reduce(
+          const validCartItems = response.data.cart_items.filter(
+            (item) => item.product !== null
+          );
+          setCartItems(validCartItems);
+          const total = validCartItems.reduce(
             (acc, item) => acc + item.price * item.quantity,
             0
           );
@@ -195,7 +197,6 @@ const CheckoutPage: React.FC = () => {
           console.error("Lỗi không xác định:", error);
         }
       }
-    }
   };
 
   useEffect(() => {

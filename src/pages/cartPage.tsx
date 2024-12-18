@@ -59,9 +59,11 @@ const CartPage: React.FC = () => {
             `http://localhost:8000/api/carts/cart-list/${userId}`
           );
           if (response.data.status) {
-            setCartItems(response.data.cart_items);
-            // Tính tổng giá trị giỏ hàng
-            const total = response.data.cart_items.reduce(
+            const validCartItems = response.data.cart_items.filter(
+              (item) => item.product !== null
+            );
+            setCartItems(validCartItems);
+            const total = validCartItems.reduce(
               (acc, item) => acc + item.price * item.quantity,
               0
             );
