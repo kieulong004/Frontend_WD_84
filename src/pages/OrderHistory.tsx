@@ -28,23 +28,23 @@ interface SearchFormData {
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
   const userFromStorage = getUser();
   const { register, handleSubmit } = useForm<SearchFormData>();
 
   useEffect(() => {
     document.title = "Lịch sử đơn hàng";
   }, []);
-  const fetchOrders = async () => {
+
+  const fetchOrders = async (searchTerm: string = "") => {
     if (userFromStorage) {
       const userId = userFromStorage.id;
       try {
         const { data } = await axios.get(
-          `http://localhost:8000/api/orders/order-list/${userId}`
+          `http://localhost:8000/api/orders/order-list/${userId}?code=${searchTerm}`
         );
         setOrders(data.data);
       } catch (error) {
-        console.error("Error fetching orders:");
+        console.error("Error fetching orders:", error);
       }
     }
   };
@@ -54,12 +54,8 @@ const OrderHistory = () => {
   }, []);
 
   const onSubmit: SubmitHandler<SearchFormData> = (data) => {
-    setSearchTerm(data.searchTerm);
+    fetchOrders(data.searchTerm);
   };
-
-  const filteredOrders = orders.filter((order) =>
-    order.code.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   // Hàm định dạng giá tiền theo VNĐ
   const formatCurrency = (value: number) => {
@@ -87,7 +83,7 @@ const OrderHistory = () => {
           </div>
         </form>
       )}
-      {filteredOrders.length === 0 ? (
+      {orders.length === 0 ? (
         <div className="text-center">
           <div className="alert alert-secondary p-5 border border-light">
             <h4 className="mb-3 text-primary">Đơn hàng của bạn đang trống</h4>
@@ -113,7 +109,7 @@ const OrderHistory = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredOrders.map((order: Order) => (
+              {orders.map((order: Order) => (
                 <tr key={order.id} className="align-middle">
                   <td className="text-center">{order.code}</td>
                   <td className="text-center">
